@@ -1,0 +1,97 @@
+/* PrimeVue RTL Global Styles */
+
+/* Set all PrimeVue inputs to RTL */
+.p-inputtext,
+.p-password-input,
+.p-inputnumber-input,
+.p-dropdown,
+.p-multiselect,
+.p-calendar input,
+.p-chips .p-inputtext,
+.p-autocomplete .p-inputtext {
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+/* Icon positioning for RTL */
+.p-iconfield {
+    direction: rtl;
+}
+
+.p-inputicon {
+    right: auto;
+    left: 0.75rem;
+}
+
+/* Password toggle button positioning */
+.p-password-toggle-icon {
+    left: 0.75rem;
+    right: auto;
+}
+
+/* Dropdown and select positioning */
+.p-dropdown-trigger,
+.p-multiselect-trigger {
+    left: 0;
+    right: auto;
+}
+
+/* Calendar button positioning */
+.p-datepicker-trigger {
+    left: 0;
+    right: auto;
+}
+
+/* Checkbox and Radio alignment */
+.p-checkbox,
+.p-radiobutton {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+/* Dialog and overlay positioning */
+.p-dialog-header,
+.p-dialog-content,
+.p-dialog-footer {
+    text-align: right;
+}
+
+/* Menu and dropdown items */
+.p-menuitem-text,
+.p-dropdown-item,
+.p-multiselect-item {
+    text-align: right;
+}
+
+/* Table headers */
+.p-datatable th,
+.p-datatable td {
+    text-align: right;
+}
+
+/* Breadcrumb */
+.p-breadcrumb {
+    direction: rtl;
+}
+
+/* Toast positioning */
+.p-toast-top-right {
+    left: 1rem;
+    right: auto;
+}
+
+.p-toast-top-left {
+    right: 1rem;
+    left: auto;
+}
+
+/* Sidebar positioning */
+.p-sidebar-left {
+    right: 0;
+    left: auto;
+}
+
+.p-sidebar-right {
+    left: 0;
+    right: auto;
+}
