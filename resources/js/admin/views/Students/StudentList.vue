@@ -2,7 +2,7 @@
     <div class="students">
         <!-- Page Header -->
         <div class="page-header">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 w-100">
                 <div>
                     <h1 class="page-title">
                         <i v-if="statusFilter === 'archived'" class="bi bi-archive me-2"></i>

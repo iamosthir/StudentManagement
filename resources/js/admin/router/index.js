@@ -29,6 +29,9 @@ import SubscriptionOptionForm from '../views/SubscriptionOptions/SubscriptionOpt
 import ProductList from '../views/Products/ProductList.vue';
 import ProductForm from '../views/Products/ProductForm.vue';
 
+// Subscription Management
+import SubscriptionForm from '../views/Subscriptions/SubscriptionForm.vue';
+
 // Wallet Management
 import WalletList from '../views/Wallets/WalletList.vue';
 import WalletDetails from '../views/Wallets/WalletDetails.vue';
@@ -185,6 +188,14 @@ const routes = [
         path: '/products/:id/edit',
         name: 'products.edit',
         component: ProductForm,
+        meta: { requiresAuth: true }
+    },
+
+    // Subscription Routes
+    {
+        path: '/subscriptions/create',
+        name: 'subscriptions.create',
+        component: SubscriptionForm,
         meta: { requiresAuth: true }
     },
 
