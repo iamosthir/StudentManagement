@@ -152,9 +152,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useToast } from 'primevue/usetoast';
 import axios from 'axios';
 
 const router = useRouter();
+const toast = useToast();
 
 const admins = ref([]);
 const loading = ref(true);
@@ -222,12 +224,25 @@ const deleteAdmin = async () => {
     deleting.value = true;
     try {
         await axios.delete(`/admin/admin-users/${adminToDelete.value.id}`);
+
+        toast.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Admin user deleted successfully',
+            life: 3000
+        });
+
         showDeleteModal.value = false;
         adminToDelete.value = null;
         fetchAdmins(pagination.value.current_page);
     } catch (error) {
         console.error('Error deleting admin:', error);
-        alert(error.response?.data?.message || 'Failed to delete admin user');
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.response?.data?.message || 'Failed to delete admin user',
+            life: 3000
+        });
     } finally {
         deleting.value = false;
     }

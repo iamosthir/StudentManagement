@@ -9,6 +9,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 // Import PrimeVue
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
+import ToastService from 'primevue/toastservice';
 
 // Import PrimeVue RTL styles
 import '../../css/primevue-rtl.css';
@@ -59,6 +60,9 @@ app.use(PrimeVue, {
         monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     }
 });
+
+// Use Toast Service
+app.use(ToastService);
 
 // Use router
 app.use(router);

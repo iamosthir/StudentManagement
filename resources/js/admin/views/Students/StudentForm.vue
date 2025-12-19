@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useToast } from 'primevue/usetoast';
 import axios from 'axios';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
@@ -13,6 +14,7 @@ import Password from 'primevue/password';
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToast();
 
 const isEditMode = computed(() => !!route.params.id);
 const studentId = computed(() => route.params.id);
@@ -100,7 +102,12 @@ const fetchStudent = async () => {
     };
   } catch (error) {
     console.error('Error fetching student:', error);
-    alert('Failed to fetch student details');
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to fetch student details',
+      life: 3000
+    });
   } finally {
     loading.value = false;
   }
@@ -141,12 +148,22 @@ const basePrice = computed(() => {
 // Coupon verification functions
 const verifyCoupon = async () => {
   if (!subscriptionData.value.coupon_code) {
-    alert('Please enter a coupon code');
+    toast.add({
+      severity: 'warn',
+      summary: 'Warning',
+      detail: 'Please enter a coupon code',
+      life: 3000
+    });
     return;
   }
 
   if (!basePrice.value) {
-    alert('Please select a subscription option first');
+    toast.add({
+      severity: 'warn',
+      summary: 'Warning',
+      detail: 'Please select a subscription option first',
+      life: 3000
+    });
     return;
   }
 
@@ -167,7 +184,12 @@ const verifyCoupon = async () => {
       subscriptionData.value.discount_type = null;
       subscriptionData.value.discount_value = null;
 
-      alert(`Coupon verified! You'll save $${couponDiscount.value.discount_amount}`);
+      toast.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: `Coupon verified! You'll save $${couponDiscount.value.discount_amount}`,
+        life: 5000
+      });
     }
   } catch (error) {
     couponVerified.value = false;
@@ -176,7 +198,12 @@ const verifyCoupon = async () => {
     if (error.response?.data?.message) {
       errors.value.coupon_code = [error.response.data.message];
     } else {
-      alert('Failed to verify coupon');
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to verify coupon',
+        life: 3000
+      });
     }
   } finally {
     verifyingCoupon.value = false;
@@ -220,10 +247,20 @@ const handleSubmit = async () => {
 
     if (isEditMode.value) {
       await axios.put(`/admin/students/${studentId.value}`, payload);
-      alert('Student updated successfully');
+      toast.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Student updated successfully',
+        life: 3000
+      });
     } else {
       await axios.post('/admin/students', payload);
-      alert('Student created successfully');
+      toast.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Student created successfully',
+        life: 3000
+      });
     }
 
     router.push('/students');
@@ -231,7 +268,12 @@ const handleSubmit = async () => {
     if (error.response?.data?.errors) {
       errors.value = error.response.data.errors;
     } else {
-      alert(error.response?.data?.message || 'Failed to save student');
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: error.response?.data?.message || 'Failed to save student',
+        life: 3000
+      });
     }
   } finally {
     loading.value = false;

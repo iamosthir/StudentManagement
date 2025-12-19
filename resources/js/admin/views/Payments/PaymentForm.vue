@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useToast } from 'primevue/usetoast';
 import axios from 'axios';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
@@ -11,6 +12,7 @@ import Button from 'primevue/button';
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToast();
 
 const loading = ref(false);
 const students = ref([]);
@@ -129,7 +131,12 @@ const fetchStudentById = async (studentId) => {
     await fetchStudentSubscriptions(student.id);
   } catch (error) {
     console.error('Error fetching student:', error);
-    alert('Failed to load student information');
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to load student information',
+      life: 3000
+    });
   }
 };
 
@@ -297,12 +304,22 @@ const validateTotalPrice = (item) => {
 // Coupon verification functions
 const verifyCoupon = async () => {
   if (!formData.value.coupon_code) {
-    alert('Please enter a coupon code');
+    toast.add({
+      severity: 'warn',
+      summary: 'Warning',
+      detail: 'Please enter a coupon code',
+      life: 3000
+    });
     return;
   }
 
   if (totalAmount.value <= 0) {
-    alert('Please add payment items first');
+    toast.add({
+      severity: 'warn',
+      summary: 'Warning',
+      detail: 'Please add payment items first',
+      life: 3000
+    });
     return;
   }
 
@@ -318,7 +335,12 @@ const verifyCoupon = async () => {
     if (response.data.success && response.data.available) {
       couponVerified.value = true;
       couponDiscount.value = response.data.data;
-      alert(`Coupon verified! You'll save $${couponDiscount.value.discount_amount}`);
+      toast.add({
+        severity: 'success',
+        summary: 'Coupon Verified',
+        detail: `Coupon verified! You'll save $${couponDiscount.value.discount_amount}`,
+        life: 3000
+      });
     }
   } catch (error) {
     couponVerified.value = false;
@@ -327,7 +349,12 @@ const verifyCoupon = async () => {
     if (error.response?.data?.message) {
       errors.value.coupon_code = [error.response.data.message];
     } else {
-      alert('Failed to verify coupon');
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to verify coupon',
+        life: 3000
+      });
     }
   } finally {
     verifyingCoupon.value = false;
@@ -358,7 +385,12 @@ const handleSubmit = async () => {
   });
 
   if (hasErrors) {
-    alert('Please fix the payment amount errors before submitting');
+    toast.add({
+      severity: 'error',
+      summary: 'Validation Error',
+      detail: 'Please fix the payment amount errors before submitting',
+      life: 3000
+    });
     return;
   }
 
@@ -379,13 +411,23 @@ const handleSubmit = async () => {
     };
 
     await axios.post('/admin/payments', payload);
-    alert('Payment created successfully');
+    toast.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Payment created successfully',
+      life: 3000
+    });
     router.push('/payments');
   } catch (error) {
     if (error.response?.data?.errors) {
       errors.value = error.response.data.errors;
     } else {
-      alert(error.response?.data?.message || 'Failed to create payment');
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: error.response?.data?.message || 'Failed to create payment',
+        life: 3000
+      });
     }
   } finally {
     loading.value = false;
@@ -831,210 +873,4 @@ onMounted(async () => {
   </div>
 </template>
 
-<style scoped>
-/* Coupon Input Styles */
-.coupon-input-group {
-  display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
-}
-
-.coupon-input {
-  flex: 1;
-}
-
-.verify-btn,
-.remove-btn {
-  flex-shrink: 0;
-  height: 42px;
-  padding: 0 1rem;
-  font-size: 0.875rem;
-}
-
-.success-message {
-  display: flex;
-  align-items: center;
-  color: #10b981;
-  font-weight: 600;
-  font-size: 0.8125rem;
-  margin-top: 0.5rem;
-}
-
-/* Discount Preview Card */
-.discount-preview {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.1) 100%);
-  border: 2px solid rgba(16, 185, 129, 0.2);
-  border-radius: 16px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  animation: slideInUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.preview-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #10b981;
-}
-
-.preview-header i {
-  font-size: 1.5rem;
-  animation: float 2s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.preview-body {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.preview-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.625rem 0;
-  border-bottom: 1px solid rgba(16, 185, 129, 0.15);
-}
-
-.preview-row:last-child {
-  border-bottom: none;
-}
-
-.preview-label {
-  color: #64748b;
-  font-weight: 600;
-  font-size: 0.9375rem;
-}
-
-.preview-value {
-  color: #1e293b;
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.discount-row .preview-label,
-.discount-row .preview-value {
-  color: #10b981;
-}
-
-.final-row {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.15) 100%);
-  border-radius: 10px;
-  padding: 0.875rem 1rem;
-  margin-top: 0.5rem;
-  border: none;
-}
-
-.final-row .preview-label,
-.final-row .preview-value {
-  color: #059669;
-  font-size: 1.125rem;
-}
-
-.summary-value.discounted {
-  color: #10b981;
-  font-weight: 700;
-}
-
-.payment-info-card {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border: 2px solid #dee2e6;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.info-row:last-child {
-  border-bottom: none;
-}
-
-.info-row.highlight {
-  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-  margin: 8px -16px -16px;
-  padding: 12px 16px;
-  border-radius: 0 0 10px 10px;
-  border-bottom: none;
-}
-
-.info-label {
-  font-weight: 600;
-  color: #495057;
-}
-
-.info-value {
-  font-weight: 700;
-  font-size: 1.1em;
-  color: #212529;
-}
-
-.info-value.success {
-  color: #10b981;
-}
-
-.info-value.warning {
-  color: #f59e0b;
-}
-
-.info-text {
-  font-weight: 600;
-  color: #856404;
-  margin-left: 8px;
-}
-
-.loading-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: #e3f2fd;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  color: #1976d2;
-  font-weight: 500;
-}
-
-.loading-info i {
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.total-price-display.has-error {
-  border-color: #ef4444;
-  background-color: #fee;
-}
-</style>
+<style scoped src="../../../../css/paymentform.css"></style>

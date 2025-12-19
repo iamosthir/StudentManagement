@@ -150,6 +150,7 @@ Route::prefix('admin')->group(function () {
             Route::get('/generate-code', [CouponController::class, 'generateCode'])->name('admin.coupons.generate-code');
             Route::get('/statistics', [CouponController::class, 'statistics'])->name('admin.coupons.statistics');
             Route::post('/verify', [CouponController::class, 'verify'])->name('admin.coupons.verify');
+            Route::get('/students-with-coupons', [CouponController::class, 'studentsWithCoupons'])->name('admin.coupons.students');
             Route::get('/{coupon}', [CouponController::class, 'show'])->name('admin.coupons.show');
             Route::put('/{coupon}', [CouponController::class, 'update'])->name('admin.coupons.update');
             Route::delete('/{coupon}', [CouponController::class, 'destroy'])->name('admin.coupons.destroy');

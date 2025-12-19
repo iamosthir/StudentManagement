@@ -1,6 +1,7 @@
 
-.subscription-form-page {
+.coupon-form-page {
   padding: 2rem;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -166,6 +167,51 @@
   padding: 0;
 }
 
+.code-input-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.code-input {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.generate-btn-sm {
+  white-space: nowrap;
+  padding: 0.5rem 1rem;
+}
+
+
+.code-preview {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #e0e7ff;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.code-preview-label {
+  font-weight: 600;
+  color: #64748b;
+}
+
+.code-preview-value {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 1.75rem;
+  color: #6366f1;
+  letter-spacing: 0.15em;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -221,55 +267,43 @@
   width: 100%;
 }
 
-.price-summary {
+.discount-preview {
   margin-top: 1.5rem;
   padding: 1.5rem;
   background: white;
   border-radius: 12px;
-  border: 2px solid #e0e7ff;
-}
-
-.price-row {
+  border: 2px solid #d1fae5;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0;
+  gap: 1rem;
 }
 
-.price-row:not(:last-child) {
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.price-label {
-  font-weight: 500;
-  color: #64748b;
-}
-
-.price-value {
-  font-weight: 600;
-  color: #1e293b;
-  font-size: 1.1rem;
-}
-
-.discount-row .price-value {
-  color: #10b981;
-}
-
-.total-row {
-  padding-top: 1rem;
-  margin-top: 0.5rem;
-  border-top: 2px solid #e0e7ff !important;
-}
-
-.total-row .price-label {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.final-price {
+.preview-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1.5rem;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+}
+
+.preview-content {
+  flex: 1;
+}
+
+.preview-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+}
+
+.preview-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -285,7 +319,7 @@
 }
 
 @media (max-width: 768px) {
-  .subscription-form-page {
+  .coupon-form-page {
     padding: 1rem;
   }
 
@@ -302,6 +336,15 @@
     padding: 1.5rem;
   }
 
+  .code-input-group {
+    flex-direction: column;
+  }
+
+  .generate-btn-sm {
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+
   .form-row {
     grid-template-columns: 1fr;
   }
@@ -313,47 +356,4 @@
   .form-actions button {
     width: 100%;
   }
-}
-.coupon-input-group {
-  display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
-}
-
-.coupon-input {
-  flex: 1;
-}
-
-.success-message {
-  color: #10b981;
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-weight: 500;
-}
-
-.success-message i {
-  font-size: 1rem;
-}
-
-.coupon-row {
-  background: #d1fae5;
-  padding: 0.75rem;
-  border-radius: 8px;
-  margin: 0.5rem 0;
-}
-
-.coupon-row .price-label {
-  color: #065f46;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.coupon-row .price-value {
-  color: #10b981;
-  font-weight: 700;
 }

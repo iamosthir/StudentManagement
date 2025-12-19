@@ -168,6 +168,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useToast } from 'primevue/usetoast';
 import axios from 'axios';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
@@ -177,6 +178,7 @@ import Button from 'primevue/button';
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToast();
 
 const loading = ref(false);
 const productTypes = ref([]);
@@ -216,7 +218,12 @@ const loadProduct = async () => {
     };
   } catch (error) {
     console.error('Error loading product:', error);
-    alert('Error loading product');
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Error loading product',
+      life: 3000
+    });
     router.push('/products');
   } finally {
     loading.value = false;
@@ -241,9 +248,19 @@ const handleSubmit = async () => {
     if (error.response?.data?.errors) {
       errors.value = error.response.data.errors;
     } else if (error.response?.data?.message) {
-      alert(error.response.data.message);
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: error.response.data.message,
+        life: 3000
+      });
     } else {
-      alert('Error saving product');
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Error saving product',
+        life: 3000
+      });
     }
   } finally {
     loading.value = false;

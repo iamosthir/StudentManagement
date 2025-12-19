@@ -120,9 +120,11 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Dialog from 'primevue/dialog';
 import { useConfirm } from 'primevue/useconfirm';
+import { useToast } from 'primevue/usetoast';
 import TableSkeleton from '@/components/TableSkeleton.vue';
 
 const confirm = useConfirm();
+const toast = useToast();
 
 const loading = ref(false);
 const categories = ref([]);
@@ -193,7 +195,12 @@ const submitForm = async () => {
         if (error.response?.status === 422) {
             errors.value = error.response.data.errors || {};
         } else {
-            alert(error.response?.data?.message || 'An error occurred');
+            toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: error.response?.data?.message || 'An error occurred',
+                life: 3000
+            });
         }
     } finally {
         submitting.value = false;
@@ -217,7 +224,12 @@ const deleteCategory = async (category) => {
             await fetchCategories();
         }
     } catch (error) {
-        alert(error.response?.data?.message || 'Failed to delete category');
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.response?.data?.message || 'Failed to delete category',
+            life: 3000
+        });
     }
 };
 </script>

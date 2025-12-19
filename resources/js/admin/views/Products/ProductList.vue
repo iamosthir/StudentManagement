@@ -170,10 +170,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useToast } from 'primevue/usetoast';
 import axios from 'axios';
 import TableSkeleton from '@/components/TableSkeleton.vue';
 
 const router = useRouter();
+const toast = useToast();
 
 const loading = ref(false);
 const products = ref([]);
@@ -260,12 +262,28 @@ const confirmDelete = async (product) => {
 
   try {
     await axios.delete(`/admin/products/${product.id}`);
+    toast.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Product deleted successfully',
+      life: 3000
+    });
     loadProducts(pagination.value.current_page);
   } catch (error) {
     if (error.response?.data?.message) {
-      alert(error.response.data.message);
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: error.response.data.message,
+        life: 3000
+      });
     } else {
-      alert('Error deleting product');
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Error deleting product',
+        life: 3000
+      });
     }
   }
 };

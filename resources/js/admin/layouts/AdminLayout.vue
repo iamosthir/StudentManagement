@@ -1,4 +1,5 @@
 <template>
+    <Toast />
     <div id="app-wrapper" dir="rtl">
         <!-- Show layout components only for authenticated routes -->
         <template v-if="!isLoginPage">
@@ -39,6 +40,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import Toast from 'primevue/toast';
 import AdminHeader from '../components/layout/AdminHeader.vue';
 import AdminSidebar from '../components/layout/AdminSidebar.vue';
 import AdminFooter from '../components/layout/AdminFooter.vue';

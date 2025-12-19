@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useToast } from 'primevue/usetoast';
 import axios from 'axios';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
@@ -10,6 +11,7 @@ import Button from 'primevue/button';
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToast();
 
 const submitting = ref(false);
 const students = ref([]);
@@ -119,11 +121,11 @@ const selectedSubscriptionOption = computed(() => {
 });
 
 const effectivePrice = computed(() => {
-  const basePrice = formData.value.custom_price || selectedSubscriptionOption.value?.price || 0;
+  const basePrice = Number(formData.value.custom_price || selectedSubscriptionOption.value?.price || 0);
 
   // If coupon is verified, use coupon discount
   if (couponVerified.value && couponDiscount.value) {
-    return couponDiscount.value.final_amount;
+    return Number(couponDiscount.value.final_amount || 0);
   }
 
   // Otherwise use manual discount
@@ -131,22 +133,34 @@ const effectivePrice = computed(() => {
     return basePrice;
   }
 
+  const discountValue = Number(formData.value.discount_value || 0);
+
   if (formData.value.discount_type === 'percent') {
-    return basePrice - (basePrice * formData.value.discount_value / 100);
+    return basePrice - (basePrice * discountValue / 100);
   }
 
-  return basePrice - formData.value.discount_value;
+  return basePrice - discountValue;
 });
 
 const verifyCoupon = async () => {
   if (!formData.value.coupon_code) {
-    alert('Please enter a coupon code');
+    toast.add({
+      severity: 'warn',
+      summary: 'Warning',
+      detail: 'Please enter a coupon code',
+      life: 3000
+    });
     return;
   }
 
   const basePrice = formData.value.custom_price || selectedSubscriptionOption.value?.price;
   if (!basePrice) {
-    alert('Please select a subscription option first');
+    toast.add({
+      severity: 'warn',
+      summary: 'Warning',
+      detail: 'Please select a subscription option first',
+      life: 3000
+    });
     return;
   }
 
@@ -167,7 +181,12 @@ const verifyCoupon = async () => {
       formData.value.discount_type = null;
       formData.value.discount_value = null;
 
-      alert(`Coupon verified! You'll save $${couponDiscount.value.discount_amount}`);
+      toast.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: `Coupon verified! You'll save $${couponDiscount.value.discount_amount}`,
+        life: 5000
+      });
     }
   } catch (error) {
     couponVerified.value = false;
@@ -176,7 +195,12 @@ const verifyCoupon = async () => {
     if (error.response?.data?.message) {
       errors.value.coupon_code = [error.response.data.message];
     } else {
-      alert('Failed to verify coupon');
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to verify coupon',
+        life: 3000
+      });
     }
   } finally {
     verifyingCoupon.value = false;
@@ -209,7 +233,12 @@ const handleSubmit = async () => {
     const response = await axios.post('/admin/subscriptions', payload);
 
     if (response.data.success) {
-      alert('Subscription created successfully!');
+      toast.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Subscription created successfully!',
+        life: 3000
+      });
 
       // Redirect to student details if came from there
       if (route.query.student_id) {
@@ -224,7 +253,12 @@ const handleSubmit = async () => {
     if (error.response?.data?.errors) {
       errors.value = error.response.data.errors;
     } else {
-      alert(error.response?.data?.message || 'Failed to create subscription');
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: error.response?.data?.message || 'Failed to create subscription',
+        life: 3000
+      });
     }
   } finally {
     submitting.value = false;
@@ -535,7 +569,7 @@ const handleCancel = () => {
                   Discount ({{ formData.discount_type === 'percent' ? `${formData.discount_value}%` : `$${formData.discount_value}` }}):
                 </span>
                 <span class="price-value">
-                  -${{ ((formData.custom_price || selectedSubscriptionOption.price) - effectivePrice).toFixed(2) }}
+                  -${{ (Number(formData.custom_price || selectedSubscriptionOption.price) - effectivePrice).toFixed(2) }}
                 </span>
               </div>
 
@@ -546,7 +580,7 @@ const handleCancel = () => {
                   Coupon ({{ couponDiscount.coupon_code }}):
                 </span>
                 <span class="price-value">
-                  -${{ couponDiscount.discount_amount.toFixed(2) }}
+                  -${{ Number(couponDiscount.discount_amount || 0).toFixed(2) }}
                 </span>
               </div>
 
@@ -582,49 +616,3 @@ const handleCancel = () => {
 </template>
 
 <style scoped src="../../../../css/subform.css"></style>
-
-<style scoped>
-.coupon-input-group {
-  display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
-}
-
-.coupon-input {
-  flex: 1;
-}
-
-.success-message {
-  color: #10b981;
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-weight: 500;
-}
-
-.success-message i {
-  font-size: 1rem;
-}
-
-.coupon-row {
-  background: #d1fae5;
-  padding: 0.75rem;
-  border-radius: 8px;
-  margin: 0.5rem 0;
-}
-
-.coupon-row .price-label {
-  color: #065f46;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.coupon-row .price-value {
-  color: #10b981;
-  font-weight: 700;
-}
-</style>

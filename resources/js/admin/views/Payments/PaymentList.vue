@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useToast } from 'primevue/usetoast';
 import axios from 'axios';
 import TableSkeleton from '@/components/TableSkeleton.vue';
 
 const router = useRouter();
+const toast = useToast();
 
 const payments = ref([]);
 const loading = ref(false);
@@ -35,7 +37,12 @@ const fetchPayments = async (page = 1) => {
     pagination.value = response.data.meta;
   } catch (error) {
     console.error('Error fetching payments:', error);
-    alert('Failed to fetch payments');
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to fetch payments',
+      life: 3000
+    });
   } finally {
     loading.value = false;
   }
@@ -46,11 +53,21 @@ const markAsPaid = async (payment) => {
 
   try {
     await axios.post(`/admin/payments/${payment.id}/mark-paid`);
-    alert('Payment marked as paid');
+    toast.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Payment marked as paid',
+      life: 3000
+    });
     fetchPayments(pagination.value.current_page);
   } catch (error) {
     console.error('Error marking payment as paid:', error);
-    alert('Failed to mark payment as paid');
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to mark payment as paid',
+      life: 3000
+    });
   }
 };
 
@@ -59,11 +76,21 @@ const markAsCancelled = async (payment) => {
 
   try {
     await axios.post(`/admin/payments/${payment.id}/mark-cancelled`);
-    alert('Payment cancelled');
+    toast.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Payment cancelled',
+      life: 3000
+    });
     fetchPayments(pagination.value.current_page);
   } catch (error) {
     console.error('Error cancelling payment:', error);
-    alert('Failed to cancel payment');
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to cancel payment',
+      life: 3000
+    });
   }
 };
 
