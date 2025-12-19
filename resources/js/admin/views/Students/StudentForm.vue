@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import InputText from 'primevue/inputtext';
+import InputNumber from 'primevue/inputnumber';
 import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
 import Textarea from 'primevue/textarea';
@@ -47,6 +48,11 @@ const subscriptionData = ref({
   coupon_code: '',
   start_date: new Date()
 });
+
+// Coupon verification state
+const couponVerified = ref(false);
+const verifyingCoupon = ref(false);
+const couponDiscount = ref(null);
 
 const errors = ref({});
 
@@ -114,11 +120,74 @@ const fetchSubscriptionOptions = async () => {
     const response = await axios.get('/admin/subscription-options');
     subscriptionOptions.value = response.data.data.map(opt => ({
       label: `${opt.name} - $${opt.price} (${opt.duration_months} months)`,
-      value: opt.id
+      value: opt.id,
+      price: opt.price
     }));
   } catch (error) {
     console.error('Error fetching subscription options:', error);
   }
+};
+
+// Computed properties for coupon
+const selectedSubscriptionOption = computed(() => {
+  if (!subscriptionData.value.subscription_option_id) return null;
+  return subscriptionOptions.value.find(opt => opt.value === subscriptionData.value.subscription_option_id);
+});
+
+const basePrice = computed(() => {
+  return subscriptionData.value.custom_price || selectedSubscriptionOption.value?.price || 0;
+});
+
+// Coupon verification functions
+const verifyCoupon = async () => {
+  if (!subscriptionData.value.coupon_code) {
+    alert('Please enter a coupon code');
+    return;
+  }
+
+  if (!basePrice.value) {
+    alert('Please select a subscription option first');
+    return;
+  }
+
+  verifyingCoupon.value = true;
+  errors.value.coupon_code = null;
+
+  try {
+    const response = await axios.post('/admin/coupons/verify', {
+      code: subscriptionData.value.coupon_code,
+      amount: basePrice.value
+    });
+
+    if (response.data.success && response.data.available) {
+      couponVerified.value = true;
+      couponDiscount.value = response.data.data;
+
+      // Clear manual discount when coupon is verified
+      subscriptionData.value.discount_type = null;
+      subscriptionData.value.discount_value = null;
+
+      alert(`Coupon verified! You'll save $${couponDiscount.value.discount_amount}`);
+    }
+  } catch (error) {
+    couponVerified.value = false;
+    couponDiscount.value = null;
+
+    if (error.response?.data?.message) {
+      errors.value.coupon_code = [error.response.data.message];
+    } else {
+      alert('Failed to verify coupon');
+    }
+  } finally {
+    verifyingCoupon.value = false;
+  }
+};
+
+const removeCoupon = () => {
+  subscriptionData.value.coupon_code = '';
+  couponVerified.value = false;
+  couponDiscount.value = null;
+  errors.value.coupon_code = null;
 };
 
 const handleSubmit = async () => {
@@ -590,9 +659,13 @@ onMounted(() => {
                   :options="discountTypeOptions"
                   optionLabel="label"
                   optionValue="value"
+                  :disabled="couponVerified"
                   placeholder="Select type"
                   class="w-100"
                 />
+                <small v-if="couponVerified" class="field-hint">
+                  Disabled when using coupon
+                </small>
               </div>
             </div>
 
@@ -606,10 +679,13 @@ onMounted(() => {
                   v-model="subscriptionData.discount_value"
                   type="number"
                   step="0.01"
-                  :disabled="!subscriptionData.discount_type"
+                  :disabled="!subscriptionData.discount_type || couponVerified"
                   placeholder="Enter value"
                   class="w-100"
                 />
+                <small v-if="couponVerified" class="field-hint">
+                  Disabled when using coupon
+                </small>
               </div>
             </div>
 
@@ -619,11 +695,67 @@ onMounted(() => {
                   <i class="bi bi-ticket-perforated me-2"></i>
                   Coupon Code
                 </label>
-                <InputText
-                  v-model="subscriptionData.coupon_code"
-                  placeholder="Enter coupon code"
-                  class="w-100"
-                />
+                <div class="coupon-input-group">
+                  <InputText
+                    v-model="subscriptionData.coupon_code"
+                    :invalid="!!errors.coupon_code"
+                    :disabled="couponVerified"
+                    placeholder="Enter coupon code"
+                    class="coupon-input"
+                  />
+                  <Button
+                    v-if="!couponVerified"
+                    label="Verify"
+                    icon="bi bi-check-circle"
+                    :loading="verifyingCoupon"
+                    @click="verifyCoupon"
+                    severity="success"
+                    type="button"
+                    class="verify-btn"
+                  />
+                  <Button
+                    v-else
+                    label="Remove"
+                    icon="bi bi-x-circle"
+                    @click="removeCoupon"
+                    severity="danger"
+                    type="button"
+                    class="remove-btn"
+                  />
+                </div>
+                <small v-if="errors.coupon_code" class="error-message">
+                  {{ errors.coupon_code[0] }}
+                </small>
+                <small v-if="couponVerified" class="success-message">
+                  <i class="bi bi-check-circle-fill me-1"></i>
+                  Coupon verified successfully!
+                </small>
+              </div>
+            </div>
+
+            <!-- Coupon Discount Preview -->
+            <div v-if="couponVerified && couponDiscount" class="col-12">
+              <div class="discount-preview">
+                <div class="preview-header">
+                  <i class="bi bi-receipt-cutoff"></i>
+                  <span>Coupon Discount Applied</span>
+                </div>
+                <div class="preview-body">
+                  <div class="preview-row">
+                    <span class="preview-label">Original Amount:</span>
+                    <span class="preview-value">${{ couponDiscount.original_amount }}</span>
+                  </div>
+                  <div class="preview-row discount-row">
+                    <span class="preview-label">
+                      Discount ({{ couponDiscount.discount_type === 'percent' ? `${couponDiscount.discount_value}%` : 'Fixed' }}):
+                    </span>
+                    <span class="preview-value">-${{ couponDiscount.discount_amount }}</span>
+                  </div>
+                  <div class="preview-row final-row">
+                    <span class="preview-label">Final Amount:</span>
+                    <span class="preview-value">${{ couponDiscount.final_amount }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

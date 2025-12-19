@@ -32,6 +32,11 @@ import ProductForm from '../views/Products/ProductForm.vue';
 // Subscription Management
 import SubscriptionForm from '../views/Subscriptions/SubscriptionForm.vue';
 
+// Coupon Management
+import CouponList from '../views/Coupons/CouponList.vue';
+import CouponForm from '../views/Coupons/CouponForm.vue';
+import StudentCoupons from '../views/Coupons/StudentCoupons.vue';
+
 // Wallet Management
 import WalletList from '../views/Wallets/WalletList.vue';
 import WalletDetails from '../views/Wallets/WalletDetails.vue';
@@ -196,6 +201,32 @@ const routes = [
         path: '/subscriptions/create',
         name: 'subscriptions.create',
         component: SubscriptionForm,
+        meta: { requiresAuth: true }
+    },
+
+    // Coupon Routes (Administrator only)
+    {
+        path: '/coupons',
+        name: 'coupons.index',
+        component: CouponList,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/coupons/create',
+        name: 'coupons.create',
+        component: CouponForm,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/coupons/:id/edit',
+        name: 'coupons.edit',
+        component: CouponForm,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/coupons/students-with-coupons',
+        name: 'coupons.students',
+        component: StudentCoupons,
         meta: { requiresAuth: true }
     },
 

@@ -9,9 +9,12 @@ use App\Http\Resources\StudentSubscriptionResource;
 use App\Models\Student;
 use App\Models\StudentSubscription;
 use App\Models\SubscriptionOption;
+use App\Models\CouponLog;
+use App\Services\CouponService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class StudentSubscriptionController extends Controller
 {
@@ -77,21 +80,58 @@ class StudentSubscriptionController extends Controller
         try {
             $validated = $request->validated();
 
-            // Get subscription option to calculate expiry date
+            // Get subscription option to calculate expiry date and price
             $subscriptionOption = SubscriptionOption::findOrFail($validated['subscription_option_id']);
+            $basePrice = $validated['custom_price'] ?? $subscriptionOption->price;
+
+            // Initialize discount variables
+            $discountType = $validated['discount_type'] ?? null;
+            $discountValue = $validated['discount_value'] ?? null;
+            $couponCode = null;
+
+            // Handle coupon if provided
+            if (!empty($validated['coupon_code'])) {
+                try {
+                    $couponService = new CouponService();
+                    $coupon = $couponService->validateCoupon($validated['coupon_code']);
+                    $calculation = $couponService->calculateDiscount($coupon, $basePrice);
+
+                    // Override discount values with coupon
+                    $discountType = $calculation['discount_type'];
+                    $discountValue = $calculation['discount_value'];
+                    $couponCode = $coupon->code;
+
+                    // Will apply coupon after subscription is created
+                } catch (ValidationException $e) {
+                    throw $e;
+                }
+            }
 
             $subscription = StudentSubscription::create([
                 'student_id' => $validated['student_id'],
                 'program_id' => $validated['program_id'],
                 'subscription_option_id' => $validated['subscription_option_id'],
                 'custom_price' => $validated['custom_price'] ?? null,
-                'discount_type' => $validated['discount_type'] ?? null,
-                'discount_value' => $validated['discount_value'] ?? null,
-                'coupon_code' => $validated['coupon_code'] ?? null,
+                'discount_type' => $discountType,
+                'discount_value' => $discountValue,
+                'coupon_code' => $couponCode,
                 'start_date' => $validated['start_date'],
                 'expiry_date' => now()->parse($validated['start_date'])->addMonths($subscriptionOption->duration_months),
                 'status' => 'active',
             ]);
+
+            // Apply coupon and create log if coupon was used
+            if (!empty($validated['coupon_code']) && isset($coupon)) {
+                $couponService->applyCoupon(
+                    $coupon,
+                    $validated['student_id'],
+                    $basePrice,
+                    CouponLog::PURPOSE_SUBSCRIPTION,
+                    StudentSubscription::class,
+                    $subscription->id,
+                    "Applied to subscription #{$subscription->id}"
+                );
+            }
 
             // Update student's last subscription expiry
             $student = Student::findOrFail($validated['student_id']);
@@ -108,6 +148,9 @@ class StudentSubscriptionController extends Controller
                 'data' => new StudentSubscriptionResource($subscription->load(['student', 'program', 'subscriptionOption'])),
             ], 201);
 
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
 

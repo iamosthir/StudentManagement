@@ -9,9 +9,12 @@ use App\Http\Resources\StudentResource;
 use App\Models\Student;
 use App\Models\StudentSubscription;
 use App\Models\SubscriptionOption;
+use App\Models\CouponLog;
+use App\Services\CouponService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class StudentController extends Controller
 {
@@ -108,23 +111,59 @@ class StudentController extends Controller
             if ($request->has('subscription') && $request->subscription) {
                 $subscriptionData = $request->subscription;
 
-                // Get subscription option to calculate expiry date
+                // Get subscription option to calculate expiry date and price
                 $subscriptionOption = SubscriptionOption::findOrFail($subscriptionData['subscription_option_id']);
+                $basePrice = $subscriptionData['custom_price'] ?? $subscriptionOption->price;
+
+                // Initialize discount variables
+                $discountType = $subscriptionData['discount_type'] ?? null;
+                $discountValue = $subscriptionData['discount_value'] ?? null;
+                $couponCode = null;
+                $coupon = null;
+
+                // Handle coupon if provided
+                if (!empty($subscriptionData['coupon_code'])) {
+                    try {
+                        $couponService = new CouponService();
+                        $coupon = $couponService->validateCoupon($subscriptionData['coupon_code']);
+                        $calculation = $couponService->calculateDiscount($coupon, $basePrice);
+
+                        // Override discount values with coupon
+                        $discountType = $calculation['discount_type'];
+                        $discountValue = $calculation['discount_value'];
+                        $couponCode = $coupon->code;
+                    } catch (ValidationException $e) {
+                        throw $e;
+                    }
+                }
 
                 $subscription = new StudentSubscription([
                     'student_id' => $student->id,
                     'program_id' => $subscriptionData['program_id'],
                     'subscription_option_id' => $subscriptionData['subscription_option_id'],
                     'custom_price' => $subscriptionData['custom_price'] ?? null,
-                    'discount_type' => $subscriptionData['discount_type'] ?? null,
-                    'discount_value' => $subscriptionData['discount_value'] ?? null,
-                    'coupon_code' => $subscriptionData['coupon_code'] ?? null,
+                    'discount_type' => $discountType,
+                    'discount_value' => $discountValue,
+                    'coupon_code' => $couponCode,
                     'start_date' => $subscriptionData['start_date'],
                     'expiry_date' => now()->parse($subscriptionData['start_date'])->addMonths($subscriptionOption->duration_months),
                     'status' => 'active',
                 ]);
 
                 $subscription->save();
+
+                // Apply coupon and create log if coupon was used
+                if (!empty($subscriptionData['coupon_code']) && $coupon) {
+                    $couponService->applyCoupon(
+                        $coupon,
+                        $student->id,
+                        $basePrice,
+                        CouponLog::PURPOSE_INITIAL_SUBSCRIPTION,
+                        StudentSubscription::class,
+                        $subscription->id,
+                        "Applied to initial subscription during student registration"
+                    );
+                }
 
                 // Update student's last subscription expiry
                 $student->update([
@@ -140,6 +179,9 @@ class StudentController extends Controller
                 'data' => new StudentResource($student->load(['program', 'subscriptions.subscriptionOption'])),
             ], 201);
 
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
 

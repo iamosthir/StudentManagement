@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\ProgramController;
 use App\Http\Controllers\Admin\SubscriptionOptionController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\CouponController;
 
 /*
 |--------------------------------------------------------------------------
@@ -140,6 +141,18 @@ Route::prefix('admin')->group(function () {
             Route::get('/{product}', [ProductController::class, 'show'])->name('admin.products.show');
             Route::put('/{product}', [ProductController::class, 'update'])->name('admin.products.update');
             Route::delete('/{product}', [ProductController::class, 'destroy'])->name('admin.products.destroy');
+        });
+
+        // Coupon Management (Administrator only)
+        Route::prefix('coupons')->middleware('role:Administrator')->group(function () {
+            Route::get('/', [CouponController::class, 'index'])->name('admin.coupons.index');
+            Route::post('/', [CouponController::class, 'store'])->name('admin.coupons.store');
+            Route::get('/generate-code', [CouponController::class, 'generateCode'])->name('admin.coupons.generate-code');
+            Route::get('/statistics', [CouponController::class, 'statistics'])->name('admin.coupons.statistics');
+            Route::post('/verify', [CouponController::class, 'verify'])->name('admin.coupons.verify');
+            Route::get('/{coupon}', [CouponController::class, 'show'])->name('admin.coupons.show');
+            Route::put('/{coupon}', [CouponController::class, 'update'])->name('admin.coupons.update');
+            Route::delete('/{coupon}', [CouponController::class, 'destroy'])->name('admin.coupons.destroy');
         });
 
         // Expense Category Management

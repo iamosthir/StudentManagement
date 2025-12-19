@@ -93,6 +93,28 @@
                             <span v-if="!collapsed">Products</span>
                         </transition>
                     </router-link>
+                    <router-link
+                        v-if="isAdministrator"
+                        :to="{ name: 'coupons.index' }"
+                        class="nav-item"
+                        :class="{ 'active': $route.name?.startsWith('coupons') && $route.name !== 'coupons.students' }"
+                    >
+                        <i class="bi bi-ticket-perforated"></i>
+                        <transition name="fade">
+                            <span v-if="!collapsed">Coupons</span>
+                        </transition>
+                    </router-link>
+                    <router-link
+                        v-if="isAdministrator"
+                        :to="{ name: 'coupons.students' }"
+                        class="nav-item"
+                        :class="{ 'active': $route.name === 'coupons.students' }"
+                    >
+                        <i class="bi bi-people"></i>
+                        <transition name="fade">
+                            <span v-if="!collapsed">Students with Coupons</span>
+                        </transition>
+                    </router-link>
                 </div>
 
                 <!-- Financial -->

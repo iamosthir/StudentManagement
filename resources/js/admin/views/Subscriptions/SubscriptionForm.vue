@@ -29,6 +29,9 @@ const formData = ref({
 });
 
 const errors = ref({});
+const couponVerified = ref(false);
+const verifyingCoupon = ref(false);
+const couponDiscount = ref(null);
 
 const discountTypeOptions = [
   { label: 'No Discount', value: null },
@@ -118,6 +121,12 @@ const selectedSubscriptionOption = computed(() => {
 const effectivePrice = computed(() => {
   const basePrice = formData.value.custom_price || selectedSubscriptionOption.value?.price || 0;
 
+  // If coupon is verified, use coupon discount
+  if (couponVerified.value && couponDiscount.value) {
+    return couponDiscount.value.final_amount;
+  }
+
+  // Otherwise use manual discount
   if (!formData.value.discount_value || !formData.value.discount_type) {
     return basePrice;
   }
@@ -128,6 +137,58 @@ const effectivePrice = computed(() => {
 
   return basePrice - formData.value.discount_value;
 });
+
+const verifyCoupon = async () => {
+  if (!formData.value.coupon_code) {
+    alert('Please enter a coupon code');
+    return;
+  }
+
+  const basePrice = formData.value.custom_price || selectedSubscriptionOption.value?.price;
+  if (!basePrice) {
+    alert('Please select a subscription option first');
+    return;
+  }
+
+  verifyingCoupon.value = true;
+  errors.value.coupon_code = null;
+
+  try {
+    const response = await axios.post('/admin/coupons/verify', {
+      code: formData.value.coupon_code,
+      amount: basePrice
+    });
+
+    if (response.data.success && response.data.available) {
+      couponVerified.value = true;
+      couponDiscount.value = response.data.data;
+
+      // Clear manual discount fields when coupon is applied
+      formData.value.discount_type = null;
+      formData.value.discount_value = null;
+
+      alert(`Coupon verified! You'll save $${couponDiscount.value.discount_amount}`);
+    }
+  } catch (error) {
+    couponVerified.value = false;
+    couponDiscount.value = null;
+
+    if (error.response?.data?.message) {
+      errors.value.coupon_code = [error.response.data.message];
+    } else {
+      alert('Failed to verify coupon');
+    }
+  } finally {
+    verifyingCoupon.value = false;
+  }
+};
+
+const removeCoupon = () => {
+  formData.value.coupon_code = '';
+  couponVerified.value = false;
+  couponDiscount.value = null;
+  errors.value.coupon_code = null;
+};
 
 const handleSubmit = async () => {
   errors.value = {};
@@ -420,13 +481,41 @@ const handleCancel = () => {
                   <i class="bi bi-ticket-perforated"></i>
                   Coupon Code
                 </label>
-                <InputText
-                  id="coupon_code"
-                  v-model="formData.coupon_code"
-                  placeholder="Enter coupon code (optional)"
-                  :class="{ 'p-invalid': errors.coupon_code }"
-                  class="w-100"
-                />
+                <div class="coupon-input-group">
+                  <InputText
+                    id="coupon_code"
+                    v-model="formData.coupon_code"
+                    placeholder="Enter coupon code (optional)"
+                    :class="{ 'p-invalid': errors.coupon_code }"
+                    :disabled="couponVerified || verifyingCoupon"
+                    class="coupon-input"
+                    @keyup.enter="verifyCoupon"
+                  />
+                  <Button
+                    v-if="!couponVerified"
+                    type="button"
+                    :label="verifyingCoupon ? 'Verifying...' : 'Verify'"
+                    icon="bi bi-check-circle"
+                    :loading="verifyingCoupon"
+                    :disabled="!formData.coupon_code || verifyingCoupon"
+                    @click="verifyCoupon"
+                    severity="success"
+                    outlined
+                  />
+                  <Button
+                    v-else
+                    type="button"
+                    label="Remove"
+                    icon="bi bi-x-circle"
+                    @click="removeCoupon"
+                    severity="danger"
+                    outlined
+                  />
+                </div>
+                <small v-if="couponVerified" class="success-message">
+                  <i class="bi bi-check-circle-fill"></i>
+                  Coupon verified! Discount: ${{ couponDiscount.discount_amount }}
+                </small>
                 <small v-if="errors.coupon_code" class="error-message">
                   {{ errors.coupon_code[0] }}
                 </small>
@@ -439,7 +528,9 @@ const handleCancel = () => {
                 <span class="price-label">Base Price:</span>
                 <span class="price-value">${{ formData.custom_price || selectedSubscriptionOption.price }}</span>
               </div>
-              <div v-if="formData.discount_value && formData.discount_type" class="price-row discount-row">
+
+              <!-- Manual Discount -->
+              <div v-if="!couponVerified && formData.discount_value && formData.discount_type" class="price-row discount-row">
                 <span class="price-label">
                   Discount ({{ formData.discount_type === 'percent' ? `${formData.discount_value}%` : `$${formData.discount_value}` }}):
                 </span>
@@ -447,6 +538,18 @@ const handleCancel = () => {
                   -${{ ((formData.custom_price || selectedSubscriptionOption.price) - effectivePrice).toFixed(2) }}
                 </span>
               </div>
+
+              <!-- Coupon Discount -->
+              <div v-if="couponVerified && couponDiscount" class="price-row discount-row coupon-row">
+                <span class="price-label">
+                  <i class="bi bi-ticket-perforated-fill"></i>
+                  Coupon ({{ couponDiscount.coupon_code }}):
+                </span>
+                <span class="price-value">
+                  -${{ couponDiscount.discount_amount.toFixed(2) }}
+                </span>
+              </div>
+
               <div class="price-row total-row">
                 <span class="price-label">Final Price:</span>
                 <span class="price-value final-price">${{ effectivePrice.toFixed(2) }}</span>
@@ -479,3 +582,49 @@ const handleCancel = () => {
 </template>
 
 <style scoped src="../../../../css/subform.css"></style>
+
+<style scoped>
+.coupon-input-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.coupon-input {
+  flex: 1;
+}
+
+.success-message {
+  color: #10b981;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
+}
+
+.success-message i {
+  font-size: 1rem;
+}
+
+.coupon-row {
+  background: #d1fae5;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+}
+
+.coupon-row .price-label {
+  color: #065f46;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.coupon-row .price-value {
+  color: #10b981;
+  font-weight: 700;
+}
+</style>

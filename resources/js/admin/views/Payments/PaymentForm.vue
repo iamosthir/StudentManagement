@@ -21,9 +21,15 @@ const products = ref([]);
 const formData = ref({
   student_id: null,
   payment_method: 'cash',
+  coupon_code: '',
   note: '',
   status: 'paid'
 });
+
+// Coupon verification state
+const couponVerified = ref(false);
+const verifyingCoupon = ref(false);
+const couponDiscount = ref(null);
 
 const items = ref([
   {
@@ -61,6 +67,13 @@ const itemTypes = ref([
 
 const totalAmount = computed(() => {
   return items.value.reduce((sum, item) => sum + parseFloat(item.total_price || 0), 0);
+});
+
+const finalAmount = computed(() => {
+  if (couponVerified.value && couponDiscount.value) {
+    return parseFloat(couponDiscount.value.final_amount);
+  }
+  return totalAmount.value;
 });
 
 const subscriptionOptions = computed(() => {
@@ -281,6 +294,53 @@ const validateTotalPrice = (item) => {
   return true;
 };
 
+// Coupon verification functions
+const verifyCoupon = async () => {
+  if (!formData.value.coupon_code) {
+    alert('Please enter a coupon code');
+    return;
+  }
+
+  if (totalAmount.value <= 0) {
+    alert('Please add payment items first');
+    return;
+  }
+
+  verifyingCoupon.value = true;
+  errors.value.coupon_code = null;
+
+  try {
+    const response = await axios.post('/admin/coupons/verify', {
+      code: formData.value.coupon_code,
+      amount: totalAmount.value
+    });
+
+    if (response.data.success && response.data.available) {
+      couponVerified.value = true;
+      couponDiscount.value = response.data.data;
+      alert(`Coupon verified! You'll save $${couponDiscount.value.discount_amount}`);
+    }
+  } catch (error) {
+    couponVerified.value = false;
+    couponDiscount.value = null;
+
+    if (error.response?.data?.message) {
+      errors.value.coupon_code = [error.response.data.message];
+    } else {
+      alert('Failed to verify coupon');
+    }
+  } finally {
+    verifyingCoupon.value = false;
+  }
+};
+
+const removeCoupon = () => {
+  formData.value.coupon_code = '';
+  couponVerified.value = false;
+  couponDiscount.value = null;
+  errors.value.coupon_code = null;
+};
+
 const handleSubmit = async () => {
   errors.value = {};
 
@@ -339,6 +399,14 @@ watch(items, (newItems) => {
     });
   });
 }, { deep: true, immediate: true });
+
+// Reset coupon when total amount changes
+watch(totalAmount, () => {
+  if (couponVerified.value) {
+    couponVerified.value = false;
+    couponDiscount.value = null;
+  }
+});
 
 onMounted(async () => {
   await fetchProducts();
@@ -443,6 +511,49 @@ onMounted(async () => {
                 optionValue="value"
                 placeholder="Select Status"
               />
+            </div>
+
+            <!-- Coupon Code -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="bi bi-ticket-perforated"></i>
+                Coupon Code
+              </label>
+              <div class="coupon-input-group">
+                <InputText
+                  v-model="formData.coupon_code"
+                  :invalid="!!errors.coupon_code"
+                  :disabled="couponVerified"
+                  placeholder="Enter coupon code"
+                  class="coupon-input"
+                />
+                <Button
+                  v-if="!couponVerified"
+                  label="Verify"
+                  icon="bi bi-check-circle"
+                  :loading="verifyingCoupon"
+                  @click="verifyCoupon"
+                  severity="success"
+                  type="button"
+                  class="verify-btn"
+                />
+                <Button
+                  v-else
+                  label="Remove"
+                  icon="bi bi-x-circle"
+                  @click="removeCoupon"
+                  severity="danger"
+                  type="button"
+                  class="remove-btn"
+                />
+              </div>
+              <small v-if="errors.coupon_code" class="error-message">
+                {{ errors.coupon_code[0] }}
+              </small>
+              <small v-if="couponVerified" class="success-message">
+                <i class="bi bi-check-circle-fill me-1"></i>
+                Coupon verified successfully!
+              </small>
             </div>
 
             <!-- Note -->
@@ -660,15 +771,39 @@ onMounted(async () => {
             </div>
           </div>
 
+          <!-- Coupon Discount Preview -->
+          <div v-if="couponVerified && couponDiscount" class="discount-preview">
+            <div class="preview-header">
+              <i class="bi bi-receipt-cutoff"></i>
+              <span>Coupon Discount Applied</span>
+            </div>
+            <div class="preview-body">
+              <div class="preview-row">
+                <span class="preview-label">Subtotal:</span>
+                <span class="preview-value">${{ couponDiscount.original_amount }}</span>
+              </div>
+              <div class="preview-row discount-row">
+                <span class="preview-label">
+                  Discount ({{ couponDiscount.discount_type === 'percent' ? `${couponDiscount.discount_value}%` : 'Fixed' }}):
+                </span>
+                <span class="preview-value">-${{ couponDiscount.discount_amount }}</span>
+              </div>
+              <div class="preview-row final-row">
+                <span class="preview-label">Final Amount:</span>
+                <span class="preview-value">${{ couponDiscount.final_amount }}</span>
+              </div>
+            </div>
+          </div>
+
           <!-- Payment Summary -->
           <div class="payment-summary">
             <div class="summary-content">
               <div class="summary-label">
                 <i class="bi bi-calculator"></i>
-                Total Amount
+                {{ couponVerified ? 'Final' : 'Total' }} Amount
               </div>
-              <div class="summary-value">
-                ${{ totalAmount.toFixed(2) }}
+              <div class="summary-value" :class="{ 'discounted': couponVerified }">
+                ${{ finalAmount.toFixed(2) }}
               </div>
             </div>
           </div>
@@ -697,6 +832,133 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+/* Coupon Input Styles */
+.coupon-input-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.coupon-input {
+  flex: 1;
+}
+
+.verify-btn,
+.remove-btn {
+  flex-shrink: 0;
+  height: 42px;
+  padding: 0 1rem;
+  font-size: 0.875rem;
+}
+
+.success-message {
+  display: flex;
+  align-items: center;
+  color: #10b981;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  margin-top: 0.5rem;
+}
+
+/* Discount Preview Card */
+.discount-preview {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.1) 100%);
+  border: 2px solid rgba(16, 185, 129, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  animation: slideInUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.preview-header i {
+  font-size: 1.5rem;
+  animation: float 2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.preview-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.preview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.preview-row:last-child {
+  border-bottom: none;
+}
+
+.preview-label {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.preview-value {
+  color: #1e293b;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.discount-row .preview-label,
+.discount-row .preview-value {
+  color: #10b981;
+}
+
+.final-row {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.15) 100%);
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+  margin-top: 0.5rem;
+  border: none;
+}
+
+.final-row .preview-label,
+.final-row .preview-value {
+  color: #059669;
+  font-size: 1.125rem;
+}
+
+.summary-value.discounted {
+  color: #10b981;
+  font-weight: 700;
+}
+
 .payment-info-card {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border: 2px solid #dee2e6;

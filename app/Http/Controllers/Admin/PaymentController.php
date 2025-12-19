@@ -6,16 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Resources\PaymentResource;
 use App\Models\Admin;
+use App\Models\Coupon;
+use App\Models\CouponLog;
 use App\Models\Payment;
 use App\Models\PaymentItem;
 use App\Models\Student;
 use App\Models\StudentSubscription;
 use App\Models\TransactionLog;
+use App\Services\CouponService;
 use App\Services\WalletService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class PaymentController extends Controller
 {
@@ -79,14 +83,33 @@ class PaymentController extends Controller
             // Calculate total amount from items
             $totalAmount = collect($validated['items'])->sum('total_price');
 
+            // Initialize coupon variables
+            $couponCode = null;
+            $coupon = null;
+            $finalAmount = $totalAmount;
+
+            // Handle coupon if provided
+            if (!empty($validated['coupon_code'])) {
+                try {
+                    $couponService = new CouponService();
+                    $coupon = $couponService->validateCoupon($validated['coupon_code']);
+                    $calculation = $couponService->calculateDiscount($coupon, $totalAmount);
+
+                    $finalAmount = $calculation['final_amount'];
+                    $couponCode = $coupon->code;
+                } catch (ValidationException $e) {
+                    throw $e;
+                }
+            }
+
             // Create payment
             $payment = Payment::create([
                 'student_id' => $validated['student_id'],
                 'admin_id' => $adminId,
-                'amount' => $totalAmount,
+                'amount' => $finalAmount,
                 'status' => $validated['status'] ?? Payment::STATUS_PAID,
                 'payment_method' => $validated['payment_method'] ?? null,
-                'coupon_code' => $validated['coupon_code'] ?? null,
+                'coupon_code' => $couponCode,
                 'note' => $validated['note'] ?? null,
                 'paid_at' => isset($validated['status']) && $validated['status'] === Payment::STATUS_PAID ? now() : null,
             ]);
@@ -129,11 +152,25 @@ class PaymentController extends Controller
                     // Add payment to staff wallet and create wallet transaction
                     $walletService->addPaymentToStaffWallet(
                         $admin,
-                        $totalAmount,
+                        $finalAmount,
                         $payment->id,
                         $description
                     );
                 }
+            }
+
+            // Apply coupon and create log if coupon was used
+            if (!empty($validated['coupon_code']) && $coupon) {
+                $couponService = new CouponService();
+                $couponService->applyCoupon(
+                    $coupon,
+                    $validated['student_id'],
+                    $totalAmount,
+                    CouponLog::PURPOSE_PAYMENT,
+                    Payment::class,
+                    $payment->id,
+                    "Applied to payment #{$payment->id}"
+                );
             }
 
             DB::commit();
@@ -144,6 +181,9 @@ class PaymentController extends Controller
                 'data' => new PaymentResource($payment->load(['student', 'admin', 'items'])),
             ], 201);
 
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
 
