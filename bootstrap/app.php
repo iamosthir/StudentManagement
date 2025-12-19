@@ -20,7 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->validateCsrfTokens(except: [
-            'admin/wallet-transfers/*/process',
+            'admin/*',  // Exclude all admin API routes from CSRF verification
+            'api/*',    // Exclude API routes
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
