@@ -889,10 +889,6 @@ const paymentItems = ref([
 
 const paymentMethods = ref([
     { label: 'Cash', value: 'cash' },
-    { label: 'Credit Card', value: 'credit_card' },
-    { label: 'Bank Transfer', value: 'bank_transfer' },
-    { label: 'Check', value: 'check' },
-    { label: 'Online Payment', value: 'online' }
 ]);
 
 const paymentStatuses = ref([
