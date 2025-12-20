@@ -1020,6 +1020,156 @@
     font-size: 1.125rem;
 }
 
+/* Student Details - Subscriptions Card */
+.stat-card-subscriptions {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid #e0e7ff;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.stat-card-subscriptions:hover {
+    transform: translateY(-4px);
+    border-color: #6366f1;
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15);
+}
+
+.subscriptions-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.subscriptions-title {
+    flex: 1;
+}
+
+.subscriptions-count {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #6366f1;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    padding: 0.375rem 0.875rem;
+    border-radius: 20px;
+    margin-top: 0.25rem;
+}
+
+.subscriptions-list {
+    padding-top: 0.5rem;
+}
+
+.subscription-badges-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.subscription-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.875rem 1.125rem;
+    border-radius: 14px;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+    overflow: hidden;
+}
+
+.subscription-chip::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    transition: width 0.3s ease;
+}
+
+.subscription-chip:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.subscription-chip:hover::before {
+    width: 100%;
+    opacity: 0.05;
+}
+
+.subscription-active {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    border: 2px solid #6ee7b7;
+}
+
+.subscription-active::before {
+    background: #10b981;
+}
+
+.subscription-active i {
+    color: #059669;
+    font-size: 1.125rem;
+    animation: pulse-icon 2s infinite;
+}
+
+@keyframes pulse-icon {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.subscription-expired {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border: 2px solid #fca5a5;
+    opacity: 0.85;
+}
+
+.subscription-expired::before {
+    background: #ef4444;
+}
+
+.subscription-expired i {
+    color: #dc2626;
+    font-size: 1.125rem;
+}
+
+.subscription-name {
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: #1e293b;
+    flex: 1;
+}
+
+.subscription-program {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #64748b;
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+}
+
+.no-subscriptions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem 1rem;
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    border: 2px dashed #e2e8f0;
+}
+
+.no-subscriptions i {
+    font-size: 1.5rem;
+    opacity: 0.6;
+}
+
 /* Responsive */
 @media (max-width: 767px) {
     .students .page-title {
@@ -1040,5 +1190,9 @@
 
     .students .data-table {
         font-size: 0.875rem;
+    }
+
+    .stat-card-subscriptions {
+        grid-column: span 1;
     }
 }

@@ -115,11 +115,11 @@ onMounted(() => {
       <div class="stats-grid">
         <div class="stat-card stat-card-primary">
           <div class="stat-icon">
-            <i class="bi bi-mortarboard-fill"></i>
+            <i class="bi bi-calendar-check-fill"></i>
           </div>
           <div class="stat-content">
-            <div class="stat-label">Program</div>
-            <div class="stat-value">{{ student.program?.name || 'Not Assigned' }}</div>
+            <div class="stat-label">Active Subscriptions</div>
+            <div class="stat-value">{{ student.subscriptions?.filter(s => s.is_active).length || 0 }}</div>
           </div>
         </div>
 
