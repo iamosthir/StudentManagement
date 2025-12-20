@@ -5,14 +5,18 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStudentSubscriptionRequest;
 use App\Http\Requests\UpdateStudentSubscriptionRequest;
+use App\Http\Requests\RenewStudentSubscriptionRequest;
 use App\Http\Resources\StudentSubscriptionResource;
 use App\Models\Student;
 use App\Models\StudentSubscription;
 use App\Models\SubscriptionOption;
+use App\Models\Payment;
+use App\Models\PaymentItem;
 use App\Models\CouponLog;
 use App\Services\CouponService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -266,27 +270,74 @@ class StudentSubscriptionController extends Controller
     /**
      * Renew the specified subscription.
      */
-    public function renew(Request $request, StudentSubscription $subscription): JsonResponse
+    public function renew(RenewStudentSubscriptionRequest $request, StudentSubscription $subscription): JsonResponse
     {
         DB::beginTransaction();
 
         try {
-            $durationMonths = $request->input('duration_months');
+            $validated = $request->validated();
+
+            // Get duration from request or use subscription option default
+            $durationMonths = $validated['duration_months'] ?? $subscription->subscriptionOption->duration_months;
+
+            // Get renewal price from request or use the subscription's final price
+            $renewalPrice = $validated['renewal_price'] ?? $subscription->final_price;
+
+            // Renew the subscription
             $subscription->renew($durationMonths);
 
-            // Update student's last subscription expiry
+            // Update student's last subscription expiry and status
             $subscription->student->update([
                 'last_subscription_expiry' => $subscription->expiry_date,
                 'status' => Student::STATUS_ACTIVE,
             ]);
 
+            // Create payment if requested
+            $payment = null;
+            if ($validated['create_payment'] ?? false) {
+                // Create the payment record
+                $payment = Payment::create([
+                    'student_id' => $subscription->student_id,
+                    'admin_id' => Auth::guard('admin')->id(),
+                    'amount' => $renewalPrice,
+                    'status' => $validated['payment_status'] ?? 'paid',
+                    'payment_method' => $validated['payment_method'],
+                    'note' => $validated['payment_note'] ?? "Renewal payment for {$subscription->subscriptionOption->name}",
+                    'paid_at' => ($validated['payment_status'] ?? 'paid') === 'paid' ? now() : null,
+                ]);
+
+                // Create payment item
+                PaymentItem::create([
+                    'payment_id' => $payment->id,
+                    'item_type' => 'subscription',
+                    'item_id' => $subscription->id,
+                    'description' => "Renewal: {$subscription->subscriptionOption->name} ({$durationMonths} months)",
+                    'quantity' => 1,
+                    'unit_price' => $renewalPrice,
+                    'discount_value' => 0,
+                    'total_price' => $renewalPrice,
+                ]);
+            }
+
             DB::commit();
 
-            return response()->json([
+            $responseData = [
                 'success' => true,
                 'message' => 'Subscription renewed successfully.',
                 'data' => new StudentSubscriptionResource($subscription->load(['student', 'program', 'subscriptionOption'])),
-            ]);
+            ];
+
+            // Include payment data if payment was created
+            if ($payment) {
+                $responseData['payment'] = [
+                    'id' => $payment->id,
+                    'payment_number' => $payment->payment_number,
+                    'amount' => $payment->amount,
+                    'status' => $payment->status,
+                ];
+            }
+
+            return response()->json($responseData);
 
         } catch (\Exception $e) {
             DB::rollBack();

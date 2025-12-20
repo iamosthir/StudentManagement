@@ -140,8 +140,9 @@
                                         <span
                                             v-for="sub in student.subscriptions"
                                             :key="sub.id"
-                                            :class="['subscription-badge', getSubscriptionStatusClass(sub)]"
-                                            :title="`${sub.subscription_option?.name} - Expires: ${formatDate(sub.expiry_date)}`"
+                                            :class="['subscription-badge', getSubscriptionStatusClass(sub), 'clickable-badge']"
+                                            :title="`${sub.subscription_option?.name} - Expires: ${formatDate(sub.expiry_date)} - Click to renew`"
+                                            @click.stop="openRenewalModal(sub, student)"
                                         >
                                             <i :class="getSubscriptionIcon(sub)"></i>
                                             {{ sub.subscription_option?.name || 'Subscription' }}
@@ -324,6 +325,193 @@
                 </div>
             </div>
         </div>
+
+        <!-- Renewal Modal -->
+        <Dialog
+            v-model:visible="showRenewalModal"
+            modal
+            header="Renew Subscription"
+            :style="{ width: '90vw', maxWidth: '600px', zIndex: 9999 }"
+            :dismissableMask="true"
+            :closable="true"
+        >
+            <div class="renewal-modal-content">
+                <form @submit.prevent="handleRenewalSubmit">
+                    <!-- Subscription Info Section -->
+                    <div class="renewal-section">
+                        <div class="renewal-info-card">
+                            <div class="info-row">
+                                <span class="info-label"><i class="bi bi-person"></i> Student:</span>
+                                <span class="info-value">{{ selectedStudent?.full_name }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label"><i class="bi bi-calendar-check"></i> Current Expiry:</span>
+                                <span class="info-value">{{ formatDate(selectedSubscription?.expiry_date) }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label"><i class="bi bi-clock-history"></i> Remaining Days:</span>
+                                <span class="info-value" :class="selectedSubscription?.remaining_days <= 7 ? 'text-warning' : ''">
+                                    {{ selectedSubscription?.remaining_days || 0 }} days
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label"><i class="bi bi-currency-dollar"></i> Current Price:</span>
+                                <span class="info-value">${{ parseFloat(selectedSubscription?.final_price || 0).toFixed(2) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Renewal Details Section -->
+                    <div class="renewal-section">
+                        <h4 class="section-title">
+                            <i class="bi bi-arrow-clockwise"></i>
+                            Renewal Details
+                        </h4>
+
+                        <div class="form-grid">
+                            <!-- Duration -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="bi bi-calendar-range"></i>
+                                    Extension Duration (Months)
+                                    <span class="required">*</span>
+                                </label>
+                                <InputNumber
+                                    v-model="renewalForm.duration_months"
+                                    :min="1"
+                                    :max="120"
+                                    showButtons
+                                    buttonLayout="horizontal"
+                                    decrementButtonClass="p-button-secondary"
+                                    incrementButtonClass="p-button-secondary"
+                                    incrementButtonIcon="bi bi-plus"
+                                    decrementButtonIcon="bi bi-dash"
+                                />
+                                <small class="form-hint">
+                                    Default: {{ selectedSubscription?.subscription_option?.duration_months }} months
+                                </small>
+                            </div>
+
+                            <!-- Renewal Price -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="bi bi-cash-coin"></i>
+                                    Renewal Price
+                                    <span class="required">*</span>
+                                </label>
+                                <InputNumber
+                                    v-model="renewalForm.renewal_price"
+                                    mode="currency"
+                                    currency="USD"
+                                    locale="en-US"
+                                    :min="0"
+                                    :maxFractionDigits="2"
+                                />
+                                <small class="form-hint">
+                                    Default: ${{ parseFloat(selectedSubscription?.final_price || 0).toFixed(2) }}
+                                </small>
+                            </div>
+
+                            <!-- New Expiry Date (Calculated) -->
+                            <div class="form-group form-group-full">
+                                <label class="form-label">
+                                    <i class="bi bi-calendar-event"></i>
+                                    New Expiry Date
+                                </label>
+                                <div class="calculated-expiry">
+                                    <i class="bi bi-calendar-check-fill"></i>
+                                    <span class="expiry-date">{{ calculateNewExpiryDate }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Options Section -->
+                    <div class="renewal-section">
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <Checkbox
+                                    v-model="renewalForm.create_payment"
+                                    inputId="create_payment"
+                                    :binary="true"
+                                />
+                                <label for="create_payment" class="checkbox-label">
+                                    Create payment record for this renewal
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Payment Details (shown when create_payment is true) -->
+                        <div v-if="renewalForm.create_payment" class="payment-details">
+                            <div class="form-grid">
+                                <!-- Payment Method -->
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="bi bi-credit-card"></i>
+                                        Payment Method
+                                        <span class="required">*</span>
+                                    </label>
+                                    <Select
+                                        v-model="renewalForm.payment_method"
+                                        :options="paymentMethods"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        placeholder="Select Payment Method"
+                                    />
+                                </div>
+
+                                <!-- Payment Status -->
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="bi bi-check-circle"></i>
+                                        Payment Status
+                                        <span class="required">*</span>
+                                    </label>
+                                    <Select
+                                        v-model="renewalForm.payment_status"
+                                        :options="paymentStatuses"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        placeholder="Select Status"
+                                    />
+                                </div>
+
+                                <!-- Payment Note -->
+                                <div class="form-group form-group-full">
+                                    <label class="form-label">
+                                        <i class="bi bi-pencil-square"></i>
+                                        Payment Note
+                                    </label>
+                                    <Textarea
+                                        v-model="renewalForm.payment_note"
+                                        rows="2"
+                                        placeholder="Optional payment notes..."
+                                        autoResize
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="modal-actions">
+                        <Button
+                            label="Cancel"
+                            severity="secondary"
+                            outlined
+                            @click="closeRenewalModal"
+                            type="button"
+                        />
+                        <Button
+                            label="Renew Subscription"
+                            icon="bi bi-arrow-clockwise"
+                            :loading="submittingRenewal"
+                            type="submit"
+                        />
+                    </div>
+                </form>
+            </div>
+        </Dialog>
 
         <!-- Add Payment Modal -->
         <Dialog
@@ -626,6 +814,7 @@ import Textarea from 'primevue/textarea';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
+import Checkbox from 'primevue/checkbox';
 
 const route = useRoute();
 const students = ref([]);
@@ -653,6 +842,21 @@ const restoring = ref(false);
 const showDeleteModal = ref(false);
 const studentToDelete = ref(null);
 const deleting = ref(false);
+
+// Renewal Modal
+const showRenewalModal = ref(false);
+const selectedSubscription = ref(null);
+const selectedStudent = ref(null);
+const submittingRenewal = ref(false);
+
+const renewalForm = ref({
+    duration_months: null,
+    renewal_price: null,
+    create_payment: false,
+    payment_method: 'cash',
+    payment_status: 'paid',
+    payment_note: ''
+});
 
 // Payment Modal
 const showPaymentModal = ref(false);
@@ -874,6 +1078,82 @@ const formatDate = (date) => {
 
 const formatMoney = (value) => {
     return parseFloat(value || 0).toFixed(2);
+};
+
+// Renewal Modal Methods
+const openRenewalModal = (subscription, student) => {
+    selectedSubscription.value = subscription;
+    selectedStudent.value = student;
+
+    // Set default values
+    renewalForm.value = {
+        duration_months: subscription.subscription_option?.duration_months || 1,
+        renewal_price: parseFloat(subscription.final_price || 0),
+        create_payment: false,
+        payment_method: 'cash',
+        payment_status: 'paid',
+        payment_note: ''
+    };
+
+    showRenewalModal.value = true;
+};
+
+const closeRenewalModal = () => {
+    showRenewalModal.value = false;
+    selectedSubscription.value = null;
+    selectedStudent.value = null;
+    renewalForm.value = {
+        duration_months: null,
+        renewal_price: null,
+        create_payment: false,
+        payment_method: 'cash',
+        payment_status: 'paid',
+        payment_note: ''
+    };
+};
+
+const calculateNewExpiryDate = computed(() => {
+    if (!selectedSubscription.value?.expiry_date || !renewalForm.value.duration_months) {
+        return 'N/A';
+    }
+
+    const currentExpiry = new Date(selectedSubscription.value.expiry_date);
+    const newExpiry = new Date(currentExpiry);
+    newExpiry.setMonth(newExpiry.getMonth() + parseInt(renewalForm.value.duration_months));
+
+    return formatDate(newExpiry);
+});
+
+const handleRenewalSubmit = async () => {
+    submittingRenewal.value = true;
+
+    try {
+        const payload = {
+            duration_months: renewalForm.value.duration_months,
+            renewal_price: renewalForm.value.renewal_price,
+            create_payment: renewalForm.value.create_payment,
+        };
+
+        // Add payment details if creating payment
+        if (renewalForm.value.create_payment) {
+            payload.payment_method = renewalForm.value.payment_method;
+            payload.payment_status = renewalForm.value.payment_status;
+            payload.payment_note = renewalForm.value.payment_note;
+        }
+
+        const response = await axios.post(`/admin/subscriptions/${selectedSubscription.value.id}/renew`, payload);
+
+        alert(response.data.message || 'Subscription renewed successfully!');
+        closeRenewalModal();
+
+        // Refresh the student list to show updated data
+        fetchStudents(pagination.value.current_page);
+    } catch (error) {
+        console.error('Error renewing subscription:', error);
+        alert(error.response?.data?.message || 'Failed to renew subscription');
+    } finally {
+        submittingRenewal.value = false;
+    }
 };
 
 // Payment Modal Methods
@@ -1467,6 +1747,159 @@ onMounted(() => {
     }
 
     .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Renewal Modal Styles */
+.renewal-modal-content {
+    padding: 0;
+}
+
+.renewal-section {
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.renewal-section:last-child {
+    border-bottom: none;
+}
+
+.renewal-info-card {
+    background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+    border: 2px solid #c4b5fd;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e9d5ff;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row .info-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #5b21b6;
+    font-size: 0.9rem;
+}
+
+.info-row .info-label i {
+    font-size: 1rem;
+}
+
+.info-row .info-value {
+    font-weight: 700;
+    color: #6366f1;
+    font-size: 0.95rem;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.section-title i {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.form-hint {
+    color: #64748b;
+    font-size: 0.75rem;
+    margin-top: 4px;
+}
+
+.calculated-expiry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    border: 2px solid #6ee7b7;
+    border-radius: 10px;
+}
+
+.calculated-expiry i {
+    font-size: 1.5rem;
+    color: #065f46;
+}
+
+.calculated-expiry .expiry-date {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #065f46;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 2px solid #bae6fd;
+    border-radius: 10px;
+}
+
+.checkbox-label {
+    font-weight: 600;
+    color: #0c4a6e;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin: 0;
+}
+
+.payment-details {
+    margin-top: 16px;
+    padding: 16px;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 2px solid #fcd34d;
+    border-radius: 10px;
+}
+
+.subscription-badge {
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.subscription-badge.clickable-badge {
+    cursor: pointer;
+    user-select: none;
+}
+
+.subscription-badge.clickable-badge:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.subscription-badge.clickable-badge:active {
+    transform: scale(0.98);
+}
+
+/* Responsive for Renewal Modal */
+@media (max-width: 768px) {
+    .form-grid {
         grid-template-columns: 1fr;
     }
 }
