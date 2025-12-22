@@ -390,6 +390,7 @@ class WalletController extends Controller
     public function update(Request $request, int $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
             'receivable_amount' => 'required|numeric|min:0',
             'payable_amount' => 'required|numeric|min:0',
         ]);
@@ -406,6 +407,10 @@ class WalletController extends Controller
         try {
             $wallet = Wallet::findOrFail($id);
             $admin = Auth::guard('admin')->user();
+
+            // Update wallet name
+            $wallet->name = $request->name;
+            $wallet->save();
 
             $oldReceivable = (float) $wallet->receivable_amount;
             $oldPayable = (float) $wallet->payable_amount;

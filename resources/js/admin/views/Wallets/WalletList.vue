@@ -447,11 +447,16 @@
                     <label>
                         <i class="bi bi-wallet me-2"></i>
                         Wallet Name
+                        <span class="text-danger">*</span>
                     </label>
                     <InputText
-                        :value="editData.name"
-                        disabled
+                        v-model="editData.name"
+                        placeholder="Enter wallet name"
+                        :class="{ 'p-invalid': editErrors.name }"
                     />
+                    <small v-if="editErrors.name" class="error-message">
+                        {{ editErrors.name[0] }}
+                    </small>
                 </div>
 
                 <div class="form-group">
@@ -832,6 +837,7 @@ const submitWalletUpdate = async () => {
 
     try {
         const payload = {
+            name: editData.value.name,
             receivable_amount: editData.value.receivable_amount,
             payable_amount: editData.value.payable_amount,
         };
