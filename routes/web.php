@@ -90,9 +90,17 @@ Route::prefix('admin')->group(function () {
         // Wallet Management
         Route::prefix('wallets')->group(function () {
             Route::get('/', [WalletController::class, 'index'])->name('admin.wallets.index');
+            Route::get('/my-wallet', [WalletController::class, 'myWallet'])->name('admin.wallets.my-wallet');
             Route::get('/balance-summary', [WalletController::class, 'balanceSummary'])->name('admin.wallets.balance-summary');
             Route::post('/transfer', [WalletController::class, 'transfer'])->name('admin.wallets.transfer');
             Route::post('/expense-wallets', [WalletController::class, 'createExpenseWallet'])->name('admin.wallets.create-expense');
+
+            // Administrator-only routes for creating wallets for users
+            Route::middleware('role:Administrator')->group(function () {
+                Route::post('/create-for-user', [WalletController::class, 'createWalletForUser'])->name('admin.wallets.create-for-user');
+                Route::get('/admins-list', [WalletController::class, 'getAdminsForWalletAssignment'])->name('admin.wallets.admins-list');
+            });
+
             Route::get('/{id}', [WalletController::class, 'show'])->name('admin.wallets.show');
             Route::put('/{id}', [WalletController::class, 'update'])->name('admin.wallets.update');
             Route::get('/{id}/transactions', [WalletController::class, 'transactions'])->name('admin.wallets.transactions');

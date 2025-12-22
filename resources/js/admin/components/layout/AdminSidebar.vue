@@ -131,6 +131,16 @@
                         </transition>
                     </router-link>
                     <router-link
+                        :to="{ name: 'my-wallet' }"
+                        class="nav-item"
+                        :class="{ 'active': $route.name === 'my-wallet' }"
+                    >
+                        <i class="bi bi-wallet-fill"></i>
+                        <transition name="fade">
+                            <span v-if="!collapsed">My Wallet</span>
+                        </transition>
+                    </router-link>
+                    <router-link
                         v-if="isAdministrator"
                         :to="{ name: 'wallets' }"
                         class="nav-item"

@@ -299,4 +299,47 @@ class WalletService
             'payable_amount' => 0,
         ]);
     }
+
+    /**
+     * Create a new staff wallet for an admin (allows multiple staff wallets).
+     */
+    public function createStaffWallet(
+        Admin $admin,
+        string $name = null
+    ): Wallet {
+        $walletName = $name ?? "{$admin->name}'s Wallet";
+
+        return Wallet::create([
+            'owner_type' => Admin::class,
+            'owner_id' => $admin->id,
+            'name' => $walletName,
+            'type' => Wallet::TYPE_STAFF,
+            'receivable_amount' => 0,
+            'payable_amount' => 0,
+        ]);
+    }
+
+    /**
+     * Create a wallet for a specific admin (staff or expense type).
+     */
+    public function createWalletForAdmin(
+        Admin $admin,
+        string $name,
+        string $type
+    ): Wallet {
+        // Validate wallet type
+        $allowedTypes = [Wallet::TYPE_STAFF, Wallet::TYPE_EXPENSE];
+        if (!in_array($type, $allowedTypes)) {
+            throw new Exception('Invalid wallet type. Allowed types: staff, expense');
+        }
+
+        return Wallet::create([
+            'owner_type' => Admin::class,
+            'owner_id' => $admin->id,
+            'name' => $name,
+            'type' => $type,
+            'receivable_amount' => 0,
+            'payable_amount' => 0,
+        ]);
+    }
 }

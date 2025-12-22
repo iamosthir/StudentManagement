@@ -40,6 +40,7 @@ import StudentCoupons from '../views/Coupons/StudentCoupons.vue';
 // Wallet Management
 import WalletList from '../views/Wallets/WalletList.vue';
 import WalletDetails from '../views/Wallets/WalletDetails.vue';
+import MyWallet from '../views/Wallets/MyWallet.vue';
 
 // Wallet Transfer Management
 import TransferHistory from '../views/WalletTransfers/TransferHistory.vue';
@@ -231,6 +232,12 @@ const routes = [
     },
 
     // Wallet Routes
+    {
+        path: '/my-wallet',
+        name: 'my-wallet',
+        component: MyWallet,
+        meta: { requiresAuth: true }
+    },
     {
         path: '/wallets',
         name: 'wallets',

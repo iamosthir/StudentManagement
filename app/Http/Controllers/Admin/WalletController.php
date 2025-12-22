@@ -213,6 +213,71 @@ class WalletController extends Controller
     }
 
     /**
+     * Get current admin's wallets.
+     */
+    public function myWallet(): JsonResponse
+    {
+        $admin = Auth::guard('admin')->user();
+
+        // Get all wallets owned by this admin
+        $wallets = Wallet::with(['transactions' => function ($query) {
+            $query->orderBy('created_at', 'desc')->limit(10);
+        }, 'transactions.createdBy'])
+            ->where('owner_type', get_class($admin))
+            ->where('owner_id', $admin->id)
+            ->orderBy('type')
+            ->get();
+
+        // Calculate totals
+        $totalBalance = 0;
+        $totalReceivable = 0;
+        $totalPayable = 0;
+
+        $walletsData = $wallets->map(function ($wallet) use (&$totalBalance, &$totalReceivable, &$totalPayable) {
+            $totalBalance += $wallet->balance;
+            $totalReceivable += $wallet->receivable_amount;
+            $totalPayable += $wallet->payable_amount;
+
+            return [
+                'id' => $wallet->id,
+                'name' => $wallet->name,
+                'type' => $wallet->type,
+                'receivable_amount' => (float) $wallet->receivable_amount,
+                'payable_amount' => (float) $wallet->payable_amount,
+                'balance' => $wallet->balance,
+                'created_at' => $wallet->created_at->format('Y-m-d H:i:s'),
+                'recent_transactions' => $wallet->transactions->map(function ($transaction) {
+                    return [
+                        'id' => $transaction->id,
+                        'transaction_type' => $transaction->transaction_type,
+                        'amount' => (float) $transaction->amount,
+                        'direction' => $transaction->direction,
+                        'description' => $transaction->description,
+                        'created_by' => $transaction->createdBy ? [
+                            'id' => $transaction->createdBy->id,
+                            'name' => $transaction->createdBy->name,
+                        ] : null,
+                        'created_at' => $transaction->created_at->format('Y-m-d H:i:s'),
+                    ];
+                }),
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'wallets' => $walletsData,
+                'summary' => [
+                    'total_balance' => $totalBalance,
+                    'total_receivable' => $totalReceivable,
+                    'total_payable' => $totalPayable,
+                    'wallet_count' => $wallets->count(),
+                ],
+            ],
+        ]);
+    }
+
+    /**
      * Create a new expense wallet.
      */
     public function createExpenseWallet(Request $request): JsonResponse
@@ -250,6 +315,73 @@ class WalletController extends Controller
                 'message' => $e->getMessage(),
             ], 400);
         }
+    }
+
+    /**
+     * Create a new wallet for a specific admin user (Administrator only).
+     */
+    public function createWalletForUser(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'admin_id' => 'required|exists:admins,id',
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:staff,expense',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $targetAdmin = \App\Models\Admin::findOrFail($request->admin_id);
+            $wallet = $this->walletService->createWalletForAdmin(
+                $targetAdmin,
+                $request->name,
+                $request->type
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Wallet created successfully',
+                'data' => [
+                    'id' => $wallet->id,
+                    'name' => $wallet->name,
+                    'type' => $wallet->type,
+                    'owner' => [
+                        'id' => $targetAdmin->id,
+                        'name' => $targetAdmin->name,
+                        'email' => $targetAdmin->email,
+                    ],
+                    'balance' => $wallet->balance,
+                    'receivable_amount' => (float) $wallet->receivable_amount,
+                    'payable_amount' => (float) $wallet->payable_amount,
+                ],
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    /**
+     * Get all admins for wallet assignment (Administrator only).
+     */
+    public function getAdminsForWalletAssignment(): JsonResponse
+    {
+        $admins = \App\Models\Admin::select('id', 'name', 'email')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $admins,
+        ]);
     }
 
     /**

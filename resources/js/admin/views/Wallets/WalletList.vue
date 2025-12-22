@@ -9,12 +9,22 @@
                 </h1>
                 <p class="page-subtitle">Manage staff wallets, main cashbox, and expense wallets</p>
             </div>
-            <Button
-                label="Create Expense Wallet"
-                icon="bi bi-plus-circle"
-                @click="showCreateExpenseWalletModal = true"
-                severity="success"
-            />
+            <div class="header-actions">
+                <Button
+                    v-if="isAdministrator"
+                    label="Create Wallet for User"
+                    icon="bi bi-person-plus"
+                    @click="showCreateWalletForUserModal = true"
+                    severity="primary"
+                    class="me-2"
+                />
+                <Button
+                    label="Create Expense Wallet"
+                    icon="bi bi-plus-circle"
+                    @click="showCreateExpenseWalletModal = true"
+                    severity="success"
+                />
+            </div>
         </div>
 
         <!-- Balance Summary Cards -->
@@ -333,6 +343,90 @@
             </template>
         </Dialog>
 
+        <!-- Create Wallet for User Modal -->
+        <Dialog
+            v-model:visible="showCreateWalletForUserModal"
+            modal
+            header="Create Wallet for User"
+            :style="{ width: '500px' }"
+        >
+            <div class="wallet-for-user-form">
+                <div class="form-group">
+                    <label>
+                        <i class="bi bi-person me-2"></i>
+                        Select User
+                        <span class="text-danger">*</span>
+                    </label>
+                    <Select
+                        v-model="newWalletForUser.adminId"
+                        :options="admins"
+                        optionLabel="name"
+                        optionValue="id"
+                        placeholder="Select a user"
+                        :class="{ 'p-invalid': walletForUserErrors.admin_id }"
+                        filter
+                    />
+                    <small v-if="walletForUserErrors.admin_id" class="error-message">
+                        {{ walletForUserErrors.admin_id[0] }}
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="bi bi-tag me-2"></i>
+                        Wallet Name
+                        <span class="text-danger">*</span>
+                    </label>
+                    <InputText
+                        v-model="newWalletForUser.name"
+                        placeholder="e.g., John's Main Wallet or Marketing Expenses"
+                        :class="{ 'p-invalid': walletForUserErrors.name }"
+                    />
+                    <small v-if="walletForUserErrors.name" class="error-message">
+                        {{ walletForUserErrors.name[0] }}
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="bi bi-wallet me-2"></i>
+                        Wallet Type
+                        <span class="text-danger">*</span>
+                    </label>
+                    <Select
+                        v-model="newWalletForUser.type"
+                        :options="userWalletTypes"
+                        optionLabel="label"
+                        optionValue="value"
+                        placeholder="Select wallet type"
+                        :class="{ 'p-invalid': walletForUserErrors.type }"
+                    />
+                    <small v-if="walletForUserErrors.type" class="error-message">
+                        {{ walletForUserErrors.type[0] }}
+                    </small>
+                    <small class="hint-text">
+                        <strong>Staff Wallet:</strong> For receiving payments and general use<br>
+                        <strong>Expense Wallet:</strong> Specifically for managing expenses only
+                    </small>
+                </div>
+            </div>
+
+            <template #footer>
+                <Button
+                    label="Cancel"
+                    severity="secondary"
+                    @click="showCreateWalletForUserModal = false"
+                    :disabled="creatingWalletForUser"
+                />
+                <Button
+                    label="Create Wallet"
+                    icon="bi bi-plus-circle"
+                    @click="createWalletForUser"
+                    :loading="creatingWalletForUser"
+                />
+            </template>
+        </Dialog>
+
         <!-- Edit Wallet Modal -->
         <Dialog
             v-model:visible="showEditModal"
@@ -489,6 +583,20 @@ const newExpenseWallet = ref({
 const expenseWalletErrors = ref({});
 const admins = ref([]);
 
+// Create Wallet for User Modal
+const showCreateWalletForUserModal = ref(false);
+const creatingWalletForUser = ref(false);
+const newWalletForUser = ref({
+    adminId: null,
+    name: '',
+    type: 'staff',
+});
+const walletForUserErrors = ref({});
+const userWalletTypes = [
+    { label: 'Staff Wallet', value: 'staff' },
+    { label: 'Expense Wallet', value: 'expense' },
+];
+
 // Edit Wallet Modal
 const showEditModal = ref(false);
 const updatingWallet = ref(false);
@@ -568,7 +676,7 @@ const fetchWallets = async () => {
 
 const fetchAdmins = async () => {
     try {
-        const response = await axios.get('/admin/admin-users');
+        const response = await axios.get('/admin/wallets/admins-list');
         if (response.data.success) {
             admins.value = response.data.data;
         }
@@ -671,6 +779,37 @@ const createExpenseWallet = async () => {
         }
     } finally {
         creatingExpenseWallet.value = false;
+    }
+};
+
+const createWalletForUser = async () => {
+    creatingWalletForUser.value = true;
+    walletForUserErrors.value = {};
+
+    try {
+        const payload = {
+            admin_id: newWalletForUser.value.adminId,
+            name: newWalletForUser.value.name,
+            type: newWalletForUser.value.type,
+        };
+
+        const response = await axios.post('/admin/wallets/create-for-user', payload);
+
+        if (response.data.success) {
+            showCreateWalletForUserModal.value = false;
+            newWalletForUser.value = { adminId: null, name: '', type: 'staff' };
+            await fetchBalanceSummary();
+            await fetchWallets();
+            // Could add a success toast here
+        }
+    } catch (error) {
+        if (error.response?.status === 422) {
+            walletForUserErrors.value = error.response.data.errors || {};
+        } else {
+            console.error('Error creating wallet for user:', error);
+        }
+    } finally {
+        creatingWalletForUser.value = false;
     }
 };
 
