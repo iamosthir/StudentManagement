@@ -18,12 +18,12 @@
                     severity="primary"
                     class="me-2"
                 />
-                <Button
+                <!-- <Button
                     label="Create Expense Wallet"
                     icon="bi bi-plus-circle"
                     @click="showCreateExpenseWalletModal = true"
                     severity="success"
-                />
+                /> -->
             </div>
         </div>
 

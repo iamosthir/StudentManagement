@@ -10,7 +10,8 @@
       "Bash(dir /b)",
       "Bash(npm run dev:*)",
       "Bash(cat:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(composer dev:*)"
     ]
   }
 }

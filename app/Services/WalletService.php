@@ -126,6 +126,9 @@ class WalletService
                 throw new Exception('Insufficient balance in staff wallet');
             }
 
+            // Get balance before transfer
+            $balanceBefore = $staffWallet->balance;
+
             // Get or create main cashbox
             $mainCashbox = $this->getOrCreateMainCashbox();
 
@@ -149,6 +152,28 @@ class WalletService
                 'direction' => WalletTransaction::DIRECTION_IN,
                 'description' => $description,
                 'created_by_admin_id' => $admin->id,
+            ]);
+
+            // Refresh wallet to get updated balance
+            $staffWallet->refresh();
+            $balanceAfter = $staffWallet->balance;
+
+            // Create transaction log for audit trail
+            TransactionLog::create([
+                'admin_id' => $admin->id,
+                'transaction_type' => TransactionLog::TYPE_TRANSFER_OUT,
+                'amount' => $amount,
+                'balance_before' => $balanceBefore,
+                'balance_after' => $balanceAfter,
+                'description' => $description,
+                'metadata' => [
+                    'from_wallet_id' => $staffWallet->id,
+                    'from_wallet_name' => $staffWallet->name,
+                    'to_wallet_id' => $mainCashbox->id,
+                    'to_wallet_name' => $mainCashbox->name,
+                    'transfer_type' => 'staff_to_cashbox',
+                    'note' => $note,
+                ],
             ]);
 
             DB::commit();
@@ -188,6 +213,9 @@ class WalletService
                 throw new Exception('Insufficient balance in main cashbox');
             }
 
+            // Get balance before transfer
+            $balanceBefore = $mainCashbox->balance;
+
             $description = $note ?? "Transfer from Main Cashbox to {$expenseWallet->name}";
 
             // Create outgoing transaction for main cashbox
@@ -208,6 +236,28 @@ class WalletService
                 'direction' => WalletTransaction::DIRECTION_IN,
                 'description' => $description,
                 'created_by_admin_id' => $admin->id,
+            ]);
+
+            // Refresh wallet to get updated balance
+            $mainCashbox->refresh();
+            $balanceAfter = $mainCashbox->balance;
+
+            // Create transaction log for audit trail
+            TransactionLog::create([
+                'admin_id' => $admin->id,
+                'transaction_type' => TransactionLog::TYPE_TRANSFER_OUT,
+                'amount' => $amount,
+                'balance_before' => $balanceBefore,
+                'balance_after' => $balanceAfter,
+                'description' => $description,
+                'metadata' => [
+                    'from_wallet_id' => $mainCashbox->id,
+                    'from_wallet_name' => $mainCashbox->name,
+                    'to_wallet_id' => $expenseWallet->id,
+                    'to_wallet_name' => $expenseWallet->name,
+                    'transfer_type' => 'cashbox_to_expense',
+                    'note' => $note,
+                ],
             ]);
 
             DB::commit();
@@ -245,6 +295,9 @@ class WalletService
                 throw new Exception('Insufficient balance in expense wallet');
             }
 
+            // Get balance before transaction
+            $balanceBefore = $expenseWallet->balance;
+
             $transaction = WalletTransaction::create([
                 'wallet_id' => $expenseWallet->id,
                 'related_expense_id' => $expenseId,
@@ -253,6 +306,26 @@ class WalletService
                 'direction' => WalletTransaction::DIRECTION_OUT,
                 'description' => $description,
                 'created_by_admin_id' => $admin->id,
+            ]);
+
+            // Refresh wallet to get updated balance
+            $expenseWallet->refresh();
+            $balanceAfter = $expenseWallet->balance;
+
+            // Create transaction log for audit trail
+            TransactionLog::create([
+                'admin_id' => $admin->id,
+                'expense_id' => $expenseId,
+                'transaction_type' => TransactionLog::TYPE_EXPENSE,
+                'amount' => $amount,
+                'balance_before' => $balanceBefore,
+                'balance_after' => $balanceAfter,
+                'description' => $description,
+                'metadata' => [
+                    'wallet_id' => $expenseWallet->id,
+                    'wallet_name' => $expenseWallet->name,
+                    'expense_id' => $expenseId,
+                ],
             ]);
 
             DB::commit();
@@ -341,5 +414,84 @@ class WalletService
             'receivable_amount' => 0,
             'payable_amount' => 0,
         ]);
+    }
+
+    /**
+     * Transfer money directly from one wallet to another wallet.
+     */
+    public function directWalletTransfer(
+        Wallet $fromWallet,
+        Wallet $toWallet,
+        float $amount,
+        Admin $admin,
+        string $note = null
+    ): array {
+        DB::beginTransaction();
+
+        try {
+            // Check sufficient balance
+            if ($fromWallet->balance < $amount) {
+                throw new Exception('Insufficient balance in source wallet');
+            }
+
+            // Get balance before transfer
+            $balanceBefore = $fromWallet->balance;
+
+            $description = $note ?? "Transfer from {$fromWallet->name} to {$toWallet->name}";
+
+            // Create outgoing transaction for source wallet
+            $outgoingTransaction = WalletTransaction::create([
+                'wallet_id' => $fromWallet->id,
+                'transaction_type' => WalletTransaction::TYPE_TRANSFER_OUT,
+                'amount' => $amount,
+                'direction' => WalletTransaction::DIRECTION_OUT,
+                'description' => $description,
+                'created_by_admin_id' => $admin->id,
+            ]);
+
+            // Create incoming transaction for destination wallet
+            $incomingTransaction = WalletTransaction::create([
+                'wallet_id' => $toWallet->id,
+                'transaction_type' => WalletTransaction::TYPE_TRANSFER_IN,
+                'amount' => $amount,
+                'direction' => WalletTransaction::DIRECTION_IN,
+                'description' => $description,
+                'created_by_admin_id' => $admin->id,
+            ]);
+
+            // Refresh wallet to get updated balance
+            $fromWallet->refresh();
+            $balanceAfter = $fromWallet->balance;
+
+            // Create transaction log for audit trail
+            TransactionLog::create([
+                'admin_id' => $admin->id,
+                'transaction_type' => TransactionLog::TYPE_TRANSFER_OUT,
+                'amount' => $amount,
+                'balance_before' => $balanceBefore,
+                'balance_after' => $balanceAfter,
+                'description' => $description,
+                'metadata' => [
+                    'from_wallet_id' => $fromWallet->id,
+                    'from_wallet_name' => $fromWallet->name,
+                    'from_wallet_owner' => $fromWallet->owner?->name ?? 'System',
+                    'to_wallet_id' => $toWallet->id,
+                    'to_wallet_name' => $toWallet->name,
+                    'to_wallet_owner' => $toWallet->owner?->name ?? 'System',
+                    'transfer_type' => 'direct_transfer',
+                    'note' => $note,
+                ],
+            ]);
+
+            DB::commit();
+
+            return [
+                'outgoing' => $outgoingTransaction,
+                'incoming' => $incomingTransaction,
+            ];
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 }

@@ -173,6 +173,33 @@
                     </router-link>
                 </div>
 
+                <!-- Logs -->
+                <div class="nav-group">
+                    <div v-if="!collapsed" class="group-label">Logs</div>
+                    <router-link
+                        v-if="isAdministrator"
+                        :to="{ name: 'transaction-logs.index' }"
+                        class="nav-item"
+                        :class="{ 'active': $route.name?.startsWith('transaction-logs') }"
+                    >
+                        <i class="bi bi-journal-text"></i>
+                        <transition name="fade">
+                            <span v-if="!collapsed">Transaction Logs</span>
+                        </transition>
+                    </router-link>
+                    <router-link
+                        v-if="isAdministrator"
+                        :to="{ name: 'transfer-logs.index' }"
+                        class="nav-item"
+                        :class="{ 'active': $route.name?.startsWith('transfer-logs') }"
+                    >
+                        <i class="bi bi-arrow-left-right"></i>
+                        <transition name="fade">
+                            <span v-if="!collapsed">Transfer Logs</span>
+                        </transition>
+                    </router-link>
+                </div>
+
                 <!-- System -->
                 <div class="nav-group">
                     <div v-if="!collapsed" class="group-label">System</div>
@@ -185,17 +212,6 @@
                         <i class="bi bi-person-badge"></i>
                         <transition name="fade">
                             <span v-if="!collapsed">Admin Users</span>
-                        </transition>
-                    </router-link>
-                    <router-link
-                        v-if="isAdministrator"
-                        :to="{ name: 'transaction-logs.index' }"
-                        class="nav-item"
-                        :class="{ 'active': $route.name?.startsWith('transaction-logs') }"
-                    >
-                        <i class="bi bi-journal-text"></i>
-                        <transition name="fade">
-                            <span v-if="!collapsed">Transaction Logs</span>
                         </transition>
                     </router-link>
                 </div>

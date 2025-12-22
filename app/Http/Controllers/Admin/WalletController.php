@@ -385,6 +385,33 @@ class WalletController extends Controller
     }
 
     /**
+     * Get wallets for a specific user.
+     */
+    public function getUserWallets(int $adminId): JsonResponse
+    {
+        $targetAdmin = \App\Models\Admin::findOrFail($adminId);
+
+        $wallets = Wallet::where('owner_type', \App\Models\Admin::class)
+            ->where('owner_id', $targetAdmin->id)
+            ->orderBy('type')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $wallets->map(function ($wallet) {
+                return [
+                    'id' => $wallet->id,
+                    'name' => $wallet->name,
+                    'type' => $wallet->type,
+                    'balance' => $wallet->balance,
+                    'receivable_amount' => (float) $wallet->receivable_amount,
+                    'payable_amount' => (float) $wallet->payable_amount,
+                ];
+            }),
+        ]);
+    }
+
+    /**
      * Update wallet balance (Admin only) - Creates adjustment transactions.
      */
     public function update(Request $request, int $id): JsonResponse

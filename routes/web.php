@@ -91,6 +91,7 @@ Route::prefix('admin')->group(function () {
         Route::prefix('wallets')->group(function () {
             Route::get('/', [WalletController::class, 'index'])->name('admin.wallets.index');
             Route::get('/my-wallet', [WalletController::class, 'myWallet'])->name('admin.wallets.my-wallet');
+            Route::get('/user-wallets/{adminId}', [WalletController::class, 'getUserWallets'])->name('admin.wallets.user-wallets');
             Route::get('/balance-summary', [WalletController::class, 'balanceSummary'])->name('admin.wallets.balance-summary');
             Route::post('/transfer', [WalletController::class, 'transfer'])->name('admin.wallets.transfer');
             Route::post('/expense-wallets', [WalletController::class, 'createExpenseWallet'])->name('admin.wallets.create-expense');
@@ -111,6 +112,7 @@ Route::prefix('admin')->group(function () {
             Route::get('/', [WalletTransferController::class, 'index'])->name('admin.wallet-transfers.index');
             Route::get('/admins', [WalletTransferController::class, 'getAdmins'])->name('admin.wallet-transfers.admins');
             Route::post('/', [WalletTransferController::class, 'store'])->name('admin.wallet-transfers.store');
+            Route::post('/direct-transfer', [WalletTransferController::class, 'directTransfer'])->name('admin.wallet-transfers.direct-transfer');
             Route::get('/{transfer}', [WalletTransferController::class, 'show'])->name('admin.wallet-transfers.show');
 
             // Administrator Only Routes

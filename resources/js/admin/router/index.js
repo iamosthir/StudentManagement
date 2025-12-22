@@ -50,6 +50,9 @@ import PendingTransfers from '../views/WalletTransfers/PendingTransfers.vue';
 // Transaction Logs Management
 import TransactionLogList from '../views/TransactionLogs/TransactionLogList.vue';
 
+// Transfer Logs Management
+import TransferLogList from '../views/TransferLogs/TransferLogList.vue';
+
 // Expense Management
 import ExpenseCategoryList from '../views/ExpenseCategories/ExpenseCategoryList.vue';
 import ExpenseList from '../views/Expenses/ExpenseList.vue';
@@ -282,6 +285,14 @@ const routes = [
         path: '/transaction-logs',
         name: 'transaction-logs.index',
         component: TransactionLogList,
+        meta: { requiresAuth: true }
+    },
+
+    // Transfer Logs Routes (Administrator only)
+    {
+        path: '/transfer-logs',
+        name: 'transfer-logs.index',
+        component: TransferLogList,
         meta: { requiresAuth: true }
     },
 

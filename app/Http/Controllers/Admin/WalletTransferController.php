@@ -11,7 +11,9 @@ use App\Models\TransactionLog;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use App\Models\WalletTransferRequest;
+use App\Services\WalletService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class WalletTransferController extends Controller
@@ -374,5 +376,74 @@ class WalletTransferController extends Controller
                 'total' => $logs->total(),
             ],
         ]);
+    }
+
+    /**
+     * Direct transfer from one wallet to another wallet.
+     */
+    public function directTransfer(Request $request, WalletService $walletService): JsonResponse
+    {
+        $request->validate([
+            'from_wallet_id' => 'required|exists:wallets,id',
+            'to_wallet_id' => 'required|exists:wallets,id|different:from_wallet_id',
+            'amount' => 'required|numeric|min:0.01',
+            'note' => 'nullable|string|max:500',
+        ]);
+
+        $currentAdmin = auth('admin')->user();
+        $fromWallet = Wallet::findOrFail($request->from_wallet_id);
+        $toWallet = Wallet::findOrFail($request->to_wallet_id);
+
+        // Check if user owns the from_wallet or is an administrator
+        $isOwner = $fromWallet->owner_type === get_class($currentAdmin) &&
+                   $fromWallet->owner_id === $currentAdmin->id;
+        $isAdministrator = $currentAdmin->hasRole('Administrator');
+
+        if (!$isOwner && !$isAdministrator) {
+            return response()->json([
+                'message' => 'You do not have permission to transfer from this wallet.',
+            ], 403);
+        }
+
+        // Validate sufficient balance
+        if ($fromWallet->balance < $request->amount) {
+            return response()->json([
+                'message' => 'Insufficient balance in source wallet.',
+                'errors' => [
+                    'amount' => ["Insufficient balance. Available: $" . number_format($fromWallet->balance, 2)]
+                ]
+            ], 422);
+        }
+
+        try {
+            $result = $walletService->directWalletTransfer(
+                $fromWallet,
+                $toWallet,
+                $request->amount,
+                $currentAdmin,
+                $request->note
+            );
+
+            return response()->json([
+                'message' => 'Transfer completed successfully.',
+                'transfer' => [
+                    'from_wallet' => [
+                        'id' => $fromWallet->id,
+                        'name' => $fromWallet->name,
+                        'balance' => $fromWallet->fresh()->balance,
+                    ],
+                    'to_wallet' => [
+                        'id' => $toWallet->id,
+                        'name' => $toWallet->name,
+                        'balance' => $toWallet->fresh()->balance,
+                    ],
+                    'amount' => $request->amount,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Transfer failed: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

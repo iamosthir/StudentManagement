@@ -18,6 +18,7 @@ class TransactionLog extends Model
     public const TYPE_ADJUSTMENT = 'adjustment';
     public const TYPE_TRANSFER_IN = 'transfer_in';
     public const TYPE_TRANSFER_OUT = 'transfer_out';
+    public const TYPE_EXPENSE = 'expense';
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +28,7 @@ class TransactionLog extends Model
     protected $fillable = [
         'admin_id',
         'payment_id',
+        'expense_id',
         'transaction_type',
         'amount',
         'balance_before',

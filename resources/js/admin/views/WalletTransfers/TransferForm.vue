@@ -35,6 +35,38 @@
         <div class="section-body">
           <div class="form-row">
             <div class="form-group">
+              <label for="from_wallet_id">
+                <i class="bi bi-wallet-fill"></i>
+                From Your Wallet <span class="required">*</span>
+              </label>
+              <Select
+                v-model="form.from_wallet_id"
+                :options="myWallets"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select your wallet"
+                :class="{ 'p-invalid': errors.from_wallet_id }"
+                :loading="loadingMyWallets"
+              >
+                <template #option="slotProps">
+                  <div class="flex flex-column">
+                    <div class="font-medium">{{ slotProps.option.name }}</div>
+                    <div class="text-sm text-gray-500">{{ slotProps.option.type_label }}</div>
+                    <div class="text-sm text-green-600">Balance: ${{ slotProps.option.balance }}</div>
+                  </div>
+                </template>
+              </Select>
+              <small v-if="errors.from_wallet_id" class="error-message">
+                {{ errors.from_wallet_id }}
+              </small>
+              <small v-else-if="selectedFromWallet" class="hint-text">
+                Available balance: <strong>${{ selectedFromWallet.balance }}</strong>
+              </small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
               <label for="to_admin_id">
                 <i class="bi bi-person-fill"></i>
                 Recipient Admin <span class="required">*</span>
@@ -47,6 +79,7 @@
                 placeholder="Select recipient admin"
                 :class="{ 'p-invalid': errors.to_admin_id }"
                 :loading="loadingAdmins"
+                @change="onRecipientChange"
               >
                 <template #value="slotProps">
                   <div v-if="slotProps.value" class="flex align-items-center">
@@ -58,7 +91,6 @@
                   <div class="flex flex-column">
                     <div class="font-medium">{{ slotProps.option.name }}</div>
                     <div class="text-sm text-gray-500">{{ slotProps.option.email }}</div>
-                    <div class="text-sm text-green-600">Balance: ${{ slotProps.option.balance }}</div>
                   </div>
                 </template>
               </Select>
@@ -67,6 +99,34 @@
               </small>
             </div>
 
+            <div class="form-group" v-if="form.to_admin_id">
+              <label for="to_wallet_id">
+                <i class="bi bi-wallet2"></i>
+                To Their Wallet <span class="required">*</span>
+              </label>
+              <Select
+                v-model="form.to_wallet_id"
+                :options="recipientWallets"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select recipient wallet"
+                :class="{ 'p-invalid': errors.to_wallet_id }"
+                :loading="loadingRecipientWallets"
+              >
+                <template #option="slotProps">
+                  <div class="flex flex-column">
+                    <div class="font-medium">{{ slotProps.option.name }}</div>
+                    <div class="text-sm text-gray-500">{{ slotProps.option.type_label }}</div>
+                  </div>
+                </template>
+              </Select>
+              <small v-if="errors.to_wallet_id" class="error-message">
+                {{ errors.to_wallet_id }}
+              </small>
+            </div>
+          </div>
+
+          <div class="form-row">
             <div class="form-group">
               <label for="amount">
                 <i class="bi bi-cash-stack"></i>
@@ -83,9 +143,6 @@
               />
               <small v-if="errors.amount" class="error-message">
                 {{ errors.amount }}
-              </small>
-              <small v-else class="hint-text">
-                Your current balance: <strong>${{ currentAdmin?.balance || '0.00' }}</strong>
               </small>
             </div>
           </div>
@@ -132,7 +189,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import InputNumber from 'primevue/inputnumber';
@@ -143,7 +200,9 @@ import Button from 'primevue/button';
 const router = useRouter();
 
 const form = ref({
+  from_wallet_id: null,
   to_admin_id: null,
+  to_wallet_id: null,
   amount: null,
   notes: ''
 });
@@ -154,6 +213,14 @@ const formLoaded = ref(false);
 const admins = ref([]);
 const loadingAdmins = ref(false);
 const currentAdmin = ref(null);
+const myWallets = ref([]);
+const loadingMyWallets = ref(false);
+const recipientWallets = ref([]);
+const loadingRecipientWallets = ref(false);
+
+const selectedFromWallet = computed(() => {
+  return myWallets.value.find(w => w.id === form.value.from_wallet_id);
+});
 
 onMounted(async () => {
   setTimeout(() => {
@@ -162,7 +229,8 @@ onMounted(async () => {
 
   await Promise.all([
     fetchAdmins(),
-    fetchCurrentAdmin()
+    fetchCurrentAdmin(),
+    fetchMyWallets()
   ]);
 });
 
@@ -187,29 +255,82 @@ const fetchCurrentAdmin = async () => {
   }
 };
 
+const fetchMyWallets = async () => {
+  loadingMyWallets.value = true;
+  try {
+    const response = await axios.get('/admin/wallets/my-wallet');
+    if (response.data.success) {
+      myWallets.value = response.data.data.wallets.map(wallet => ({
+        ...wallet,
+        type_label: formatWalletType(wallet.type),
+        balance: parseFloat(wallet.balance).toFixed(2)
+      }));
+    }
+  } catch (error) {
+    console.error('Error fetching my wallets:', error);
+  } finally {
+    loadingMyWallets.value = false;
+  }
+};
+
+const fetchRecipientWallets = async (adminId) => {
+  loadingRecipientWallets.value = true;
+  try {
+    const response = await axios.get(`/admin/wallets/user-wallets/${adminId}`);
+    if (response.data.success) {
+      recipientWallets.value = response.data.data.map(wallet => ({
+        ...wallet,
+        type_label: formatWalletType(wallet.type)
+      }));
+    }
+  } catch (error) {
+    console.error('Error fetching recipient wallets:', error);
+    recipientWallets.value = [];
+  } finally {
+    loadingRecipientWallets.value = false;
+  }
+};
+
+const onRecipientChange = () => {
+  form.value.to_wallet_id = null;
+  recipientWallets.value = [];
+  if (form.value.to_admin_id) {
+    fetchRecipientWallets(form.value.to_admin_id);
+  }
+};
+
 const getAdminName = (adminId) => {
   const admin = admins.value.find(a => a.id === adminId);
   return admin ? admin.name : '';
 };
 
+const formatWalletType = (type) => {
+  const types = {
+    staff: 'Staff Wallet',
+    main_cashbox: 'Main Cashbox',
+    expense: 'Expense Wallet'
+  };
+  return types[type] || type;
+};
+
 const submitTransfer = async () => {
   errors.value = {};
 
-  // Validate balance before submitting
-  if (!currentAdmin.value || parseFloat(currentAdmin.value.balance) === 0) {
-    errors.value.amount = 'Your balance is insufficient.';
-    return;
-  }
+  // Validate wallet balance
+  if (selectedFromWallet.value && form.value.amount) {
+    const walletBalance = parseFloat(selectedFromWallet.value.balance);
+    const transferAmount = parseFloat(form.value.amount);
 
-  if (form.value.amount && parseFloat(form.value.amount) > parseFloat(currentAdmin.value.balance)) {
-    errors.value.amount = `Your balance is insufficient. Available balance: $${parseFloat(currentAdmin.value.balance).toFixed(2)}`;
-    return;
+    if (transferAmount > walletBalance) {
+      errors.value.amount = `Insufficient balance. Available: $${walletBalance.toFixed(2)}`;
+      return;
+    }
   }
 
   submitting.value = true;
 
   try {
-    const response = await axios.post('/admin/wallet-transfers', form.value);
+    const response = await axios.post('/admin/wallet-transfers/direct-transfer', form.value);
 
     alert(response.data.message);
     router.push('/transfers');
