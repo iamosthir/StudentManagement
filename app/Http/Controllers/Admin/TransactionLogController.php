@@ -114,4 +114,52 @@ class TransactionLogController extends Controller
             'data' => new TransactionLogResource($log),
         ]);
     }
+
+    /**
+     * Display a listing of transfer logs only (transfer_in and transfer_out).
+     */
+    public function transferLogs(Request $request): JsonResponse
+    {
+        $perPage = $request->get('per_page', 20);
+        $type = $request->get('type');
+        $adminId = $request->get('admin_id');
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+
+        $query = TransactionLog::with(['admin', 'payment'])
+            ->whereIn('transaction_type', [TransactionLog::TYPE_TRANSFER_IN, TransactionLog::TYPE_TRANSFER_OUT])
+            ->orderBy('created_at', 'desc');
+
+        // Filter by specific transfer type if provided
+        if ($type && in_array($type, ['transfer_in', 'transfer_out'])) {
+            $query->where('transaction_type', $type);
+        }
+
+        // Filter by admin ID
+        if ($adminId) {
+            $query->where('admin_id', $adminId);
+        }
+
+        // Filter by date range
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+        } elseif ($startDate) {
+            $query->where('created_at', '>=', $startDate . ' 00:00:00');
+        } elseif ($endDate) {
+            $query->where('created_at', '<=', $endDate . ' 23:59:59');
+        }
+
+        $logs = $query->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => TransactionLogResource::collection($logs),
+            'meta' => [
+                'current_page' => $logs->currentPage(),
+                'last_page' => $logs->lastPage(),
+                'per_page' => $logs->perPage(),
+                'total' => $logs->total(),
+            ],
+        ]);
+    }
 }

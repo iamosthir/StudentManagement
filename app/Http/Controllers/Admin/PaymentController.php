@@ -479,4 +479,25 @@ class PaymentController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Print invoice - returns a simple HTML view for printing.
+     */
+    public function printInvoice(Payment $payment)
+    {
+        $payment->load(['student', 'admin', 'items']);
+
+        // Calculate totals
+        $subtotal = $payment->items->sum(function ($item) {
+            return $item->unit_price * $item->quantity;
+        });
+
+        $totalDiscount = $payment->items->sum('discount_value');
+
+        return view('admin.payments.print-invoice', [
+            'payment' => $payment,
+            'subtotal' => $subtotal,
+            'totalDiscount' => $totalDiscount,
+        ]);
+    }
 }

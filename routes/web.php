@@ -80,6 +80,7 @@ Route::prefix('admin')->group(function () {
             Route::get('/summary', [PaymentController::class, 'summary'])->name('admin.payments.summary');
             Route::post('/item-payment-info', [PaymentController::class, 'getItemPaymentInfo'])->name('admin.payments.item-payment-info');
             Route::get('/student/{student}/stats', [PaymentController::class, 'studentStats'])->name('admin.payments.student-stats');
+            Route::get('/{payment}/print', [PaymentController::class, 'printInvoice'])->name('admin.payments.print');
             Route::get('/{payment}', [PaymentController::class, 'show'])->name('admin.payments.show');
             Route::put('/{payment}', [PaymentController::class, 'update'])->name('admin.payments.update');
             Route::delete('/{payment}', [PaymentController::class, 'destroy'])->name('admin.payments.destroy');
@@ -190,6 +191,7 @@ Route::prefix('admin')->group(function () {
         Route::prefix('transaction-logs')->middleware('role:Administrator')->group(function () {
             Route::get('/', [TransactionLogController::class, 'index'])->name('admin.transaction-logs.index');
             Route::get('/summary', [TransactionLogController::class, 'summary'])->name('admin.transaction-logs.summary');
+            Route::get('/transfers', [TransactionLogController::class, 'transferLogs'])->name('admin.transaction-logs.transfers');
             Route::get('/{log}', [TransactionLogController::class, 'show'])->name('admin.transaction-logs.show');
         });
     });

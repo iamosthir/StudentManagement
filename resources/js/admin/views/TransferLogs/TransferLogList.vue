@@ -340,26 +340,16 @@ const fetchLogs = async (page = 1) => {
             per_page: 20,
         };
 
-        // Always filter for transfer types only
-        if (filters.value.type) {
-            params.type = filters.value.type;
-        } else {
-            // If no specific type selected, we'll need to fetch both transfer_in and transfer_out
-            // Since the API accepts single type, we'll use a workaround by not setting type and filtering client-side
-            // Or we can make the API call without type filter and filter client-side
-        }
-
+        // Add filter parameters
+        if (filters.value.type) params.type = filters.value.type;
         if (filters.value.admin_id) params.admin_id = filters.value.admin_id;
         if (filters.value.start_date) params.start_date = formatDateForApi(filters.value.start_date);
         if (filters.value.end_date) params.end_date = formatDateForApi(filters.value.end_date);
 
-        const response = await axios.get('/admin/transaction-logs', { params });
+        // Use the dedicated transfer logs endpoint
+        const response = await axios.get('/admin/transaction-logs/transfers', { params });
         if (response.data.success) {
-            // Filter to only show transfer logs
-            const allLogs = response.data.data;
-            logs.value = allLogs.filter(log =>
-                log.transaction_type === 'transfer_in' || log.transaction_type === 'transfer_out'
-            );
+            logs.value = response.data.data;
             meta.value = response.data.meta;
         }
 

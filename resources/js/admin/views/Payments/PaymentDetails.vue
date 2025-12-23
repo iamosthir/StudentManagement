@@ -84,7 +84,8 @@ const grandTotal = computed(() => {
 });
 
 const printInvoice = () => {
-  window.print();
+  const printUrl = `/admin/payments/${route.params.id}/print`;
+  window.open(printUrl, '_blank');
 };
 
 onMounted(() => {
@@ -248,5 +249,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
-<style scoped src="../../../../css/payment.css"></style>

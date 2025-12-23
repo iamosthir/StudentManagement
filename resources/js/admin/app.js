@@ -10,6 +10,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
 import ToastService from 'primevue/toastservice';
+import ConfirmationService from 'primevue/confirmationservice';
 
 // Import PrimeVue RTL styles
 import '../../css/primevue-rtl.css';
@@ -63,6 +64,9 @@ app.use(PrimeVue, {
 
 // Use Toast Service
 app.use(ToastService);
+
+// Use Confirmation Service
+app.use(ConfirmationService);
 
 // Use router
 app.use(router);
