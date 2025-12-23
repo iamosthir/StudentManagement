@@ -114,14 +114,16 @@ Route::prefix('admin')->group(function () {
             Route::get('/admins', [WalletTransferController::class, 'getAdmins'])->name('admin.wallet-transfers.admins');
             Route::post('/', [WalletTransferController::class, 'store'])->name('admin.wallet-transfers.store');
             Route::post('/direct-transfer', [WalletTransferController::class, 'directTransfer'])->name('admin.wallet-transfers.direct-transfer');
-            Route::get('/{transfer}', [WalletTransferController::class, 'show'])->name('admin.wallet-transfers.show');
 
-            // Administrator Only Routes
+            // Administrator Only Routes (must come before /{transfer} to avoid route conflicts)
             Route::middleware('role:Administrator')->group(function () {
                 Route::get('/pending', [WalletTransferController::class, 'pending'])->name('admin.wallet-transfers.pending');
-                Route::post('/{transfer}/process', [WalletTransferController::class, 'process'])->name('admin.wallet-transfers.process');
                 Route::get('/transaction-logs', [WalletTransferController::class, 'transactionLogs'])->name('admin.wallet-transfers.transaction-logs');
+                Route::post('/{transfer}/process', [WalletTransferController::class, 'process'])->name('admin.wallet-transfers.process');
             });
+
+            // Wildcard route must come last
+            Route::get('/{transfer}', [WalletTransferController::class, 'show'])->name('admin.wallet-transfers.show');
         });
 
         // Program Management
