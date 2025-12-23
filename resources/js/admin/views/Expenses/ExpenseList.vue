@@ -1,24 +1,24 @@
 <template>
-    <div class="expenses">
+    <div class="expenses" dir="rtl">
         <!-- Page Header -->
         <div class="page-header">
             <div>
                 <h1 class="page-title">
                     <i class="bi bi-cash-stack me-2"></i>
-                    Expenses
+                    المصروفات
                 </h1>
-                <p class="page-subtitle">Track and manage all expenses</p>
+                <p class="page-subtitle">تتبع وإدارة جميع المصروفات</p>
             </div>
             <div class="header-actions">
                 <Button
-                    label="Manage Categories"
+                    label="إدارة الفئات"
                     icon="bi bi-tags"
                     @click="router.push('/expense-categories')"
                     severity="secondary"
                     outlined
                 />
                 <Button
-                    label="Add Expense"
+                    label="إضافة مصروف"
                     icon="bi bi-plus-circle"
                     @click="router.push('/expenses/create')"
                 />
@@ -32,9 +32,9 @@
                     <i class="bi bi-cash-coin"></i>
                 </div>
                 <div class="card-content">
-                    <h3>Total Expenses</h3>
+                    <h3>إجمالي المصروفات</h3>
                     <p class="amount">${{ formatMoney(summary.total_amount) }}</p>
-                    <span class="count">{{ summary.total_count }} transactions</span>
+                    <span class="count">{{ summary.total_count }} معاملة</span>
                 </div>
             </div>
             <div class="summary-card">
@@ -42,9 +42,9 @@
                     <i class="bi bi-calculator"></i>
                 </div>
                 <div class="card-content">
-                    <h3>Average Expense</h3>
+                    <h3>متوسط المصروف</h3>
                     <p class="amount">${{ formatMoney(summary.average_expense) }}</p>
-                    <span class="count">Per transaction</span>
+                    <span class="count">لكل معاملة</span>
                 </div>
             </div>
         </div>
@@ -52,45 +52,45 @@
         <!-- Filters -->
         <div class="filters-section">
             <div class="filter-group">
-                <label>Expense Wallet</label>
+                <label>محفظة المصروف</label>
                 <Select
                     v-model="filters.wallet_id"
                     :options="wallets"
                     optionLabel="name"
                     optionValue="id"
-                    placeholder="All Wallets"
+                    placeholder="جميع المحافظ"
                     showClear
                     @change="fetchExpenses"
                 />
             </div>
             <div class="filter-group">
-                <label>Category</label>
+                <label>الفئة</label>
                 <Select
                     v-model="filters.category_id"
                     :options="categories"
                     optionLabel="name"
                     optionValue="id"
-                    placeholder="All Categories"
+                    placeholder="جميع الفئات"
                     showClear
                     @change="fetchExpenses"
                 />
             </div>
             <div class="filter-group">
-                <label>From Date</label>
+                <label>من تاريخ</label>
                 <DatePicker
                     v-model="filters.start_date"
                     dateFormat="yy-mm-dd"
-                    placeholder="Select start date"
+                    placeholder="اختر تاريخ البداية"
                     showIcon
                     @date-select="fetchExpenses"
                 />
             </div>
             <div class="filter-group">
-                <label>To Date</label>
+                <label>إلى تاريخ</label>
                 <DatePicker
                     v-model="filters.end_date"
                     dateFormat="yy-mm-dd"
-                    placeholder="Select end date"
+                    placeholder="اختر تاريخ النهاية"
                     showIcon
                     @date-select="fetchExpenses"
                 />
@@ -104,13 +104,13 @@
             <table v-else class="data-table">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Wallet</th>
-                        <th>Category</th>
-                        <th>Amount</th>
-                        <th>Description</th>
-                        <th>Created By</th>
-                        <th>Actions</th>
+                        <th>التاريخ</th>
+                        <th>المحفظة</th>
+                        <th>الفئة</th>
+                        <th>المبلغ</th>
+                        <th>الوصف</th>
+                        <th>أنشأ بواسطة</th>
+                        <th>الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -148,7 +148,7 @@
                                     text
                                     rounded
                                     @click="router.push(`/expenses/${expense.id}/edit`)"
-                                    v-tooltip.top="'Edit'"
+                                    v-tooltip.top="'تعديل'"
                                 />
                             </div>
                         </td>
@@ -158,23 +158,23 @@
 
             <div v-if="!loading && expenses.length === 0" class="empty-state">
                 <i class="bi bi-inbox"></i>
-                <p>No expenses found</p>
+                <p>لم يتم العثور على مصروفات</p>
             </div>
 
             <!-- Pagination -->
             <div v-if="!loading && expenses.length > 0" class="pagination">
                 <Button
-                    label="Previous"
+                    label="السابق"
                     icon="bi bi-chevron-left"
                     @click="previousPage"
                     :disabled="meta.current_page === 1"
                     outlined
                 />
                 <span class="page-info">
-                    Page {{ meta.current_page }} of {{ meta.last_page }} ({{ meta.total }} total)
+                    الصفحة {{ meta.current_page }} من {{ meta.last_page }} ({{ meta.total }} إجمالي)
                 </span>
                 <Button
-                    label="Next"
+                    label="التالي"
                     icon="bi bi-chevron-right"
                     iconPos="right"
                     @click="nextPage"
@@ -434,7 +434,7 @@ const formatDateForApi = (date) => {
     color: #1e293b;
     font-weight: 600;
     padding: 1rem;
-    text-align: left;
+    text-align: right;
     border-bottom: 2px solid #e2e8f0;
     font-size: 0.875rem;
 }

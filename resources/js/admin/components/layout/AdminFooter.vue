@@ -2,12 +2,12 @@
     <footer :class="['admin-footer', { 'sidebar-collapsed': sidebarCollapsed }]">
         <div class="footer-content">
             <div class="footer-left">
-                <span class="copyright">© {{ currentYear }} Student Management System</span>
+                <span class="copyright">© {{ currentYear }} نظام إدارة الطلاب</span>
                 <span class="separator">•</span>
-                <span class="rights">All rights reserved</span>
+                <span class="rights">جميع الحقوق محفوظة</span>
             </div>
             <div class="footer-right">
-                <span class="version">Version 1.0.0</span>
+                <span class="version">الإصدار 1.0.0</span>
             </div>
         </div>
     </footer>

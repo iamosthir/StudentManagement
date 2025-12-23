@@ -36,9 +36,9 @@ const verifyingCoupon = ref(false);
 const couponDiscount = ref(null);
 
 const discountTypeOptions = [
-  { label: 'No Discount', value: null },
-  { label: 'Percentage', value: 'percent' },
-  { label: 'Fixed Amount', value: 'fixed' }
+  { label: 'بدون خصم', value: null },
+  { label: 'نسبة مئوية', value: 'percent' },
+  { label: 'مبلغ ثابت', value: 'fixed' }
 ];
 
 // Pre-fill student_id from query parameter
@@ -146,8 +146,8 @@ const verifyCoupon = async () => {
   if (!formData.value.coupon_code) {
     toast.add({
       severity: 'warn',
-      summary: 'Warning',
-      detail: 'Please enter a coupon code',
+      summary: 'تحذير',
+      detail: 'الرجاء إدخال رمز القسيمة',
       life: 3000
     });
     return;
@@ -157,8 +157,8 @@ const verifyCoupon = async () => {
   if (!basePrice) {
     toast.add({
       severity: 'warn',
-      summary: 'Warning',
-      detail: 'Please select a subscription option first',
+      summary: 'تحذير',
+      detail: 'الرجاء تحديد خيار الاشتراك أولاً',
       life: 3000
     });
     return;
@@ -183,8 +183,8 @@ const verifyCoupon = async () => {
 
       toast.add({
         severity: 'success',
-        summary: 'Success',
-        detail: `Coupon verified! You'll save $${couponDiscount.value.discount_amount}`,
+        summary: 'نجح',
+        detail: `تم التحقق من القسيمة! ستوفر $${couponDiscount.value.discount_amount}`,
         life: 5000
       });
     }
@@ -197,8 +197,8 @@ const verifyCoupon = async () => {
     } else {
       toast.add({
         severity: 'error',
-        summary: 'Error',
-        detail: 'Failed to verify coupon',
+        summary: 'خطأ',
+        detail: 'فشل التحقق من القسيمة',
         life: 3000
       });
     }
@@ -235,8 +235,8 @@ const handleSubmit = async () => {
     if (response.data.success) {
       toast.add({
         severity: 'success',
-        summary: 'Success',
-        detail: 'Subscription created successfully!',
+        summary: 'نجح',
+        detail: 'تم إنشاء الاشتراك بنجاح!',
         life: 3000
       });
 
@@ -255,8 +255,8 @@ const handleSubmit = async () => {
     } else {
       toast.add({
         severity: 'error',
-        summary: 'Error',
-        detail: error.response?.data?.message || 'Failed to create subscription',
+        summary: 'خطأ',
+        detail: error.response?.data?.message || 'فشل إنشاء الاشتراك',
         life: 3000
       });
     }
@@ -283,13 +283,13 @@ const handleCancel = () => {
           <i class="bi bi-calendar-plus"></i>
         </div>
         <div class="header-text">
-          <h1 class="page-title">Add New Subscription</h1>
-          <p class="page-subtitle">Create a new subscription for a student</p>
+          <h1 class="page-title">إضافة اشتراك جديد</h1>
+          <p class="page-subtitle">إنشاء اشتراك جديد لطالب</p>
         </div>
       </div>
       <button class="back-btn" @click="handleCancel">
         <i class="bi bi-arrow-left"></i>
-        <span>Back to List</span>
+        <span>العودة إلى القائمة</span>
       </button>
     </div>
 
@@ -303,8 +303,8 @@ const handleCancel = () => {
               <i class="bi bi-person-badge"></i>
             </div>
             <div class="section-text">
-              <h3 class="section-title">Student & Program Details</h3>
-              <p class="section-subtitle">Select the student and program for this subscription</p>
+              <h3 class="section-title">تفاصيل الطالب والبرنامج</h3>
+              <p class="section-subtitle">اختر الطالب والبرنامج لهذا الاشتراك</p>
             </div>
           </div>
 
@@ -314,7 +314,7 @@ const handleCancel = () => {
               <div class="form-group">
                 <label for="student_id" class="form-label">
                   <i class="bi bi-person"></i>
-                  Student <span class="required">*</span>
+                  الطالب <span class="required">*</span>
                 </label>
                 <Select
                   id="student_id"
@@ -322,7 +322,7 @@ const handleCancel = () => {
                   :options="students"
                   optionLabel="label"
                   optionValue="value"
-                  placeholder="Select a student"
+                  placeholder="اختر طالب"
                   filter
                   :class="{ 'p-invalid': errors.student_id }"
                   :disabled="!!route.query.student_id"
@@ -337,7 +337,7 @@ const handleCancel = () => {
               <div class="form-group">
                 <label for="program_id" class="form-label">
                   <i class="bi bi-mortarboard"></i>
-                  Program <span class="required">*</span>
+                  البرنامج <span class="required">*</span>
                 </label>
                 <Select
                   id="program_id"
@@ -345,7 +345,7 @@ const handleCancel = () => {
                   :options="programs"
                   optionLabel="label"
                   optionValue="value"
-                  placeholder="Select a program"
+                  placeholder="اختر برنامج"
                   filter
                   :class="{ 'p-invalid': errors.program_id }"
                   class="w-100"
@@ -360,7 +360,7 @@ const handleCancel = () => {
             <div class="form-group mb-4">
               <label for="subscription_option_id" class="form-label">
                 <i class="bi bi-calendar-check"></i>
-                Subscription Option <span class="required">*</span>
+                خيار الاشتراك <span class="required">*</span>
               </label>
               <Select
                 id="subscription_option_id"
@@ -368,16 +368,16 @@ const handleCancel = () => {
                 :options="filteredSubscriptionOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Select a subscription option"
+                placeholder="اختر خيار الاشتراك"
                 :disabled="!formData.program_id"
                 :class="{ 'p-invalid': errors.subscription_option_id }"
                 class="w-100"
               />
               <small v-if="!formData.program_id" class="hint-text">
-                Please select a program first
+                الرجاء اختيار برنامج أولاً
               </small>
               <small v-else-if="filteredSubscriptionOptions.length === 0" class="hint-text">
-                No subscription options available for this program
+                لا توجد خيارات اشتراك متاحة لهذا البرنامج
               </small>
               <small v-if="errors.subscription_option_id" class="error-message">
                 {{ errors.subscription_option_id[0] }}
@@ -388,7 +388,7 @@ const handleCancel = () => {
             <div class="form-group mb-4">
               <label for="start_date" class="form-label">
                 <i class="bi bi-calendar-event"></i>
-                Start Date <span class="required">*</span>
+                تاريخ البدء <span class="required">*</span>
               </label>
               <DatePicker
                 id="start_date"
@@ -411,8 +411,8 @@ const handleCancel = () => {
               <i class="bi bi-cash-coin"></i>
             </div>
             <div class="section-text">
-              <h3 class="section-title">Pricing & Discounts</h3>
-              <p class="section-subtitle">Optional custom pricing and discount settings</p>
+              <h3 class="section-title">التسعير والخصومات</h3>
+              <p class="section-subtitle">إعدادات التسعير والخصم الاختيارية</p>
             </div>
           </div>
 
@@ -422,7 +422,7 @@ const handleCancel = () => {
               <div class="form-group">
                 <label for="custom_price" class="form-label">
                   <i class="bi bi-tag"></i>
-                  Custom Price (Optional)
+                  السعر المخصص (اختياري)
                 </label>
                 <InputNumber
                   id="custom_price"
@@ -430,12 +430,12 @@ const handleCancel = () => {
                   mode="currency"
                   currency="USD"
                   locale="en-US"
-                  placeholder="Leave empty to use default price"
+                  placeholder="اترك فارغاً لاستخدام السعر الافتراضي"
                   :class="{ 'p-invalid': errors.custom_price }"
                   class="w-100"
                 />
                 <small v-if="selectedSubscriptionOption && !formData.custom_price" class="hint-text">
-                  Default price: ${{ selectedSubscriptionOption.price }}
+                  السعر الافتراضي: ${{ selectedSubscriptionOption.price }}
                 </small>
                 <small v-if="errors.custom_price" class="error-message">
                   {{ errors.custom_price[0] }}
@@ -446,7 +446,7 @@ const handleCancel = () => {
               <div class="form-group">
                 <label for="discount_type" class="form-label">
                   <i class="bi bi-percent"></i>
-                  Discount Type
+                  نوع الخصم
                 </label>
                 <Select
                   id="discount_type"
@@ -454,7 +454,7 @@ const handleCancel = () => {
                   :options="discountTypeOptions"
                   optionLabel="label"
                   optionValue="value"
-                  placeholder="Select discount type"
+                  placeholder="اختر نوع الخصم"
                   :class="{ 'p-invalid': errors.discount_type }"
                   class="w-100"
                 />
@@ -469,7 +469,7 @@ const handleCancel = () => {
               <div class="form-group">
                 <label for="discount_value" class="form-label">
                   <i class="bi bi-calculator"></i>
-                  Discount Value
+                  قيمة الخصم
                 </label>
                 <InputNumber
                   v-if="formData.discount_type === 'fixed'"
@@ -478,7 +478,7 @@ const handleCancel = () => {
                   mode="currency"
                   currency="USD"
                   locale="en-US"
-                  placeholder="Enter discount amount"
+                  placeholder="أدخل مبلغ الخصم"
                   :class="{ 'p-invalid': errors.discount_value }"
                   class="w-100"
                 />
@@ -490,7 +490,7 @@ const handleCancel = () => {
                   suffix="%"
                   :min="0"
                   :max="100"
-                  placeholder="Enter discount percentage"
+                  placeholder="أدخل نسبة الخصم"
                   :class="{ 'p-invalid': errors.discount_value }"
                   class="w-100"
                 />
@@ -499,7 +499,7 @@ const handleCancel = () => {
                   id="discount_value"
                   v-model="formData.discount_value"
                   mode="decimal"
-                  placeholder="Select discount type first"
+                  placeholder="اختر نوع الخصم أولاً"
                   disabled
                   :class="{ 'p-invalid': errors.discount_value }"
                   class="w-100"
@@ -513,13 +513,13 @@ const handleCancel = () => {
               <div class="form-group">
                 <label for="coupon_code" class="form-label">
                   <i class="bi bi-ticket-perforated"></i>
-                  Coupon Code
+                  رمز القسيمة
                 </label>
                 <div class="coupon-input-group">
                   <InputText
                     id="coupon_code"
                     v-model="formData.coupon_code"
-                    placeholder="Enter coupon code (optional)"
+                    placeholder="أدخل رمز القسيمة (اختياري)"
                     :class="{ 'p-invalid': errors.coupon_code }"
                     :disabled="couponVerified || verifyingCoupon"
                     class="coupon-input"
@@ -528,7 +528,7 @@ const handleCancel = () => {
                   <Button
                     v-if="!couponVerified"
                     type="button"
-                    :label="verifyingCoupon ? 'Verifying...' : 'Verify'"
+                    :label="verifyingCoupon ? 'جاري التحقق...' : 'تحقق'"
                     icon="bi bi-check-circle"
                     :loading="verifyingCoupon"
                     :disabled="!formData.coupon_code || verifyingCoupon"
@@ -539,7 +539,7 @@ const handleCancel = () => {
                   <Button
                     v-else
                     type="button"
-                    label="Remove"
+                    label="إزالة"
                     icon="bi bi-x-circle"
                     @click="removeCoupon"
                     severity="danger"
@@ -548,7 +548,7 @@ const handleCancel = () => {
                 </div>
                 <small v-if="couponVerified" class="success-message">
                   <i class="bi bi-check-circle-fill"></i>
-                  Coupon verified! Discount: ${{ couponDiscount.discount_amount }}
+                  تم التحقق من القسيمة! الخصم: ${{ couponDiscount.discount_amount }}
                 </small>
                 <small v-if="errors.coupon_code" class="error-message">
                   {{ errors.coupon_code[0] }}
@@ -559,14 +559,14 @@ const handleCancel = () => {
             <!-- Price Summary -->
             <div v-if="selectedSubscriptionOption" class="price-summary">
               <div class="price-row">
-                <span class="price-label">Base Price:</span>
+                <span class="price-label">السعر الأساسي:</span>
                 <span class="price-value">${{ formData.custom_price || selectedSubscriptionOption.price }}</span>
               </div>
 
               <!-- Manual Discount -->
               <div v-if="!couponVerified && formData.discount_value && formData.discount_type" class="price-row discount-row">
                 <span class="price-label">
-                  Discount ({{ formData.discount_type === 'percent' ? `${formData.discount_value}%` : `$${formData.discount_value}` }}):
+                  الخصم ({{ formData.discount_type === 'percent' ? `${formData.discount_value}%` : `$${formData.discount_value}` }}):
                 </span>
                 <span class="price-value">
                   -${{ (Number(formData.custom_price || selectedSubscriptionOption.price) - effectivePrice).toFixed(2) }}
@@ -577,7 +577,7 @@ const handleCancel = () => {
               <div v-if="couponVerified && couponDiscount" class="price-row discount-row coupon-row">
                 <span class="price-label">
                   <i class="bi bi-ticket-perforated-fill"></i>
-                  Coupon ({{ couponDiscount.coupon_code }}):
+                  القسيمة ({{ couponDiscount.coupon_code }}):
                 </span>
                 <span class="price-value">
                   -${{ Number(couponDiscount.discount_amount || 0).toFixed(2) }}
@@ -585,7 +585,7 @@ const handleCancel = () => {
               </div>
 
               <div class="price-row total-row">
-                <span class="price-label">Final Price:</span>
+                <span class="price-label">السعر النهائي:</span>
                 <span class="price-value final-price">${{ effectivePrice.toFixed(2) }}</span>
               </div>
             </div>
@@ -596,7 +596,7 @@ const handleCancel = () => {
         <div class="form-actions">
           <Button
             type="button"
-            label="Cancel"
+            label="إلغاء"
             severity="secondary"
             outlined
             @click="handleCancel"
@@ -604,7 +604,7 @@ const handleCancel = () => {
           />
           <Button
             type="submit"
-            :label="submitting ? 'Creating...' : 'Create Subscription'"
+            :label="submitting ? 'جاري الإنشاء...' : 'إنشاء الاشتراك'"
             icon="bi bi-check-circle"
             :loading="submitting"
             :disabled="submitting"

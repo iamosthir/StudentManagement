@@ -59,21 +59,21 @@ const couponDiscount = ref(null);
 const errors = ref({});
 
 const statusOptions = [
-  { label: 'Active', value: 'active' },
-  { label: 'Pending Payment', value: 'pending_payment' },
-  { label: 'Expired', value: 'expired' },
-  { label: 'Archived', value: 'archived' }
+  { label: 'نشط', value: 'active' },
+  { label: 'انتظار الدفع', value: 'pending_payment' },
+  { label: 'منتهي', value: 'expired' },
+  { label: 'مؤرشف', value: 'archived' }
 ];
 
 const genderOptions = [
-  { label: 'Male', value: 'male' },
-  { label: 'Female', value: 'female' }
+  { label: 'ذكر', value: 'male' },
+  { label: 'أنثى', value: 'female' }
 ];
 
 const discountTypeOptions = [
-  { label: 'No Discount', value: null },
-  { label: 'Percentage', value: 'percent' },
-  { label: 'Fixed Amount', value: 'fixed' }
+  { label: 'لا يوجد خصم', value: null },
+  { label: 'نسبة مئوية', value: 'percent' },
+  { label: 'مبلغ ثابت', value: 'fixed' }
 ];
 
 const fetchStudent = async () => {
@@ -104,8 +104,8 @@ const fetchStudent = async () => {
     console.error('Error fetching student:', error);
     toast.add({
       severity: 'error',
-      summary: 'Error',
-      detail: 'Failed to fetch student details',
+      summary: 'خطأ',
+      detail: 'فشل في جلب تفاصيل الطالب',
       life: 3000
     });
   } finally {
@@ -126,7 +126,7 @@ const fetchSubscriptionOptions = async () => {
   try {
     const response = await axios.get('/admin/subscription-options');
     subscriptionOptions.value = response.data.data.map(opt => ({
-      label: `${opt.name} - $${opt.price} (${opt.duration_months} months)`,
+      label: `${opt.name} - $${opt.price} (${opt.duration_months} أشهر)`,
       value: opt.id,
       price: opt.price
     }));
@@ -150,8 +150,8 @@ const verifyCoupon = async () => {
   if (!subscriptionData.value.coupon_code) {
     toast.add({
       severity: 'warn',
-      summary: 'Warning',
-      detail: 'Please enter a coupon code',
+      summary: 'تحذير',
+      detail: 'يرجى إدخال رمز كوبون',
       life: 3000
     });
     return;
@@ -160,8 +160,8 @@ const verifyCoupon = async () => {
   if (!basePrice.value) {
     toast.add({
       severity: 'warn',
-      summary: 'Warning',
-      detail: 'Please select a subscription option first',
+      summary: 'تحذير',
+      detail: 'يرجى اختيار خيار اشتراك أولاً',
       life: 3000
     });
     return;
@@ -186,8 +186,8 @@ const verifyCoupon = async () => {
 
       toast.add({
         severity: 'success',
-        summary: 'Success',
-        detail: `Coupon verified! You'll save $${couponDiscount.value.discount_amount}`,
+        summary: 'نجاح',
+        detail: `تم التحقق من الكوبون! ستوفر $${couponDiscount.value.discount_amount}`,
         life: 5000
       });
     }
@@ -200,8 +200,8 @@ const verifyCoupon = async () => {
     } else {
       toast.add({
         severity: 'error',
-        summary: 'Error',
-        detail: 'Failed to verify coupon',
+        summary: 'خطأ',
+        detail: 'فشل في التحقق من الكوبون',
         life: 3000
       });
     }
@@ -249,16 +249,16 @@ const handleSubmit = async () => {
       await axios.put(`/admin/students/${studentId.value}`, payload);
       toast.add({
         severity: 'success',
-        summary: 'Success',
-        detail: 'Student updated successfully',
+        summary: 'نجاح',
+        detail: 'تم تحديث الطالب بنجاح',
         life: 3000
       });
     } else {
       await axios.post('/admin/students', payload);
       toast.add({
         severity: 'success',
-        summary: 'Success',
-        detail: 'Student created successfully',
+        summary: 'نجاح',
+        detail: 'تم إنشاء الطالب بنجاح',
         life: 3000
       });
     }
@@ -270,8 +270,8 @@ const handleSubmit = async () => {
     } else {
       toast.add({
         severity: 'error',
-        summary: 'Error',
-        detail: error.response?.data?.message || 'Failed to save student',
+        summary: 'خطأ',
+        detail: error.response?.data?.message || 'فشل في حفظ الطالب',
         life: 3000
       });
     }
@@ -294,21 +294,21 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="student-form">
+  <div class="student-form" dir="rtl">
     <!-- Page Header -->
     <div class="page-header">
       <div class="header-wrapper">
         <div class="header-text">
           <h1 class="page-title">
             <i class="bi bi-person-plus-fill me-3"></i>
-            {{ isEditMode ? 'Edit Student' : 'Add New Student' }}
+            {{ isEditMode ? 'تعديل طالب' : 'إضافة طالب جديد' }}
           </h1>
           <p class="page-subtitle">
-            {{ isEditMode ? 'Update student information and academic details' : 'Register a new student in the system' }}
+            {{ isEditMode ? 'تحديث معلومات الطالب والتفاصيل الأكاديمية' : 'تسجيل طالب جديد في النظام' }}
           </p>
         </div>
         <Button
-          label="Back to List"
+          label="العودة للقائمة"
           icon="bi bi-arrow-right"
           iconPos="right"
           outlined
@@ -328,8 +328,8 @@ onMounted(() => {
             <i class="bi bi-person-circle"></i>
           </div>
           <div class="section-title-wrapper">
-            <h3 class="section-title">Personal Information</h3>
-            <p class="section-subtitle">Basic student details and contact information</p>
+            <h3 class="section-title">المعلومات الشخصية</h3>
+            <p class="section-subtitle">تفاصيل الطالب الأساسية ومعلومات الاتصال</p>
           </div>
         </div>
         <div class="section-body">
@@ -338,14 +338,14 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-hash me-2"></i>
-                  Admission Number
+                  رقم القبول
                   <span class="required">*</span>
                 </label>
                 <InputText
                   v-model="formData.admission_number"
                   :disabled="isEditMode"
                   :invalid="!!errors.admission_number"
-                  placeholder="Enter admission number"
+                  placeholder="أدخل رقم القبول"
                   class="w-100"
                 />
                 <small v-if="errors.admission_number" class="error-message">
@@ -358,7 +358,7 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-toggle-on me-2"></i>
-                  Status
+                  الحالة
                   <span class="required">*</span>
                 </label>
                 <Select
@@ -366,7 +366,7 @@ onMounted(() => {
                   :options="statusOptions"
                   optionLabel="label"
                   optionValue="value"
-                  placeholder="Select status"
+                  placeholder="اختر الحالة"
                   class="w-100"
                 />
               </div>
@@ -376,13 +376,13 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-person me-2"></i>
-                  First Name
+                  الاسم الأول
                   <span class="required">*</span>
                 </label>
                 <InputText
                   v-model="formData.first_name"
                   :invalid="!!errors.first_name"
-                  placeholder="Enter first name"
+                  placeholder="أدخل الاسم الأول"
                   class="w-100"
                 />
                 <small v-if="errors.first_name" class="error-message">
@@ -395,13 +395,13 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-person me-2"></i>
-                  Last Name
+                  الاسم الأخير
                   <span class="required">*</span>
                 </label>
                 <InputText
                   v-model="formData.last_name"
                   :invalid="!!errors.last_name"
-                  placeholder="Enter last name"
+                  placeholder="أدخل الاسم الأخير"
                   class="w-100"
                 />
                 <small v-if="errors.last_name" class="error-message">
@@ -414,13 +414,13 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-telephone me-2"></i>
-                  Phone Number
+                  رقم الهاتف
                   <span class="required">*</span>
                 </label>
                 <InputText
                   v-model="formData.phone"
                   :invalid="!!errors.phone"
-                  placeholder="Enter phone number"
+                  placeholder="أدخل رقم الهاتف"
                   class="w-100"
                 />
                 <small v-if="errors.phone" class="error-message">
@@ -433,13 +433,13 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-envelope me-2"></i>
-                  Email Address
+                  البريد الإلكتروني
                 </label>
                 <InputText
                   v-model="formData.email"
                   type="email"
                   :invalid="!!errors.email"
-                  placeholder="Enter email address"
+                  placeholder="أدخل البريد الإلكتروني"
                   class="w-100"
                 />
                 <small v-if="errors.email" class="error-message">
@@ -452,20 +452,20 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-key me-2"></i>
-                  Password
+                  كلمة المرور
                   <span v-if="!isEditMode" class="required">*</span>
                 </label>
                 <Password
                   v-model="formData.password"
                   :invalid="!!errors.password"
                   :feedback="false"
-                  placeholder="Enter password"
+                  placeholder="أدخل كلمة المرور"
                   toggleMask
                   class="w-100"
                   inputClass="w-100"
                 />
                 <small v-if="isEditMode" class="field-hint">
-                  Leave blank to keep current password
+                  اترك فارغًا للحفاظ على كلمة المرور الحالية
                 </small>
                 <small v-if="errors.password" class="error-message">
                   {{ errors.password[0] }}
@@ -477,12 +477,12 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-calendar me-2"></i>
-                  Birthdate
+                  تاريخ الميلاد
                 </label>
                 <DatePicker
                   v-model="formData.birthdate"
                   dateFormat="yy-mm-dd"
-                  placeholder="Select birthdate"
+                  placeholder="اختر تاريخ الميلاد"
                   showIcon
                   class="w-100"
                 />
@@ -493,14 +493,14 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-gender-ambiguous me-2"></i>
-                  Gender
+                  الجنس
                 </label>
                 <Select
                   v-model="formData.gender"
                   :options="genderOptions"
                   optionLabel="label"
                   optionValue="value"
-                  placeholder="Select gender"
+                  placeholder="اختر الجنس"
                   class="w-100"
                 />
               </div>
@@ -510,11 +510,11 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-people me-2"></i>
-                  Guardian Name
+                  اسم ولي الأمر
                 </label>
                 <InputText
                   v-model="formData.guardian_name"
-                  placeholder="Enter guardian name"
+                  placeholder="أدخل اسم ولي الأمر"
                   class="w-100"
                 />
               </div>
@@ -530,8 +530,8 @@ onMounted(() => {
             <i class="bi bi-mortarboard"></i>
           </div>
           <div class="section-title-wrapper">
-            <h3 class="section-title">Academic Information</h3>
-            <p class="section-subtitle">Program enrollment and academic details</p>
+            <h3 class="section-title">المعلومات الأكاديمية</h3>
+            <p class="section-subtitle">تسجيل البرنامج والتفاصيل الأكاديمية</p>
           </div>
         </div>
         <div class="section-body">
@@ -540,14 +540,14 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-book me-2"></i>
-                  Program
+                  البرنامج
                 </label>
                 <Select
                   v-model="formData.program_id"
                   :options="programs"
                   optionLabel="label"
                   optionValue="value"
-                  placeholder="Select program"
+                  placeholder="اختر البرنامج"
                   @change="handleProgramChange"
                   class="w-100"
                 />
@@ -558,11 +558,11 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-calendar-range me-2"></i>
-                  Academic Year
+                  السنة الأكاديمية
                 </label>
                 <InputText
                   v-model="formData.academic_year"
-                  placeholder="e.g., 2024-2025"
+                  placeholder="مثلاً، 2024-2025"
                   class="w-100"
                 />
               </div>
@@ -572,11 +572,11 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-diagram-3 me-2"></i>
-                  Class Section
+                  الشعبة
                 </label>
                 <InputText
                   v-model="formData.class_section"
-                  placeholder="e.g., A, B, C"
+                  placeholder="مثلاً، أ، ب، ج"
                   class="w-100"
                 />
               </div>
@@ -586,12 +586,12 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-geo-alt me-2"></i>
-                  Address
+                  العنوان
                 </label>
                 <Textarea
                   v-model="formData.address"
                   rows="3"
-                  placeholder="Enter full address"
+                  placeholder="أدخل العنوان الكامل"
                   class="w-100"
                 />
               </div>
@@ -607,196 +607,199 @@ onMounted(() => {
             <i class="bi bi-credit-card"></i>
           </div>
           <div class="section-title-wrapper">
-            <h3 class="section-title">Initial Subscription</h3>
-            <p class="section-subtitle">Optional subscription setup for new student</p>
-          </div>
-          <div class="section-toggle">
-            <ToggleSwitch v-model="subscriptionData.enabled" />
+            <h3 class="section-title">الاشتراك الأولي</h3>
+            <p class="section-subtitle">إعداد اشتراك اختياري للطالب الجديد</p>
           </div>
         </div>
-        <div v-if="subscriptionData.enabled" class="section-body">
-          <div class="row g-4">
-            <div class="col-md-6">
-              <div class="form-field">
-                <label class="field-label">
-                  <i class="bi bi-book me-2"></i>
-                  Program
+        <div class="section-toggle">
+          <ToggleSwitch v-model="subscriptionData.enabled" />
+        </div>
+      </div>
+      <div v-if="subscriptionData.enabled" class="section-body">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="form-field">
+              <label class="field-label">
+                <i class="bi bi-book me-2"></i>
+                  البرنامج
                   <span class="required">*</span>
-                </label>
-                <Select
-                  v-model="subscriptionData.program_id"
-                  :options="programs"
-                  optionLabel="label"
-                  optionValue="value"
-                  :invalid="!!errors['subscription.program_id']"
-                  placeholder="Select program"
-                  class="w-100"
-                />
-                <small v-if="errors['subscription.program_id']" class="error-message">
-                  {{ errors['subscription.program_id'][0] }}
-                </small>
-              </div>
+              </label>
+              <Select
+                v-model="subscriptionData.program_id"
+                :options="programs"
+                optionLabel="label"
+                optionValue="value"
+                :invalid="!!errors['subscription.program_id']"
+                placeholder="اختر البرنامج"
+                class="w-100"
+              />
+              <small v-if="errors['subscription.program_id']" class="error-message">
+                {{ errors['subscription.program_id'][0] }}
+              </small>
             </div>
+          </div>
 
-            <div class="col-md-6">
-              <div class="form-field">
-                <label class="field-label">
-                  <i class="bi bi-tag me-2"></i>
-                  Subscription Option
+          <div class="col-md-6">
+            <div class="form-field">
+              <label class="field-label">
+                <i class="bi bi-tag me-2"></i>
+                  خيار الاشتراك
                   <span class="required">*</span>
-                </label>
-                <Select
-                  v-model="subscriptionData.subscription_option_id"
-                  :options="subscriptionOptions"
-                  optionLabel="label"
-                  optionValue="value"
-                  :invalid="!!errors['subscription.subscription_option_id']"
-                  placeholder="Select option"
-                  class="w-100"
-                />
-              </div>
+              </label>
+              <Select
+                v-model="subscriptionData.subscription_option_id"
+                :options="subscriptionOptions"
+                optionLabel="label"
+                optionValue="value"
+                :invalid="!!errors['subscription.subscription_option_id']"
+                placeholder="اختر الخيار"
+                class="w-100"
+              />
+              <small v-if="errors['subscription.subscription_option_id']" class="error-message">
+                {{ errors['subscription.subscription_option_id'][0] }}
+              </small>
             </div>
+          </div>
 
-            <div class="col-md-6">
-              <div class="form-field">
-                <label class="field-label">
-                  <i class="bi bi-calendar-check me-2"></i>
-                  Start Date
+          <div class="col-md-6">
+            <div class="form-field">
+              <label class="field-label">
+                <i class="bi bi-calendar-check me-2"></i>
+                  تاريخ البدء
                   <span class="required">*</span>
-                </label>
-                <DatePicker
-                  v-model="subscriptionData.start_date"
-                  dateFormat="yy-mm-dd"
-                  placeholder="Select start date"
-                  showIcon
-                  class="w-100"
-                />
-              </div>
+              </label>
+              <DatePicker
+                v-model="subscriptionData.start_date"
+                dateFormat="yy-mm-dd"
+                placeholder="اختر تاريخ البدء"
+                showIcon
+                class="w-100"
+              />
             </div>
+          </div>
 
-            <div class="col-md-6">
-              <div class="form-field">
-                <label class="field-label">
-                  <i class="bi bi-cash me-2"></i>
-                  Custom Price
-                </label>
+          <div class="col-md-6">
+            <div class="form-field">
+              <label class="field-label">
+                <i class="bi bi-cash me-2"></i>
+                  سعر مخصص
+              </label>
+              <InputText
+                v-model="subscriptionData.custom_price"
+                type="number"
+                step="0.01"
+                placeholder="اترك فارغًا للسعر الافتراضي"
+                class="w-100"
+              />
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-field">
+              <label class="field-label">
+                <i class="bi bi-percent me-2"></i>
+                  نوع الخصم
+              </label>
+              <Select
+                v-model="subscriptionData.discount_type"
+                :options="discountTypeOptions"
+                optionLabel="label"
+                optionValue="value"
+                :disabled="couponVerified"
+                placeholder="اختر النوع"
+                class="w-100"
+              />
+              <small v-if="couponVerified" class="field-hint">
+                معطل عند استخدام الكوبون
+              </small>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-field">
+              <label class="field-label">
+                <i class="bi bi-dash-circle me-2"></i>
+                  قيمة الخصم
+              </label>
+              <InputText
+                v-model="subscriptionData.discount_value"
+                type="number"
+                step="0.01"
+                :disabled="!subscriptionData.discount_type || couponVerified"
+                placeholder="أدخل القيمة"
+                class="w-100"
+              />
+              <small v-if="couponVerified" class="field-hint">
+                معطل عند استخدام الكوبون
+              </small>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-field">
+              <label class="field-label">
+                <i class="bi bi-ticket-perforated me-2"></i>
+                  رمز الكوبون
+              </label>
+              <div class="coupon-input-group">
                 <InputText
-                  v-model="subscriptionData.custom_price"
-                  type="number"
-                  step="0.01"
-                  placeholder="Leave blank for default price"
-                  class="w-100"
-                />
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="form-field">
-                <label class="field-label">
-                  <i class="bi bi-percent me-2"></i>
-                  Discount Type
-                </label>
-                <Select
-                  v-model="subscriptionData.discount_type"
-                  :options="discountTypeOptions"
-                  optionLabel="label"
-                  optionValue="value"
+                  v-model="subscriptionData.coupon_code"
+                  :invalid="!!errors.coupon_code"
                   :disabled="couponVerified"
-                  placeholder="Select type"
-                  class="w-100"
+                  placeholder="أدخل رمز الكوبون"
+                  class="coupon-input"
                 />
-                <small v-if="couponVerified" class="field-hint">
-                  Disabled when using coupon
-                </small>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="form-field">
-                <label class="field-label">
-                  <i class="bi bi-dash-circle me-2"></i>
-                  Discount Value
-                </label>
-                <InputText
-                  v-model="subscriptionData.discount_value"
-                  type="number"
-                  step="0.01"
-                  :disabled="!subscriptionData.discount_type || couponVerified"
-                  placeholder="Enter value"
-                  class="w-100"
+                <Button
+                  v-if="!couponVerified"
+                  label="تحقق"
+                  icon="bi bi-check-circle"
+                  :loading="verifyingCoupon"
+                  @click="verifyCoupon"
+                  severity="success"
+                  type="button"
+                  class="verify-btn"
                 />
-                <small v-if="couponVerified" class="field-hint">
-                  Disabled when using coupon
-                </small>
+                <Button
+                  v-else
+                  label="إزالة"
+                  icon="bi bi-x-circle"
+                  @click="removeCoupon"
+                  severity="danger"
+                  type="button"
+                  class="remove-btn"
+                />
               </div>
+              <small v-if="errors.coupon_code" class="error-message">
+                {{ errors.coupon_code[0] }}
+              </small>
+              <small v-if="couponVerified" class="success-message">
+                <i class="bi bi-check-circle-fill me-1"></i>
+                تم التحقق من الكوبون بنجاح!
+              </small>
             </div>
+          </div>
 
-            <div class="col-md-4">
-              <div class="form-field">
-                <label class="field-label">
-                  <i class="bi bi-ticket-perforated me-2"></i>
-                  Coupon Code
-                </label>
-                <div class="coupon-input-group">
-                  <InputText
-                    v-model="subscriptionData.coupon_code"
-                    :invalid="!!errors.coupon_code"
-                    :disabled="couponVerified"
-                    placeholder="Enter coupon code"
-                    class="coupon-input"
-                  />
-                  <Button
-                    v-if="!couponVerified"
-                    label="Verify"
-                    icon="bi bi-check-circle"
-                    :loading="verifyingCoupon"
-                    @click="verifyCoupon"
-                    severity="success"
-                    type="button"
-                    class="verify-btn"
-                  />
-                  <Button
-                    v-else
-                    label="Remove"
-                    icon="bi bi-x-circle"
-                    @click="removeCoupon"
-                    severity="danger"
-                    type="button"
-                    class="remove-btn"
-                  />
-                </div>
-                <small v-if="errors.coupon_code" class="error-message">
-                  {{ errors.coupon_code[0] }}
-                </small>
-                <small v-if="couponVerified" class="success-message">
-                  <i class="bi bi-check-circle-fill me-1"></i>
-                  Coupon verified successfully!
-                </small>
+          <!-- Coupon Discount Preview -->
+          <div v-if="couponVerified && couponDiscount" class="col-12">
+            <div class="discount-preview">
+              <div class="preview-header">
+                <i class="bi bi-receipt-cutoff"></i>
+                <span>تم تطبيق خصم الكوبون</span>
               </div>
-            </div>
-
-            <!-- Coupon Discount Preview -->
-            <div v-if="couponVerified && couponDiscount" class="col-12">
-              <div class="discount-preview">
-                <div class="preview-header">
-                  <i class="bi bi-receipt-cutoff"></i>
-                  <span>Coupon Discount Applied</span>
+              <div class="preview-body">
+                <div class="preview-row">
+                  <span class="preview-label">المبلغ الأصلي:</span>
+                  <span class="preview-value">${{ couponDiscount.original_amount }}</span>
                 </div>
-                <div class="preview-body">
-                  <div class="preview-row">
-                    <span class="preview-label">Original Amount:</span>
-                    <span class="preview-value">${{ couponDiscount.original_amount }}</span>
-                  </div>
-                  <div class="preview-row discount-row">
-                    <span class="preview-label">
-                      Discount ({{ couponDiscount.discount_type === 'percent' ? `${couponDiscount.discount_value}%` : 'Fixed' }}):
-                    </span>
-                    <span class="preview-value">-${{ couponDiscount.discount_amount }}</span>
-                  </div>
-                  <div class="preview-row final-row">
-                    <span class="preview-label">Final Amount:</span>
-                    <span class="preview-value">${{ couponDiscount.final_amount }}</span>
-                  </div>
+                <div class="preview-row discount-row">
+                  <span class="preview-label">
+                    الخصم ({{ couponDiscount.discount_type === 'percent' ? `${couponDiscount.discount_value}%` : 'ثابت' }}):
+                  </span>
+                  <span class="preview-value">-${{ couponDiscount.discount_amount }}</span>
+                </div>
+                <div class="preview-row final-row">
+                  <span class="preview-label">المبلغ النهائي:</span>
+                  <span class="preview-value">${{ couponDiscount.final_amount }}</span>
                 </div>
               </div>
             </div>
@@ -807,7 +810,7 @@ onMounted(() => {
       <!-- Submit Buttons -->
       <div class="form-actions">
         <Button
-          label="Cancel"
+          label="إلغاء"
           icon="bi bi-x-lg"
           outlined
           severity="secondary"
@@ -815,7 +818,7 @@ onMounted(() => {
           type="button"
         />
         <Button
-          :label="isEditMode ? 'Update Student' : 'Create Student'"
+          :label="isEditMode ? 'تحديث الطالب' : 'إنشاء الطالب'"
           :icon="loading ? 'pi pi-spin pi-spinner' : 'bi bi-check-lg'"
           :loading="loading"
           type="submit"

@@ -3,10 +3,10 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <h1 class="page-title">Admin Users</h1>
+                <h1 class="page-title">مستخدمو الإدارة</h1>
                 <router-link :to="{ name: 'admin.users.create' }" class="btn-primary">
                     <i class="bi bi-plus-lg me-2"></i>
-                    Add Admin User
+                    إضافة مستخدم
                 </router-link>
             </div>
         </div>
@@ -22,7 +22,7 @@
                                 type="text"
                                 v-model="search"
                                 @input="searchAdmins"
-                                placeholder="Search by name or email..."
+                                placeholder="البحث بالاسم أو البريد الإلكتروني..."
                                 class="search-input"
                             />
                         </div>
@@ -36,23 +36,23 @@
             <div class="glass-card-body">
                 <div v-if="loading" class="loading-state">
                     <i class="bi bi-arrow-repeat spinner"></i>
-                    <p>Loading admin users...</p>
+                    <p>جاري تحميل مستخدمي الإدارة...</p>
                 </div>
 
                 <div v-else-if="admins.length === 0" class="empty-state">
                     <i class="bi bi-people"></i>
-                    <p>No admin users found</p>
+                    <p>لم يتم العثور على مستخدمين</p>
                 </div>
 
                 <div v-else class="table-responsive">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Roles</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>الاسم</th>
+                                <th>البريد الإلكتروني</th>
+                                <th>الصلاحيات</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -68,12 +68,12 @@
                                         {{ role.name }}
                                     </span>
                                     <span v-if="!admin.roles || admin.roles.length === 0" class="text-muted">
-                                        No roles
+                                        لا توجد صلاحيات
                                     </span>
                                 </td>
                                 <td>
                                     <span :class="['status-badge', admin.is_active ? 'status-active' : 'status-inactive']">
-                                        {{ admin.is_active ? 'Active' : 'Inactive' }}
+                                        {{ admin.is_active ? 'نشط' : 'غير نشط' }}
                                     </span>
                                 </td>
                                 <td>
@@ -81,14 +81,14 @@
                                         <router-link
                                             :to="{ name: 'admin.users.edit', params: { id: admin.id } }"
                                             class="btn-action btn-action-edit"
-                                            title="Edit"
+                                            title="تعديل"
                                         >
                                             <i class="bi bi-pencil"></i>
                                         </router-link>
                                         <button
                                             @click="confirmDelete(admin)"
                                             class="btn-action btn-action-delete"
-                                            title="Delete"
+                                            title="حذف"
                                         >
                                             <i class="bi bi-trash"></i>
                                         </button>
@@ -110,7 +110,7 @@
                     </button>
 
                     <span class="pagination-info">
-                        Page {{ pagination.current_page }} of {{ pagination.last_page }}
+                        صفحة {{ pagination.current_page }} من {{ pagination.last_page }}
                     </span>
 
                     <button
@@ -128,20 +128,20 @@
         <div v-if="showDeleteModal" class="modal-overlay" @click="showDeleteModal = false">
             <div class="modal-content" @click.stop>
                 <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
+                    <h5 class="modal-title">تأكيد الحذف</h5>
                     <button @click="showDeleteModal = false" class="btn-close">
                         <i class="bi bi-x-lg"></i>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete admin user <strong>{{ adminToDelete?.name }}</strong>?</p>
-                    <p class="text-muted">This action cannot be undone.</p>
+                    <p>هل أنت متأكد من حذف مستخدم الإدارة <strong>{{ adminToDelete?.name }}</strong>؟</p>
+                    <p class="text-muted">لا يمكن التراجع عن هذا الإجراء.</p>
                 </div>
                 <div class="modal-footer">
-                    <button @click="showDeleteModal = false" class="btn-secondary">Cancel</button>
+                    <button @click="showDeleteModal = false" class="btn-secondary">إلغاء</button>
                     <button @click="deleteAdmin" class="btn-danger" :disabled="deleting">
                         <i v-if="deleting" class="bi bi-arrow-repeat spinner me-2"></i>
-                        {{ deleting ? 'Deleting...' : 'Delete' }}
+                        {{ deleting ? 'جاري الحذف...' : 'حذف' }}
                     </button>
                 </div>
             </div>
@@ -227,8 +227,8 @@ const deleteAdmin = async () => {
 
         toast.add({
             severity: 'success',
-            summary: 'Success',
-            detail: 'Admin user deleted successfully',
+            summary: 'نجاح',
+            detail: 'تم حذف مستخدم الإدارة بنجاح',
             life: 3000
         });
 
@@ -239,8 +239,8 @@ const deleteAdmin = async () => {
         console.error('Error deleting admin:', error);
         toast.add({
             severity: 'error',
-            summary: 'Error',
-            detail: error.response?.data?.message || 'Failed to delete admin user',
+            summary: 'خطأ',
+            detail: error.response?.data?.message || 'فشل في حذف مستخدم الإدارة',
             life: 3000
         });
     } finally {

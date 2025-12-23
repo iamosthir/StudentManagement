@@ -5,9 +5,9 @@
             <div>
                 <h1 class="page-title">
                     <i class="bi bi-journal-text me-2"></i>
-                    Transaction Logs
+                    سجلات المعاملات
                 </h1>
-                <p class="page-subtitle">Complete audit trail of all financial transactions</p>
+                <p class="page-subtitle">سجل تدقيق كامل لجميع المعاملات المالية</p>
             </div>
         </div>
 
@@ -18,9 +18,9 @@
                     <i class="bi bi-cash-coin"></i>
                 </div>
                 <div class="card-content">
-                    <h3>Student Payments</h3>
+                    <h3>مدفوعات الطلاب</h3>
                     <p class="amount">${{ formatMoney(summary.totals.payments) }}</p>
-                    <span class="count">{{ summary.counts.payments }} transactions</span>
+                    <span class="count">{{ summary.counts.payments }} معاملة</span>
                 </div>
             </div>
 
@@ -29,9 +29,9 @@
                     <i class="bi bi-arrow-down-circle"></i>
                 </div>
                 <div class="card-content">
-                    <h3>Transfers In</h3>
+                    <h3>التحويلات الواردة</h3>
                     <p class="amount">${{ formatMoney(summary.totals.transfers_in) }}</p>
-                    <span class="count">{{ summary.counts.transfers_in }} transactions</span>
+                    <span class="count">{{ summary.counts.transfers_in }} معاملة</span>
                 </div>
             </div>
 
@@ -40,9 +40,9 @@
                     <i class="bi bi-arrow-up-circle"></i>
                 </div>
                 <div class="card-content">
-                    <h3>Transfers Out</h3>
+                    <h3>التحويلات الصادرة</h3>
                     <p class="amount">${{ formatMoney(summary.totals.transfers_out) }}</p>
-                    <span class="count">{{ summary.counts.transfers_out }} transactions</span>
+                    <span class="count">{{ summary.counts.transfers_out }} معاملة</span>
                 </div>
             </div>
         </div>
@@ -52,41 +52,41 @@
         <!-- Filters -->
         <div class="filters-section">
             <div class="filter-group">
-                <label>Transaction Type</label>
+                <label>نوع المعاملة</label>
                 <Select
                     v-model="filters.type"
                     :options="transactionTypes"
                     optionLabel="label"
                     optionValue="value"
-                    placeholder="All Types"
+                    placeholder="جميع الأنواع"
                     showClear
                     @change="fetchLogs"
                 />
             </div>
             <div class="filter-group">
-                <label>Payment ID</label>
+                <label>رقم الدفعة</label>
                 <InputNumber
                     v-model="filters.payment_id"
-                    placeholder="Enter payment ID"
+                    placeholder="أدخل رقم الدفعة"
                     @input="fetchLogs"
                 />
             </div>
             <div class="filter-group">
-                <label>From Date</label>
+                <label>من تاريخ</label>
                 <DatePicker
                     v-model="filters.start_date"
                     dateFormat="yy-mm-dd"
-                    placeholder="Select start date"
+                    placeholder="اختر تاريخ البداية"
                     showIcon
                     @date-select="fetchLogs"
                 />
             </div>
             <div class="filter-group">
-                <label>To Date</label>
+                <label>إلى تاريخ</label>
                 <DatePicker
                     v-model="filters.end_date"
                     dateFormat="yy-mm-dd"
-                    placeholder="Select end date"
+                    placeholder="اختر تاريخ النهاية"
                     showIcon
                     @date-select="fetchLogs"
                 />
@@ -100,15 +100,15 @@
             <table v-else class="data-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Date & Time</th>
-                        <th>Admin</th>
-                        <th>Type</th>
-                        <th>Amount</th>
-                        <th>Balance Before</th>
-                        <th>Balance After</th>
-                        <th>Description</th>
-                        <th>Actions</th>
+                        <th>المعرف</th>
+                        <th>التاريخ والوقت</th>
+                        <th>المسؤول</th>
+                        <th>النوع</th>
+                        <th>المبلغ</th>
+                        <th>الرصيد قبل</th>
+                        <th>الرصيد بعد</th>
+                        <th>الوصف</th>
+                        <th>الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -159,7 +159,7 @@
                                 text
                                 rounded
                                 @click="viewDetails(log)"
-                                v-tooltip.top="'View Details'"
+                                v-tooltip.top="'عرض التفاصيل'"
                             />
                         </td>
                     </tr>
@@ -168,23 +168,23 @@
 
             <div v-if="!loading && logs.length === 0" class="empty-state">
                 <i class="bi bi-inbox"></i>
-                <p>No transaction logs found</p>
+                <p>لم يتم العثور على سجلات معاملات</p>
             </div>
 
             <!-- Pagination -->
             <div v-if="!loading && logs.length > 0" class="pagination">
                 <Button
-                    label="Previous"
+                    label="السابق"
                     icon="bi bi-chevron-left"
                     @click="previousPage"
                     :disabled="meta.current_page === 1"
                     outlined
                 />
                 <span class="page-info">
-                    Page {{ meta.current_page }} of {{ meta.last_page }} ({{ meta.total }} total)
+                    صفحة {{ meta.current_page }} من {{ meta.last_page }} ({{ meta.total }} إجمالي)
                 </span>
                 <Button
-                    label="Next"
+                    label="التالي"
                     icon="bi bi-chevron-right"
                     iconPos="right"
                     @click="nextPage"
@@ -198,48 +198,48 @@
         <Dialog
             v-model:visible="showDetailsModal"
             modal
-            header="Transaction Log Details"
+            header="تفاصيل سجل المعاملات"
             :style="{ width: '700px' }"
         >
             <div v-if="selectedLog" class="log-details">
                 <div class="detail-row">
-                    <span class="label">Transaction ID:</span>
+                    <span class="label">معرف المعاملة:</span>
                     <span class="value">#{{ selectedLog.id }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="label">Date & Time:</span>
+                    <span class="label">التاريخ والوقت:</span>
                     <span class="value">{{ formatDateTime(selectedLog.created_at) }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="label">Admin:</span>
+                    <span class="label">المسؤول:</span>
                     <span class="value">{{ selectedLog.admin.name }} ({{ selectedLog.admin.email }})</span>
                 </div>
                 <div class="detail-row">
-                    <span class="label">Transaction Type:</span>
+                    <span class="label">نوع المعاملة:</span>
                     <span :class="['value', 'type-badge', selectedLog.transaction_type]">
                         {{ formatType(selectedLog.transaction_type) }}
                     </span>
                 </div>
                 <div class="detail-row">
-                    <span class="label">Amount:</span>
+                    <span class="label">المبلغ:</span>
                     <span :class="['value', 'amount', getAmountClass(selectedLog.transaction_type)]">
                         {{ getAmountPrefix(selectedLog.transaction_type) }}${{ formatMoney(selectedLog.amount) }}
                     </span>
                 </div>
                 <div class="detail-row">
-                    <span class="label">Balance Before:</span>
+                    <span class="label">الرصيد قبل:</span>
                     <span class="value">${{ formatMoney(selectedLog.balance_before) }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="label">Balance After:</span>
+                    <span class="label">الرصيد بعد:</span>
                     <span class="value">${{ formatMoney(selectedLog.balance_after) }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="label">Description:</span>
+                    <span class="label">الوصف:</span>
                     <span class="value">{{ selectedLog.description }}</span>
                 </div>
                 <div v-if="selectedLog.payment" class="detail-row">
-                    <span class="label">Related Payment:</span>
+                    <span class="label">الدفعة المرتبطة:</span>
                     <span class="value">
                         Payment #{{ selectedLog.payment.id }} -
                         {{ selectedLog.payment.student.full_name }}
@@ -247,14 +247,14 @@
                     </span>
                 </div>
                 <div v-if="selectedLog.metadata" class="detail-row">
-                    <span class="label">Metadata:</span>
+                    <span class="label">البيانات الوصفية:</span>
                     <pre class="value metadata">{{ JSON.stringify(selectedLog.metadata, null, 2) }}</pre>
                 </div>
             </div>
 
             <template #footer>
                 <Button
-                    label="Close"
+                    label="إغلاق"
                     @click="showDetailsModal = false"
                 />
             </template>
@@ -291,11 +291,11 @@ const filters = ref({
 });
 
 const transactionTypes = [
-    { label: 'Student Payments', value: 'payment' },
-    { label: 'Transfer In', value: 'transfer_in' },
-    { label: 'Transfer Out', value: 'transfer_out' },
-    { label: 'Refund', value: 'refund' },
-    { label: 'Adjustment', value: 'adjustment' },
+    { label: 'مدفوعات الطلاب', value: 'payment' },
+    { label: 'تحويل وارد', value: 'transfer_in' },
+    { label: 'تحويل صادر', value: 'transfer_out' },
+    { label: 'استرداد', value: 'refund' },
+    { label: 'تعديل', value: 'adjustment' },
 ];
 
 const showDetailsModal = ref(false);
@@ -396,11 +396,11 @@ const formatDateForApi = (date) => {
 
 const formatType = (type) => {
     const types = {
-        'payment': 'Payment',
-        'transfer_in': 'Transfer In',
-        'transfer_out': 'Transfer Out',
-        'refund': 'Refund',
-        'adjustment': 'Adjustment',
+        'payment': 'دفعة',
+        'transfer_in': 'تحويل وارد',
+        'transfer_out': 'تحويل صادر',
+        'refund': 'استرداد',
+        'adjustment': 'تعديل',
     };
     return types[type] || type;
 };

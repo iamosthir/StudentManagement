@@ -5,14 +5,14 @@
             <div>
                 <h1 class="page-title">
                     <i class="bi bi-wallet2 me-2"></i>
-                    Wallet Management
+                    إدارة المحافظ
                 </h1>
-                <p class="page-subtitle">Manage staff wallets, main cashbox, and expense wallets</p>
+                <p class="page-subtitle">إدارة محافظ الموظفين والخزينة الرئيسية ومحافظ المصروفات</p>
             </div>
             <div class="header-actions">
                 <Button
                     v-if="isAdministrator"
-                    label="Create Wallet for User"
+                    label="إنشاء محفظة لمستخدم"
                     icon="bi bi-person-plus"
                     @click="showCreateWalletForUserModal = true"
                     severity="primary"
@@ -34,9 +34,9 @@
                     <i class="bi bi-person-badge"></i>
                 </div>
                 <div class="card-content">
-                    <h3>Total Staff Balance</h3>
+                    <h3>إجمالي رصيد الموظفين</h3>
                     <p class="amount">${{ formatMoney(summary.total_staff_balance) }}</p>
-                    <span class="wallets-count">{{ summary.staff_wallets_count }} Staff Wallets</span>
+                    <span class="wallets-count">{{ summary.staff_wallets_count }} محفظة موظف</span>
                 </div>
             </div>
 
@@ -45,9 +45,9 @@
                     <i class="bi bi-bank2"></i>
                 </div>
                 <div class="card-content">
-                    <h3>Main Cashbox</h3>
+                    <h3>الخزينة الرئيسية</h3>
                     <p class="amount">${{ formatMoney(summary.main_cashbox_balance) }}</p>
-                    <span class="wallets-count">Central Safe</span>
+                    <span class="wallets-count">الخزنة المركزية</span>
                 </div>
             </div>
 
@@ -56,9 +56,9 @@
                     <i class="bi bi-cash-stack"></i>
                 </div>
                 <div class="card-content">
-                    <h3>Total Expense Balance</h3>
+                    <h3>إجمالي رصيد المصروفات</h3>
                     <p class="amount">${{ formatMoney(summary.total_expense_balance) }}</p>
-                    <span class="wallets-count">{{ summary.expense_wallets_count }} Expense Wallets</span>
+                    <span class="wallets-count">{{ summary.expense_wallets_count }} محفظة مصروفات</span>
                 </div>
             </div>
 
@@ -67,9 +67,9 @@
                     <i class="bi bi-calculator"></i>
                 </div>
                 <div class="card-content">
-                    <h3>Total System Balance</h3>
+                    <h3>إجمالي رصيد النظام</h3>
                     <p class="amount">${{ formatMoney(summary.total_balance) }}</p>
-                    <span class="wallets-count">All Wallets</span>
+                    <span class="wallets-count">جميع المحافظ</span>
                 </div>
             </div>
         </div>
@@ -79,21 +79,21 @@
         <!-- Filters -->
         <div class="filters-section">
             <div class="filter-group">
-                <label>Wallet Type</label>
+                <label>نوع المحفظة</label>
                 <Select
                     v-model="filters.type"
                     :options="walletTypes"
                     optionLabel="label"
                     optionValue="value"
-                    placeholder="All Types"
+                    placeholder="جميع الأنواع"
                     @change="fetchWallets"
                 />
             </div>
             <div class="filter-group">
-                <label>Search</label>
+                <label>بحث</label>
                 <InputText
                     v-model="filters.search"
-                    placeholder="Search wallet name..."
+                    placeholder="ابحث عن اسم المحفظة..."
                     @input="fetchWallets"
                 />
             </div>
@@ -106,13 +106,13 @@
             <table v-else class="data-table">
                 <thead>
                     <tr>
-                        <th>Wallet Name</th>
-                        <th>Type</th>
-                        <th>Owner</th>
-                        <th>Receivable</th>
-                        <th>Payable</th>
-                        <th>Balance</th>
-                        <th>Actions</th>
+                        <th>اسم المحفظة</th>
+                        <th>النوع</th>
+                        <th>المالك</th>
+                        <th>مستحق</th>
+                        <th>مستحق الدفع</th>
+                        <th>الرصيد</th>
+                        <th>الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -130,7 +130,7 @@
                         </td>
                         <td>
                             <span v-if="wallet.owner">{{ wallet.owner.name }}</span>
-                            <span v-else class="text-muted">System</span>
+                            <span v-else class="text-muted">النظام</span>
                         </td>
                         <td>
                             <span class="financial-value receivable">
@@ -155,7 +155,7 @@
                                     text
                                     rounded
                                     @click="viewWallet(wallet.id)"
-                                    v-tooltip.top="'View Details'"
+                                    v-tooltip.top="'عرض التفاصيل'"
                                 />
                                 <Button
                                     v-if="isAdministrator"
@@ -164,7 +164,7 @@
                                     text
                                     rounded
                                     @click="openEditModal(wallet)"
-                                    v-tooltip.top="'Edit Wallet'"
+                                    v-tooltip.top="'تعديل المحفظة'"
                                 />
                                 <Button
                                     v-if="wallet.type === 'staff'"
@@ -173,7 +173,7 @@
                                     text
                                     rounded
                                     @click="openTransferModal(wallet, 'staff_to_cashbox')"
-                                    v-tooltip.top="'Transfer to Main Cashbox'"
+                                    v-tooltip.top="'تحويل إلى الخزينة الرئيسية'"
                                 />
                                 <Button
                                     v-if="wallet.type === 'main_cashbox'"
@@ -182,7 +182,7 @@
                                     text
                                     rounded
                                     @click="openTransferModal(wallet, 'cashbox_to_expense')"
-                                    v-tooltip.top="'Transfer to Expense Wallet'"
+                                    v-tooltip.top="'تحويل إلى محفظة مصروفات'"
                                 />
                             </div>
                         </td>
@@ -192,7 +192,7 @@
 
             <div v-if="!loading && wallets.length === 0" class="empty-state">
                 <i class="bi bi-inbox"></i>
-                <p>No wallets found</p>
+                <p>لم يتم العثور على محافظ</p>
             </div>
         </div>
 
@@ -207,7 +207,7 @@
                 <div class="form-group">
                     <label>
                         <i class="bi bi-wallet me-2"></i>
-                        From Wallet
+                        من محفظة
                     </label>
                     <InputText
                         :value="transferData.fromWallet?.name"
@@ -218,7 +218,7 @@
                 <div class="form-group">
                     <label>
                         <i class="bi bi-wallet2 me-2"></i>
-                        To Wallet
+                        إلى محفظة
                         <span class="text-danger">*</span>
                     </label>
                     <Select
@@ -226,7 +226,7 @@
                         :options="transferDestinations"
                         optionLabel="name"
                         optionValue="id"
-                        placeholder="Select destination wallet"
+                        placeholder="اختر محفظة الوجهة"
                         :class="{ 'p-invalid': transferErrors.to_wallet_id }"
                     />
                     <small v-if="transferErrors.to_wallet_id" class="error-message">
@@ -237,46 +237,46 @@
                 <div class="form-group">
                     <label>
                         <i class="bi bi-cash me-2"></i>
-                        Amount
+                        المبلغ
                         <span class="text-danger">*</span>
                     </label>
                     <InputNumber
                         v-model="transferData.amount"
                         mode="currency"
                         currency="USD"
-                        placeholder="Enter amount"
+                        placeholder="أدخل المبلغ"
                         :class="{ 'p-invalid': transferErrors.amount }"
                     />
                     <small v-if="transferErrors.amount" class="error-message">
                         {{ transferErrors.amount[0] }}
                     </small>
                     <small class="hint-text">
-                        Available balance: ${{ formatMoney(transferData.fromWallet?.balance || 0) }}
+                        الرصيد المتاح: ${{ formatMoney(transferData.fromWallet?.balance || 0) }}
                     </small>
                 </div>
 
                 <div class="form-group">
                     <label>
                         <i class="bi bi-chat-left-text me-2"></i>
-                        Note
+                        ملاحظة
                     </label>
                     <Textarea
                         v-model="transferData.note"
                         rows="3"
-                        placeholder="Optional note for this transfer"
+                        placeholder="ملاحظة اختيارية لهذا التحويل"
                     />
                 </div>
             </div>
 
             <template #footer>
                 <Button
-                    label="Cancel"
+                    label="إلغاء"
                     severity="secondary"
                     @click="showTransferModal = false"
                     :disabled="submittingTransfer"
                 />
                 <Button
-                    label="Transfer"
+                    label="تحويل"
                     icon="bi bi-arrow-right-circle"
                     @click="submitTransfer"
                     :loading="submittingTransfer"
@@ -288,19 +288,19 @@
         <Dialog
             v-model:visible="showCreateExpenseWalletModal"
             modal
-            header="Create New Expense Wallet"
+            header="إنشاء محفظة مصروفات جديدة"
             :style="{ width: '500px' }"
         >
             <div class="expense-wallet-form">
                 <div class="form-group">
                     <label>
                         <i class="bi bi-tag me-2"></i>
-                        Wallet Name
+                        اسم المحفظة
                         <span class="text-danger">*</span>
                     </label>
                     <InputText
                         v-model="newExpenseWallet.name"
-                        placeholder="e.g., Office Supplies"
+                        placeholder="مثال: مستلزمات المكتب"
                         :class="{ 'p-invalid': expenseWalletErrors.name }"
                     />
                     <small v-if="expenseWalletErrors.name" class="error-message">
@@ -311,31 +311,31 @@
                 <div class="form-group">
                     <label>
                         <i class="bi bi-person me-2"></i>
-                        Assign to Admin (Optional)
+                        تعيين إلى مسؤول (اختياري)
                     </label>
                     <Select
                         v-model="newExpenseWallet.ownerId"
                         :options="admins"
                         optionLabel="name"
                         optionValue="id"
-                        placeholder="Select admin (optional)"
+                        placeholder="اختر مسؤول (اختياري)"
                         showClear
                     />
                     <small class="hint-text">
-                        Leave empty for system-wide expense wallet
+                        اترك فارغاً لمحفظة مصروفات عامة للنظام
                     </small>
                 </div>
             </div>
 
             <template #footer>
                 <Button
-                    label="Cancel"
+                    label="إلغاء"
                     severity="secondary"
                     @click="showCreateExpenseWalletModal = false"
                     :disabled="creatingExpenseWallet"
                 />
                 <Button
-                    label="Create Wallet"
+                    label="إنشاء محفظة"
                     icon="bi bi-plus-circle"
                     @click="createExpenseWallet"
                     :loading="creatingExpenseWallet"
@@ -347,14 +347,14 @@
         <Dialog
             v-model:visible="showCreateWalletForUserModal"
             modal
-            header="Create Wallet for User"
+            header="إنشاء محفظة لمستخدم"
             :style="{ width: '500px' }"
         >
             <div class="wallet-for-user-form">
                 <div class="form-group">
                     <label>
                         <i class="bi bi-person me-2"></i>
-                        Select User
+                        اختر مستخدم
                         <span class="text-danger">*</span>
                     </label>
                     <Select
@@ -362,7 +362,7 @@
                         :options="admins"
                         optionLabel="name"
                         optionValue="id"
-                        placeholder="Select a user"
+                        placeholder="اختر مستخدم"
                         :class="{ 'p-invalid': walletForUserErrors.admin_id }"
                         filter
                     />
@@ -374,12 +374,12 @@
                 <div class="form-group">
                     <label>
                         <i class="bi bi-tag me-2"></i>
-                        Wallet Name
+                        اسم المحفظة
                         <span class="text-danger">*</span>
                     </label>
                     <InputText
                         v-model="newWalletForUser.name"
-                        placeholder="e.g., John's Main Wallet or Marketing Expenses"
+                        placeholder="مثل: محفظة محمد الرئيسية أو مصروفات التسويق"
                         :class="{ 'p-invalid': walletForUserErrors.name }"
                     />
                     <small v-if="walletForUserErrors.name" class="error-message">
@@ -390,7 +390,7 @@
                 <div class="form-group">
                     <label>
                         <i class="bi bi-wallet me-2"></i>
-                        Wallet Type
+                        نوع المحفظة
                         <span class="text-danger">*</span>
                     </label>
                     <Select
@@ -398,28 +398,28 @@
                         :options="userWalletTypes"
                         optionLabel="label"
                         optionValue="value"
-                        placeholder="Select wallet type"
+                        placeholder="اختر نوع المحفظة"
                         :class="{ 'p-invalid': walletForUserErrors.type }"
                     />
                     <small v-if="walletForUserErrors.type" class="error-message">
                         {{ walletForUserErrors.type[0] }}
                     </small>
                     <small class="hint-text">
-                        <strong>Staff Wallet:</strong> For receiving payments and general use<br>
-                        <strong>Expense Wallet:</strong> Specifically for managing expenses only
+                        <strong>محفظة الموظف:</strong> لاستلام المدفوعات والاستخدام العام<br>
+                        <strong>محفظة المصروفات:</strong> خاصة بإدارة المصروفات فقط
                     </small>
                 </div>
             </div>
 
             <template #footer>
                 <Button
-                    label="Cancel"
+                    label="إلغاء"
                     severity="secondary"
                     @click="showCreateWalletForUserModal = false"
                     :disabled="creatingWalletForUser"
                 />
                 <Button
-                    label="Create Wallet"
+                    label="إنشاء محفظة"
                     icon="bi bi-plus-circle"
                     @click="createWalletForUser"
                     :loading="creatingWalletForUser"
@@ -431,27 +431,27 @@
         <Dialog
             v-model:visible="showEditModal"
             modal
-            header="Adjust Wallet Balance"
+            header="تعديل رصيد المحفظة"
             :style="{ width: '600px' }"
         >
             <div class="edit-wallet-form">
                 <div class="info-banner">
                     <i class="bi bi-info-circle me-2"></i>
                     <div>
-                        <strong>Balance Adjustment</strong>
-                        <p>Adjusting receivable/payable creates proper audit trail transactions. Balance = Receivable - Payable</p>
+                        <strong>تعديل الرصيد</strong>
+                        <p>تعديل المستحق/المستحق الدفع ينشئ سجل تدقيق معاملات مناسب. الرصيد = المستحق - المستحق الدفع</p>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>
                         <i class="bi bi-wallet me-2"></i>
-                        Wallet Name
+                        اسم المحفظة
                         <span class="text-danger">*</span>
                     </label>
                     <InputText
                         v-model="editData.name"
-                        placeholder="Enter wallet name"
+                        placeholder="أدخل اسم المحفظة"
                         :class="{ 'p-invalid': editErrors.name }"
                     />
                     <small v-if="editErrors.name" class="error-message">
@@ -462,47 +462,47 @@
                 <div class="form-group">
                     <label>
                         <i class="bi bi-arrow-down-circle me-2"></i>
-                        Receivable Amount (Money IN)
+                        المبلغ المستحق (الأموال الواردة)
                         <span class="text-danger">*</span>
                     </label>
                     <InputNumber
                         v-model="editData.receivable_amount"
                         mode="currency"
                         currency="USD"
-                        placeholder="Enter receivable amount"
+                        placeholder="أدخل المبلغ المستحق"
                         :class="{ 'p-invalid': editErrors.receivable_amount }"
                     />
                     <small v-if="editErrors.receivable_amount" class="error-message">
                         {{ editErrors.receivable_amount[0] }}
                     </small>
                     <small class="hint-text">
-                        Current: ${{ formatMoney(editData.original_receivable || 0) }} | Credits, income, deposits
+                        الحالي: ${{ formatMoney(editData.original_receivable || 0) }} | الائتمانات، الدخل، الإيداعات
                     </small>
                 </div>
 
                 <div class="form-group">
                     <label>
                         <i class="bi bi-arrow-up-circle me-2"></i>
-                        Payable Amount (Money OUT)
+                        المبلغ المستحق الدفع (الأموال الصادرة)
                         <span class="text-danger">*</span>
                     </label>
                     <InputNumber
                         v-model="editData.payable_amount"
                         mode="currency"
                         currency="USD"
-                        placeholder="Enter payable amount"
+                        placeholder="أدخل المبلغ المستحق الدفع"
                         :class="{ 'p-invalid': editErrors.payable_amount }"
                     />
                     <small v-if="editErrors.payable_amount" class="error-message">
                         {{ editErrors.payable_amount[0] }}
                     </small>
                     <small class="hint-text">
-                        Current: ${{ formatMoney(editData.original_payable || 0) }} | Debits, expenses, withdrawals
+                        الحالي: ${{ formatMoney(editData.original_payable || 0) }} | الديون، المصروفات، السحوبات
                     </small>
                 </div>
 
                 <div class="balance-preview">
-                    <div class="preview-label">New Balance:</div>
+                    <div class="preview-label">الرصيد الجديد:</div>
                     <div :class="['preview-value', newBalance >= 0 ? 'positive' : 'negative']">
                         ${{ formatMoney(newBalance) }}
                     </div>
@@ -511,13 +511,13 @@
 
             <template #footer>
                 <Button
-                    label="Cancel"
+                    label="إلغاء"
                     severity="secondary"
                     @click="showEditModal = false"
                     :disabled="updatingWallet"
                 />
                 <Button
-                    label="Update Wallet"
+                    label="تحديث المحفظة"
                     icon="bi bi-check-circle"
                     @click="submitWalletUpdate"
                     :loading="updatingWallet"
@@ -559,10 +559,10 @@ const filters = ref({
 });
 
 const walletTypes = [
-    { label: 'All Types', value: null },
-    { label: 'Staff Wallet', value: 'staff' },
-    { label: 'Main Cashbox', value: 'main_cashbox' },
-    { label: 'Expense Wallet', value: 'expense' },
+    { label: 'جميع الأنواع', value: null },
+    { label: 'محفظة الموظف', value: 'staff' },
+    { label: 'الخزينة الرئيسية', value: 'main_cashbox' },
+    { label: 'محفظة المصروفات', value: 'expense' },
 ];
 
 // Transfer Modal
@@ -598,8 +598,8 @@ const newWalletForUser = ref({
 });
 const walletForUserErrors = ref({});
 const userWalletTypes = [
-    { label: 'Staff Wallet', value: 'staff' },
-    { label: 'Expense Wallet', value: 'expense' },
+    { label: 'محفظة الموظف', value: 'staff' },
+    { label: 'محفظة المصروفات', value: 'expense' },
 ];
 
 // Edit Wallet Modal
@@ -620,11 +620,11 @@ const adminUser = ref(null);
 
 const transferModalTitle = computed(() => {
     if (transferData.value.transferType === 'staff_to_cashbox') {
-        return 'Transfer to Main Cashbox';
+        return 'تحويل إلى الخزينة الرئيسية';
     } else if (transferData.value.transferType === 'cashbox_to_expense') {
-        return 'Transfer to Expense Wallet';
+        return 'تحويل إلى محفظة مصروفات';
     }
-    return 'Transfer Money';
+    return 'تحويل أموال';
 });
 
 const isAdministrator = computed(() => {
@@ -867,9 +867,9 @@ const formatMoney = (amount) => {
 
 const formatWalletType = (type) => {
     const types = {
-        'staff': 'Staff Wallet',
-        'main_cashbox': 'Main Cashbox',
-        'expense': 'Expense Wallet',
+        'staff': 'محفظة الموظف',
+        'main_cashbox': 'الخزينة الرئيسية',
+        'expense': 'محفظة المصروفات',
     };
     return types[type] || type;
 };

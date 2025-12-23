@@ -5,14 +5,14 @@
       <div class="header-content">
         <h1 class="page-title">
           <i class="bi bi-clock-history gradient-icon"></i>
-          Transfer History
+          سجل التحويلات
         </h1>
-        <p class="page-subtitle">View all wallet transfer requests and their status</p>
+        <p class="page-subtitle">عرض جميع طلبات تحويل المحفظة وحالتها</p>
       </div>
       <div class="header-actions">
         <Button
           v-if="isAdministrator"
-          label="Transaction Logs"
+          label="سجلات المعاملات"
           icon="bi bi-file-text"
           @click="router.push('/transfers/transaction-logs')"
           severity="info"
@@ -20,7 +20,7 @@
         />
         <Button
           v-if="isAdministrator"
-          label="Pending Transfers"
+          label="التحويلات المعلقة"
           icon="bi bi-hourglass-split"
           @click="router.push('/transfers/pending')"
           severity="warning"
@@ -28,7 +28,7 @@
           :badge="pendingCount > 0 ? pendingCount.toString() : null"
         />
         <Button
-          label="New Transfer"
+          label="تحويل جديد"
           icon="bi bi-plus-lg"
           @click="router.push('/transfers/create')"
         />
@@ -41,10 +41,10 @@
     <!-- No Transfers -->
     <div v-else-if="transfers.length === 0" class="empty-state">
       <i class="bi bi-inbox-fill"></i>
-      <h3>No Transfer History</h3>
-      <p>No wallet transfers have been made yet.</p>
+      <h3>لا يوجد سجل تحويلات</h3>
+      <p>لم يتم إجراء أي تحويلات للمحفظة حتى الآن.</p>
       <Button
-        label="Create First Transfer"
+        label="إنشاء أول تحويل"
         icon="bi bi-plus-lg"
         @click="router.push('/admin/wallet-transfers/create')"
       />
@@ -55,15 +55,15 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Notes</th>
-            <th>Processed By</th>
-            <th>Date</th>
-            <th v-if="isAdministrator">Actions</th>
+            <th>المعرف</th>
+            <th>من</th>
+            <th>إلى</th>
+            <th>المبلغ</th>
+            <th>الحالة</th>
+            <th>ملاحظات</th>
+            <th>عولج بواسطة</th>
+            <th>التاريخ</th>
+            <th v-if="isAdministrator">الإجراءات</th>
           </tr>
         </thead>
         <tbody>
@@ -109,14 +109,14 @@
               <div class="date-info">
                 <div class="date">{{ formatDate(transfer.created_at) }}</div>
                 <div v-if="transfer.processed_at" class="processed-date">
-                  Processed: {{ formatDate(transfer.processed_at) }}
+                  عولج: {{ formatDate(transfer.processed_at) }}
                 </div>
               </div>
             </td>
             <td v-if="isAdministrator">
               <div v-if="transfer.status === 'pending'" class="action-buttons">
                 <Button
-                  label="Accept"
+                  label="قبول"
                   icon="bi bi-check-lg"
                   severity="success"
                   size="small"
@@ -124,7 +124,7 @@
                   :loading="processing[transfer.id]"
                 />
                 <Button
-                  label="Reject"
+                  label="رفض"
                   icon="bi bi-x-lg"
                   severity="danger"
                   size="small"
@@ -142,17 +142,17 @@
       <!-- Pagination -->
       <div v-if="pagination.last_page > 1" class="pagination">
         <Button
-          label="Previous"
+          label="السابق"
           icon="bi bi-chevron-left"
           :disabled="pagination.current_page === 1"
           @click="changePage(pagination.current_page - 1)"
           outlined
         />
         <span class="page-info">
-          Page {{ pagination.current_page }} of {{ pagination.last_page }}
+          صفحة {{ pagination.current_page }} من {{ pagination.last_page }}
         </span>
         <Button
-          label="Next"
+          label="التالي"
           icon="bi bi-chevron-right"
           iconPos="right"
           :disabled="pagination.current_page === pagination.last_page"
@@ -166,28 +166,28 @@
     <Dialog
       v-model:visible="rejectDialogVisible"
       modal
-      header="Reject Transfer"
+      header="رفض التحويل"
       :style="{ width: '500px' }"
     >
       <div class="reject-dialog-content">
-        <p>Please provide a reason for rejecting this transfer:</p>
+        <p>يرجى تقديم سبب رفض هذا التحويل:</p>
         <Textarea
           v-model="rejectionReason"
           rows="4"
-          placeholder="Enter rejection reason..."
+          placeholder="أدخل سبب الرفض..."
           :class="{ 'p-invalid': rejectionError }"
         />
         <small v-if="rejectionError" class="error-message">{{ rejectionError }}</small>
       </div>
       <template #footer>
         <Button
-          label="Cancel"
+          label="إلغاء"
           severity="secondary"
           outlined
           @click="rejectDialogVisible = false"
         />
         <Button
-          label="Reject Transfer"
+          label="رفض التحويل"
           severity="danger"
           @click="confirmReject"
           :loading="processing[selectedTransferId]"
@@ -277,7 +277,13 @@ const getStatusIcon = (status) => {
 };
 
 const getStatusLabel = (status) => {
-  return status.charAt(0).toUpperCase() + status.slice(1);
+  const labels = {
+    pending: 'معلق',
+    accepted: 'مقبول',
+    rejected: 'مرفوض',
+    cancelled: 'ملغى'
+  };
+  return labels[status] || status.charAt(0).toUpperCase() + status.slice(1);
 };
 
 const formatDate = (dateString) => {
@@ -293,7 +299,7 @@ const formatDate = (dateString) => {
 
 const processTransfer = async (transferId, action) => {
   if (action === 'accept') {
-    if (!confirm('Are you sure you want to accept this transfer?')) {
+    if (!confirm('هل أنت متأكد من قبول هذا التحويل؟')) {
       return;
     }
   }

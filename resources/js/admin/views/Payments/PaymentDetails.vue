@@ -58,9 +58,9 @@ const getStatusClass = (status) => {
 
 const getStatusLabel = (status) => {
   const labels = {
-    paid: 'Paid',
-    pending: 'Pending',
-    cancelled: 'Cancelled'
+    paid: 'مدفوع',
+    pending: 'قيد الانتظار',
+    cancelled: 'ملغى'
   };
   return labels[status] || status;
 };
@@ -99,7 +99,7 @@ onMounted(() => {
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner">
         <div class="spinner"></div>
-        <p>Loading payment details...</p>
+        <p>جاري تحميل تفاصيل الدفعة...</p>
       </div>
     </div>
 
@@ -109,7 +109,7 @@ onMounted(() => {
         <div class="header-top">
           <button class="back-btn" @click="router.push('/payments')">
             <i class="bi bi-arrow-left"></i>
-            <span>Back to Payments</span>
+            <span>العودة للمدفوعات</span>
           </button>
         </div>
 
@@ -118,12 +118,12 @@ onMounted(() => {
             <i class="bi bi-receipt"></i>
           </div>
           <div class="header-text">
-            <h1 class="page-title">Payment Details</h1>
+            <h1 class="page-title">تفاصيل الدفعة</h1>
             <p class="page-subtitle">{{ payment.payment_number }}</p>
           </div>
           <div class="header-actions">
             <Button
-              label="Print Invoice"
+              label="طباعة الفاتورة"
               icon="bi bi-printer"
               severity="primary"
               @click="printInvoice"
@@ -137,14 +137,14 @@ onMounted(() => {
         <!-- Invoice Header -->
         <div class="invoice-header">
           <div class="company-info">
-            <h2 class="company-name">Educational Center</h2>
-            <p class="company-tagline">Student Management System</p>
+            <h2 class="company-name">المركز التعليمي</h2>
+            <p class="company-tagline">نظام إدارة الطلاب</p>
           </div>
           <div class="invoice-meta">
-            <h3 class="invoice-title">INVOICE</h3>
+            <h3 class="invoice-title">فاتورة</h3>
             <div class="invoice-number">{{ payment.payment_number }}</div>
             <div class="invoice-date">
-              <span class="label">Date:</span>
+              <span class="label">التاريخ:</span>
               <span class="value">{{ formatDate(payment.paid_at || payment.created_at) }}</span>
             </div>
             <div class="invoice-status">
@@ -158,28 +158,28 @@ onMounted(() => {
         <!-- Bill To / Payment Info -->
         <div class="invoice-parties">
           <div class="party-section">
-            <h4 class="party-title">Bill To:</h4>
+            <h4 class="party-title">فاتورة إلى:</h4>
             <div class="party-details">
               <div class="party-name">{{ payment.student?.full_name }}</div>
-              <div class="party-info">Admission #: {{ payment.student?.admission_number }}</div>
-              <div v-if="payment.student?.phone" class="party-info">Phone: {{ payment.student.phone }}</div>
-              <div v-if="payment.student?.email" class="party-info">Email: {{ payment.student.email }}</div>
+              <div class="party-info">رقم القبول #: {{ payment.student?.admission_number }}</div>
+              <div v-if="payment.student?.phone" class="party-info">الهاتف: {{ payment.student.phone }}</div>
+              <div v-if="payment.student?.email" class="party-info">البريد: {{ payment.student.email }}</div>
             </div>
           </div>
 
           <div class="party-section">
-            <h4 class="party-title">Payment Information:</h4>
+            <h4 class="party-title">معلومات الدفع:</h4>
             <div class="party-details">
               <div class="info-row">
-                <span class="info-label">Payment Method:</span>
+                <span class="info-label">طريقة الدفع:</span>
                 <span class="info-value">{{ payment.payment_method || '—' }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Received By:</span>
+                <span class="info-label">تم الاستلام بواسطة:</span>
                 <span class="info-value">{{ payment.admin?.name || '—' }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Date:</span>
+                <span class="info-label">التاريخ:</span>
                 <span class="info-value">{{ formatDate(payment.paid_at || payment.created_at) }}</span>
               </div>
             </div>
@@ -191,18 +191,18 @@ onMounted(() => {
           <table class="items-table">
             <thead>
               <tr>
-                <th class="col-description">Description</th>
-                <th class="col-center">Quantity</th>
-                <th class="col-right">Unit Price</th>
-                <th class="col-right">Discount</th>
-                <th class="col-right">Total</th>
+                <th class="col-description">الوصف</th>
+                <th class="col-center">الكمية</th>
+                <th class="col-right">سعر الوحدة</th>
+                <th class="col-right">الخصم</th>
+                <th class="col-right">الإجمالي</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(item, index) in payment.items" :key="index">
                 <td class="col-description">
                   <div class="item-description">{{ item.description }}</div>
-                  <div class="item-type">{{ item.item_type === 'subscription' ? 'Subscription' : 'Product' }}</div>
+                  <div class="item-type">{{ item.item_type === 'subscription' ? 'اشتراك' : 'منتج' }}</div>
                 </td>
                 <td class="col-center">{{ item.quantity }}</td>
                 <td class="col-right">{{ formatCurrency(item.unit_price) }}</td>
@@ -217,15 +217,15 @@ onMounted(() => {
         <div class="invoice-totals">
           <div class="totals-rows">
             <div class="total-row">
-              <span class="total-label">Subtotal:</span>
+              <span class="total-label">المجموع الفرعي:</span>
               <span class="total-value">{{ formatCurrency(subtotal) }}</span>
             </div>
             <div class="total-row">
-              <span class="total-label">Total Discount:</span>
+              <span class="total-label">إجمالي الخصم:</span>
               <span class="total-value">{{ formatCurrency(totalDiscount) }}</span>
             </div>
             <div class="total-row grand-total">
-              <span class="total-label">Grand Total:</span>
+              <span class="total-label">المبلغ الإجمالي:</span>
               <span class="total-value">{{ formatCurrency(payment.amount) }}</span>
             </div>
           </div>
@@ -233,16 +233,16 @@ onMounted(() => {
 
         <!-- Notes -->
         <div v-if="payment.note" class="invoice-notes">
-          <h4 class="notes-title">Notes:</h4>
+          <h4 class="notes-title">ملاحظات:</h4>
           <p class="notes-content">{{ payment.note }}</p>
         </div>
 
         <!-- Footer -->
         <div class="invoice-footer">
-          <p class="footer-text">Thank you for your payment!</p>
+          <p class="footer-text">شكراً لكم على دفعتكم!</p>
           <p class="footer-signature">
             <span class="signature-line">_______________________</span><br>
-            <span class="signature-label">Authorized Signature</span>
+            <span class="signature-label">التوقيع المعتمد</span>
           </p>
         </div>
       </div>

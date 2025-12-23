@@ -5,12 +5,12 @@
       <div class="header-content">
         <h1 class="page-title">
           <i class="bi bi-arrow-left-right gradient-icon"></i>
-          Transfer Money
+          تحويل أموال
         </h1>
-        <p class="page-subtitle">Transfer money between admin wallets</p>
+        <p class="page-subtitle">تحويل الأموال بين محافظ المسؤولين</p>
       </div>
       <Button
-        label="Back to Transfers"
+        label="العودة إلى التحويلات"
         icon="bi bi-arrow-left"
         @click="router.push('/transfers')"
         severity="secondary"
@@ -27,8 +27,8 @@
             <i class="bi bi-send-fill"></i>
           </div>
           <div>
-            <h3 class="section-title">Transfer Details</h3>
-            <p class="section-subtitle">Enter the transfer amount and recipient</p>
+            <h3 class="section-title">تفاصيل التحويل</h3>
+            <p class="section-subtitle">أدخل مبلغ التحويل والمستلم</p>
           </div>
         </div>
 
@@ -37,14 +37,14 @@
             <div class="form-group">
               <label for="your_balance">
                 <i class="bi bi-wallet-fill"></i>
-                Your Primary Wallet Balance
+                رصيد محفظتك الرئيسية
               </label>
               <div class="balance-display">
-                <span v-if="loadingBalance" class="text-muted">Loading...</span>
+                <span v-if="loadingBalance" class="text-muted">جاري التحميل...</span>
                 <span v-else class="balance-amount">${{ currentBalance }}</span>
               </div>
               <small class="hint-text">
-                Transfers use your primary wallet
+                تستخدم التحويلات محفظتك الرئيسية
               </small>
             </div>
           </div>
@@ -53,14 +53,14 @@
             <div class="form-group">
               <label for="to_admin_id">
                 <i class="bi bi-person-fill"></i>
-                Recipient Admin <span class="required">*</span>
+                المسؤول المستلم <span class="required">*</span>
               </label>
               <Select
                 v-model="form.to_admin_id"
                 :options="admins"
                 optionLabel="name"
                 optionValue="id"
-                placeholder="Select recipient admin"
+                placeholder="اختر المسؤول المستلم"
                 :class="{ 'p-invalid': errors.to_admin_id }"
                 :loading="loadingAdmins"
               >
@@ -74,7 +74,7 @@
                   <div class="flex flex-column">
                     <div class="font-medium">{{ slotProps.option.name }}</div>
                     <div class="text-sm text-gray-500">{{ slotProps.option.email }}</div>
-                    <div class="text-sm text-green-600">Balance: ${{ slotProps.option.balance.toFixed(2) }}</div>
+                    <div class="text-sm text-green-600">الرصيد: ${{ slotProps.option.balance.toFixed(2) }}</div>
                   </div>
                 </template>
               </Select>
@@ -82,7 +82,7 @@
                 {{ errors.to_admin_id }}
               </small>
               <small v-else class="hint-text">
-                Transfer will go to their primary wallet
+                سيتم التحويل إلى محفظتهم الرئيسية
               </small>
             </div>
           </div>
@@ -91,7 +91,7 @@
             <div class="form-group">
               <label for="amount">
                 <i class="bi bi-cash-stack"></i>
-                Amount <span class="required">*</span>
+                المبلغ <span class="required">*</span>
               </label>
               <InputNumber
                 v-model="form.amount"
@@ -111,13 +111,13 @@
           <div class="form-group">
             <label for="notes">
               <i class="bi bi-card-text"></i>
-              Notes
+              ملاحظات
             </label>
             <Textarea
               v-model="form.notes"
               inputId="notes"
               rows="4"
-              placeholder="Add any notes for this transfer..."
+              placeholder="أضف أي ملاحظات لهذا التحويل..."
               :class="{ 'p-invalid': errors.notes }"
             />
             <small v-if="errors.notes" class="error-message">
@@ -131,7 +131,7 @@
       <div class="form-actions">
         <Button
           type="button"
-          label="Cancel"
+          label="إلغاء"
           severity="secondary"
           outlined
           @click="router.push('/transfers')"
@@ -139,7 +139,7 @@
         />
         <Button
           type="submit"
-          :label="submitting ? 'Processing...' : 'Transfer Money'"
+          :label="submitting ? 'جاري المعالجة...' : 'تحويل الأموال'"
           icon="bi bi-arrow-right"
           iconPos="right"
           :loading="submitting"
@@ -228,7 +228,7 @@ const submitTransfer = async () => {
     const transferAmount = parseFloat(form.value.amount);
 
     if (transferAmount > balance) {
-      errors.value.amount = `Insufficient balance. Available: $${balance.toFixed(2)}`;
+      errors.value.amount = `الرصيد غير كاف. المتاح: $${balance.toFixed(2)}`;
       return;
     }
   }

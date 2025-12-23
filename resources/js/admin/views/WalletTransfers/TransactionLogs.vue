@@ -5,12 +5,12 @@
       <div class="header-content">
         <h1 class="page-title">
           <i class="bi bi-file-text gradient-icon"></i>
-          Transaction Logs
+          سجلات المعاملات
         </h1>
-        <p class="page-subtitle">View all transaction logs for audit and tracking</p>
+        <p class="page-subtitle">عرض جميع سجلات المعاملات للتدقيق والتتبع</p>
       </div>
       <Button
-        label="Back to Transfers"
+        label="العودة إلى التحويلات"
         icon="bi bi-arrow-left"
         @click="router.push('/transfers')"
         severity="secondary"
@@ -24,8 +24,8 @@
     <!-- No Logs -->
     <div v-else-if="logs.length === 0" class="empty-state">
       <i class="bi bi-inbox-fill"></i>
-      <h3>No Transaction Logs</h3>
-      <p>No transaction logs have been recorded yet.</p>
+      <h3>لا توجد سجلات معاملات</h3>
+      <p>لم يتم تسجيل أي سجلات معاملات بعد.</p>
     </div>
 
     <!-- Logs Table -->
@@ -33,15 +33,15 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Admin</th>
-            <th>Type</th>
-            <th>Amount</th>
-            <th>Balance Before</th>
-            <th>Balance After</th>
-            <th>Description</th>
-            <th>Payment</th>
-            <th>Date</th>
+            <th>المعرف</th>
+            <th>المسؤول</th>
+            <th>النوع</th>
+            <th>المبلغ</th>
+            <th>الرصيد قبل</th>
+            <th>الرصيد بعد</th>
+            <th>الوصف</th>
+            <th>الدفعة</th>
+            <th>التاريخ</th>
           </tr>
         </thead>
         <tbody>
@@ -91,18 +91,18 @@
       <!-- Pagination -->
       <div v-if="pagination.last_page > 1" class="pagination">
         <Button
-          label="Previous"
+          label="السابق"
           icon="bi bi-chevron-left"
           :disabled="pagination.current_page === 1"
           @click="changePage(pagination.current_page - 1)"
           outlined
         />
         <span class="page-info">
-          Page {{ pagination.current_page }} of {{ pagination.last_page }}
-          ({{ pagination.total }} total)
+          صفحة {{ pagination.current_page }} من {{ pagination.last_page }}
+          ({{ pagination.total }} إجمالي)
         </span>
         <Button
-          label="Next"
+          label="التالي"
           icon="bi bi-chevron-right"
           iconPos="right"
           :disabled="pagination.current_page === pagination.last_page"

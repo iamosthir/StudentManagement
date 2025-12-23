@@ -78,7 +78,7 @@ const handleFilterChange = () => {
 };
 
 const handleDelete = async (coupon) => {
-  if (!confirm(`Are you sure you want to delete coupon "${coupon.code}"?`)) {
+  if (!confirm(`هل أنت متأكد من حذف الكوبون "${coupon.code}"؟`)) {
     return;
   }
 
@@ -148,13 +148,13 @@ onMounted(() => {
           <i class="bi bi-ticket-perforated"></i>
         </div>
         <div class="header-text">
-          <h1 class="page-title">Coupon Management</h1>
-          <p class="page-subtitle">Manage discount coupons and track usage</p>
+          <h1 class="page-title">إدارة الكوبونات</h1>
+          <p class="page-subtitle">إدارة كوبونات الخصم وتتبع الاستخدام</p>
         </div>
       </div>
       <button class="btn-add" @click="router.push('/coupons/create')">
         <i class="bi bi-plus-circle"></i>
-        <span>Create Coupon</span>
+        <span>إضافة كوبون</span>
       </button>
     </div>
 
@@ -165,7 +165,7 @@ onMounted(() => {
           <i class="bi bi-ticket-perforated-fill"></i>
         </div>
         <div class="stat-content">
-          <div class="stat-label">Total Coupons</div>
+          <div class="stat-label">إجمالي الكوبونات</div>
           <div class="stat-value">{{ stats.total }}</div>
         </div>
       </div>
@@ -175,7 +175,7 @@ onMounted(() => {
           <i class="bi bi-check-circle-fill"></i>
         </div>
         <div class="stat-content">
-          <div class="stat-label">Used Coupons</div>
+          <div class="stat-label">الكوبونات المستخدمة</div>
           <div class="stat-value">{{ stats.used }}</div>
         </div>
       </div>
@@ -185,7 +185,7 @@ onMounted(() => {
           <i class="bi bi-hourglass-split"></i>
         </div>
         <div class="stat-content">
-          <div class="stat-label">Available Coupons</div>
+          <div class="stat-label">الكوبونات المتاحة</div>
           <div class="stat-value">{{ stats.unused }}</div>
         </div>
       </div>
@@ -195,7 +195,7 @@ onMounted(() => {
           <i class="bi bi-graph-up"></i>
         </div>
         <div class="stat-content">
-          <div class="stat-label">Usage Rate</div>
+          <div class="stat-label">معدل الاستخدام</div>
           <div class="stat-value">{{ stats.usage_percentage }}%</div>
         </div>
       </div>
@@ -207,13 +207,13 @@ onMounted(() => {
         <div class="filter-group">
           <label for="search" class="filter-label">
             <i class="bi bi-search"></i>
-            Search by Code or Name
+            البحث بالكود أو الاسم
           </label>
           <input
             id="search"
             v-model="searchQuery"
             type="text"
-            placeholder="Enter coupon code or name..."
+            placeholder="أدخل كود الكوبون أو الاسم..."
             class="filter-input"
             @keyup.enter="handleSearch"
           />
@@ -222,7 +222,7 @@ onMounted(() => {
         <div class="filter-group">
           <label for="status" class="filter-label">
             <i class="bi bi-funnel"></i>
-            Status
+            الحالة
           </label>
           <select
             id="status"
@@ -230,23 +230,23 @@ onMounted(() => {
             class="filter-select"
             @change="handleFilterChange"
           >
-            <option value="">All Coupons</option>
-            <option value="unused">Available</option>
-            <option value="used">Used</option>
+            <option value="">جميع الكوبونات</option>
+            <option value="unused">متاح</option>
+            <option value="used">مستخدم</option>
           </select>
         </div>
 
         <div class="filter-actions">
           <button class="btn-filter" @click="handleSearch">
             <i class="bi bi-search"></i>
-            Search
+            بحث
           </button>
           <button
             class="btn-filter-reset"
             @click="searchQuery = ''; statusFilter = ''; fetchCoupons(1)"
           >
             <i class="bi bi-x-circle"></i>
-            Reset
+            إعادة تعيين
           </button>
         </div>
       </div>
@@ -260,14 +260,14 @@ onMounted(() => {
         <table class="data-table">
           <thead>
             <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Discount</th>
-              <th>Status</th>
-              <th>Used By</th>
-              <th>Applied By</th>
-              <th>Used At</th>
-              <th>Actions</th>
+              <th>الكود</th>
+              <th>الاسم</th>
+              <th>الخصم</th>
+              <th>الحالة</th>
+              <th>مستخدم من قبل</th>
+              <th>تم التطبيق بواسطة</th>
+              <th>تاريخ الاستخدام</th>
+              <th>الإجراءات</th>
             </tr>
           </thead>
           <tbody>
@@ -290,7 +290,7 @@ onMounted(() => {
                   :class="coupon.is_used ? 'status-danger' : 'status-success'"
                 >
                   <i :class="coupon.is_used ? 'bi bi-x-circle-fill' : 'bi bi-check-circle-fill'"></i>
-                  {{ coupon.is_used ? 'Used' : 'Available' }}
+                  {{ coupon.is_used ? 'مستخدم' : 'متاح' }}
                 </span>
               </td>
               <td>
@@ -311,7 +311,7 @@ onMounted(() => {
                   <button
                     class="btn-icon btn-icon-edit"
                     @click="router.push(`/coupons/${coupon.id}/edit`)"
-                    title="Edit"
+                    title="تعديل"
                   >
                     <i class="bi bi-pencil"></i>
                   </button>
@@ -319,7 +319,7 @@ onMounted(() => {
                     v-if="!coupon.is_used"
                     class="btn-icon btn-icon-delete"
                     @click="handleDelete(coupon)"
-                    title="Delete"
+                    title="حذف"
                   >
                     <i class="bi bi-trash"></i>
                   </button>
@@ -332,10 +332,10 @@ onMounted(() => {
 
       <div v-else class="empty-state">
         <i class="bi bi-ticket-perforated"></i>
-        <p>No coupons found</p>
+        <p>لم يتم العثور على كوبونات</p>
         <button class="btn-add" @click="router.push('/coupons/create')">
           <i class="bi bi-plus-circle"></i>
-          Create Your First Coupon
+          إنشاء أول كوبون
         </button>
       </div>
 
@@ -347,11 +347,11 @@ onMounted(() => {
           @click="fetchCoupons(currentPage - 1)"
         >
           <i class="bi bi-chevron-left"></i>
-          Previous
+          السابق
         </button>
 
         <span class="pagination-info">
-          Page {{ currentPage }} of {{ lastPage }} ({{ total }} total)
+          صفحة {{ currentPage }} من {{ lastPage }} ({{ total }} إجمالي)
         </span>
 
         <button
@@ -359,7 +359,7 @@ onMounted(() => {
           :disabled="currentPage === lastPage"
           @click="fetchCoupons(currentPage + 1)"
         >
-          Next
+          التالي
           <i class="bi bi-chevron-right"></i>
         </button>
       </div>

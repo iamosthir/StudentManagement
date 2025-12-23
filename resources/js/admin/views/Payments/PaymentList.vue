@@ -141,12 +141,12 @@ onMounted(() => {
     <div class="page-header">
       <div class="header-content">
         <div class="header-text">
-          <h1 class="page-title gradient-text">Payments</h1>
-          <p class="page-subtitle">Manage student payments and transactions</p>
+          <h1 class="page-title gradient-text">المدفوعات</h1>
+          <p class="page-subtitle">إدارة مدفوعات الطلاب والمعاملات</p>
         </div>
         <button class="btn btn-gradient" @click="router.push('/payments/create')">
           <i class="bi bi-plus-circle"></i>
-          Add Payment
+          إضافة دفعة
         </button>
       </div>
     </div>
@@ -156,16 +156,16 @@ onMounted(() => {
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-3">
-            <label class="form-label">Status</label>
+            <label class="form-label">الحالة</label>
             <select v-model="statusFilter" class="form-select" @change="handleFilter">
-              <option value="">All Status</option>
-              <option value="paid">Paid</option>
-              <option value="pending">Pending</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="">جميع الحالات</option>
+              <option value="paid">مدفوع</option>
+              <option value="pending">قيد الانتظار</option>
+              <option value="cancelled">ملغى</option>
             </select>
           </div>
           <div class="col-md-3">
-            <label class="form-label">Start Date</label>
+            <label class="form-label">تاريخ البدء</label>
             <input
               v-model="startDate"
               type="date"
@@ -174,7 +174,7 @@ onMounted(() => {
             />
           </div>
           <div class="col-md-3">
-            <label class="form-label">End Date</label>
+            <label class="form-label">تاريخ الانتهاء</label>
             <input
               v-model="endDate"
               type="date"
@@ -186,7 +186,7 @@ onMounted(() => {
             <label class="form-label d-block">&nbsp;</label>
             <button class="btn btn-outline-secondary w-100" @click="resetFilters">
               <i class="bi bi-arrow-clockwise"></i>
-              Reset
+              إعادة تعيين
             </button>
           </div>
         </div>
@@ -200,10 +200,10 @@ onMounted(() => {
 
         <div v-else-if="payments.length === 0" class="empty-state">
           <i class="bi bi-credit-card"></i>
-          <h3>No Payments Found</h3>
-          <p>Start by recording your first payment</p>
+          <h3>لم يتم العثور على دفعات</h3>
+          <p>ابدأ بتسجيل أول دفعة</p>
           <button class="btn btn-gradient" @click="router.push('/payments/create')">
-            Add Payment
+            إضافة دفعة
           </button>
         </div>
 
@@ -211,13 +211,13 @@ onMounted(() => {
           <table class="data-table">
             <thead>
               <tr>
-                <th>Payment Number</th>
-                <th>Student</th>
-                <th>Amount</th>
-                <th>Method</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>رقم الدفعة</th>
+                <th>الطالب</th>
+                <th>المبلغ</th>
+                <th>الطريقة</th>
+                <th>التاريخ</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
               </tr>
             </thead>
             <tbody>
@@ -246,7 +246,7 @@ onMounted(() => {
                     <button
                       class="btn btn-sm btn-icon btn-primary"
                       @click="router.push(`/payments/${payment.id}`)"
-                      title="View Details"
+                      title="عرض التفاصيل"
                     >
                       <i class="bi bi-eye"></i>
                     </button>
@@ -254,7 +254,7 @@ onMounted(() => {
                       v-if="payment.status === 'pending'"
                       class="btn btn-sm btn-icon btn-success"
                       @click="markAsPaid(payment)"
-                      title="Mark as Paid"
+                      title="وضع علامة مدفوع"
                     >
                       <i class="bi bi-check-circle"></i>
                     </button>
@@ -262,7 +262,7 @@ onMounted(() => {
                       v-if="payment.status === 'pending'"
                       class="btn btn-sm btn-icon btn-danger"
                       @click="markAsCancelled(payment)"
-                      title="Cancel"
+                      title="إلغاء"
                     >
                       <i class="bi bi-x-circle"></i>
                     </button>
@@ -298,7 +298,7 @@ onMounted(() => {
             </ul>
           </nav>
           <div class="pagination-info">
-            Showing {{ payments.length }} of {{ pagination.total }} payments
+            عرض {{ payments.length }} من {{ pagination.total }} دفعة
           </div>
         </div>
       </div>

@@ -17,7 +17,7 @@ const fetchStudent = async () => {
     student.value = response.data.data;
   } catch (error) {
     console.error('Error fetching student:', error);
-    alert('Failed to fetch student details');
+    alert('فشل في جلب تفاصيل الطالب');
     router.push('/students');
   } finally {
     loading.value = false;
@@ -36,10 +36,10 @@ const getStatusClass = (status) => {
 
 const getStatusLabel = (status) => {
   const labels = {
-    active: 'Active',
-    pending_payment: 'Pending Payment',
-    expired: 'Expired',
-    archived: 'Archived'
+    active: 'نشط',
+    pending_payment: 'انتظار الدفع',
+    expired: 'منتهي',
+    archived: 'مؤرشف'
   };
   return labels[status] || status;
 };
@@ -66,12 +66,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="student-details-page">
+  <div class="student-details-page" dir="rtl">
     <!-- Loading State -->
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner">
         <div class="spinner"></div>
-        <p>Loading student details...</p>
+        <p>جاري تحميل تفاصيل الطالب...</p>
       </div>
     </div>
 
@@ -80,8 +80,8 @@ onMounted(() => {
       <div class="page-header">
         <div class="header-top">
           <button class="back-btn" @click="router.push('/students')">
-            <i class="bi bi-arrow-left"></i>
-            <span>Back to Students</span>
+            <i class="bi bi-arrow-right"></i>
+            <span>العودة للطلاب</span>
           </button>
         </div>
 
@@ -105,7 +105,7 @@ onMounted(() => {
           <div class="header-actions">
             <button class="action-btn btn-edit" @click="router.push(`/students/${student.id}/edit`)">
               <i class="bi bi-pencil"></i>
-              <span>Edit Student</span>
+              <span>تعديل الطالب</span>
             </button>
           </div>
         </div>
@@ -118,7 +118,7 @@ onMounted(() => {
             <i class="bi bi-calendar-check-fill"></i>
           </div>
           <div class="stat-content">
-            <div class="stat-label">Active Subscriptions</div>
+            <div class="stat-label">الاشتراكات النشطة</div>
             <div class="stat-value">{{ student.subscriptions?.filter(s => s.is_active).length || 0 }}</div>
           </div>
         </div>
@@ -128,7 +128,7 @@ onMounted(() => {
             <i class="bi bi-cash-coin"></i>
           </div>
           <div class="stat-content">
-            <div class="stat-label">Overall Paid Amount</div>
+            <div class="stat-label">إجمالي المبلغ المدفوع</div>
             <div class="stat-value">{{ formatCurrency(student.total_paid_amount || 0) }}</div>
           </div>
         </div>
@@ -138,7 +138,7 @@ onMounted(() => {
             <i class="bi bi-exclamation-triangle-fill"></i>
           </div>
           <div class="stat-content">
-            <div class="stat-label">Overall Due Amount</div>
+            <div class="stat-label">إجمالي المبلغ المستحق</div>
             <div class="stat-value">{{ formatCurrency(student.total_due_amount || 0) }}</div>
           </div>
         </div>
@@ -148,7 +148,7 @@ onMounted(() => {
             <i class="bi bi-clock-history"></i>
           </div>
           <div class="stat-content">
-            <div class="stat-label">Member Since</div>
+            <div class="stat-label">تاريخ الانضمام</div>
             <div class="stat-value">{{ formatDate(student.created_at) }}</div>
           </div>
         </div>
@@ -163,7 +163,7 @@ onMounted(() => {
             @click="activeTab = 'overview'"
           >
             <i class="bi bi-person-circle"></i>
-            <span>Overview</span>
+            <span>نظرة عامة</span>
           </button>
           <button
             class="tab-btn"
@@ -171,7 +171,7 @@ onMounted(() => {
             @click="activeTab = 'subscriptions'"
           >
             <i class="bi bi-calendar-check"></i>
-            <span>Subscriptions</span>
+            <span>الاشتراكات</span>
           </button>
           <button
             class="tab-btn"
@@ -179,7 +179,7 @@ onMounted(() => {
             @click="activeTab = 'payments'"
           >
             <i class="bi bi-credit-card"></i>
-            <span>Payments</span>
+            <span>المدفوعات</span>
           </button>
         </div>
 
@@ -192,31 +192,31 @@ onMounted(() => {
                   <div class="info-icon info-icon-primary">
                     <i class="bi bi-person-badge"></i>
                   </div>
-                  <h3 class="info-card-title">Personal Information</h3>
+                  <h3 class="info-card-title">المعلومات الشخصية</h3>
                 </div>
                 <div class="info-list">
                   <div class="info-item">
-                    <span class="info-label"><i class="bi bi-person"></i> Full Name</span>
+                    <span class="info-label"><i class="bi bi-person"></i> الاسم الكامل</span>
                     <span class="info-value">{{ student.full_name }}</span>
                   </div>
                   <div class="info-item">
-                    <span class="info-label"><i class="bi bi-phone"></i> Phone</span>
+                    <span class="info-label"><i class="bi bi-phone"></i> الهاتف</span>
                     <span class="info-value">{{ student.phone }}</span>
                   </div>
                   <div class="info-item">
-                    <span class="info-label"><i class="bi bi-envelope"></i> Email</span>
+                    <span class="info-label"><i class="bi bi-envelope"></i> البريد الإلكتروني</span>
                     <span class="info-value">{{ student.email || '—' }}</span>
                   </div>
                   <div class="info-item">
-                    <span class="info-label"><i class="bi bi-calendar"></i> Birthdate</span>
+                    <span class="info-label"><i class="bi bi-calendar"></i> تاريخ الميلاد</span>
                     <span class="info-value">{{ formatDate(student.birthdate) }}</span>
                   </div>
                   <div class="info-item">
-                    <span class="info-label"><i class="bi bi-gender-ambiguous"></i> Gender</span>
-                    <span class="info-value">{{ student.gender ? student.gender.charAt(0).toUpperCase() + student.gender.slice(1) : '—' }}</span>
+                    <span class="info-label"><i class="bi bi-gender-ambiguous"></i> الجنس</span>
+                    <span class="info-value">{{ student.gender ? (student.gender === 'male' ? 'ذكر' : 'أنثى') : '—' }}</span>
                   </div>
                   <div class="info-item">
-                    <span class="info-label"><i class="bi bi-people"></i> Guardian</span>
+                    <span class="info-label"><i class="bi bi-people"></i> ولي الأمر</span>
                     <span class="info-value">{{ student.guardian_name || '—' }}</span>
                   </div>
                 </div>
@@ -227,27 +227,27 @@ onMounted(() => {
                   <div class="info-icon info-icon-success">
                     <i class="bi bi-book"></i>
                   </div>
-                  <h3 class="info-card-title">Academic Information</h3>
+                  <h3 class="info-card-title">المعلومات الأكاديمية</h3>
                 </div>
                 <div class="info-list">
                   <div class="info-item">
-                    <span class="info-label"><i class="bi bi-mortarboard"></i> Program</span>
+                    <span class="info-label"><i class="bi bi-mortarboard"></i> البرنامج</span>
                     <span class="info-value">{{ student.program?.name || '—' }}</span>
                   </div>
                   <div class="info-item">
-                    <span class="info-label"><i class="bi bi-calendar3"></i> Academic Year</span>
+                    <span class="info-label"><i class="bi bi-calendar3"></i> السنة الأكاديمية</span>
                     <span class="info-value">{{ student.academic_year || '—' }}</span>
                   </div>
                   <div class="info-item">
-                    <span class="info-label"><i class="bi bi-diagram-3"></i> Class Section</span>
+                    <span class="info-label"><i class="bi bi-diagram-3"></i> الشعبة</span>
                     <span class="info-value">{{ student.class_section || '—' }}</span>
                   </div>
                   <div class="info-item">
-                    <span class="info-label"><i class="bi bi-calendar-x"></i> Last Subscription Expiry</span>
+                    <span class="info-label"><i class="bi bi-calendar-x"></i> تاريخ انتهاء آخر اشتراك</span>
                     <span class="info-value">{{ formatDate(student.last_subscription_expiry) }}</span>
                   </div>
                   <div class="info-item">
-                    <span class="info-label"><i class="bi bi-calendar-plus"></i> Registration Date</span>
+                    <span class="info-label"><i class="bi bi-calendar-plus"></i> تاريخ التسجيل</span>
                     <span class="info-value">{{ formatDate(student.created_at) }}</span>
                   </div>
                 </div>
@@ -258,7 +258,7 @@ onMounted(() => {
                   <div class="info-icon info-icon-warning">
                     <i class="bi bi-geo-alt"></i>
                   </div>
-                  <h3 class="info-card-title">Address</h3>
+                  <h3 class="info-card-title">العنوان</h3>
                 </div>
                 <div class="info-list">
                   <p class="address-text">{{ student.address }}</p>
@@ -270,10 +270,10 @@ onMounted(() => {
           <!-- Subscriptions Tab -->
           <div v-if="activeTab === 'subscriptions'" class="tab-pane">
             <div class="tab-header">
-              <h3 class="tab-title">Subscription History</h3>
+              <h3 class="tab-title">سجل الاشتراكات</h3>
               <button class="btn-add" @click="router.push(`/subscriptions/create?student_id=${student.id}`)">
                 <i class="bi bi-plus-circle"></i>
-                <span>Add Subscription</span>
+                <span>إضافة اشتراك</span>
               </button>
             </div>
 
@@ -281,12 +281,12 @@ onMounted(() => {
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th>Program</th>
-                    <th>Option</th>
-                    <th>Start Date</th>
-                    <th>Expiry Date</th>
-                    <th>Price</th>
-                    <th>Status</th>
+                    <th>البرنامج</th>
+                    <th>الخيار</th>
+                    <th>تاريخ البدء</th>
+                    <th>تاريخ الانتهاء</th>
+                    <th>السعر</th>
+                    <th>الحالة</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -301,7 +301,7 @@ onMounted(() => {
                         class="status-badge"
                         :class="subscription.is_active ? 'status-success' : 'status-danger'"
                       >
-                        {{ subscription.is_active ? 'Active' : 'Expired' }}
+                        {{ subscription.is_active ? 'نشط' : 'منتهي' }}
                       </span>
                     </td>
                   </tr>
@@ -310,17 +310,17 @@ onMounted(() => {
             </div>
             <div v-else class="empty-state">
               <i class="bi bi-calendar-x"></i>
-              <p>No subscriptions found</p>
+              <p>لم يتم العثور على اشتراكات</p>
             </div>
           </div>
 
           <!-- Payments Tab -->
           <div v-if="activeTab === 'payments'" class="tab-pane">
             <div class="tab-header">
-              <h3 class="tab-title">Payment History</h3>
+              <h3 class="tab-title">سجل المدفوعات</h3>
               <button class="btn-add" @click="router.push(`/payments/create?student_id=${student.id}`)">
                 <i class="bi bi-plus-circle"></i>
-                <span>Add Payment</span>
+                <span>إضافة دفعة</span>
               </button>
             </div>
 
@@ -328,12 +328,12 @@ onMounted(() => {
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th>Payment Number</th>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Method</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <th>رقم الدفعة</th>
+                    <th>التاريخ</th>
+                    <th>المبلغ</th>
+                    <th>الطريقة</th>
+                    <th>الحالة</th>
+                    <th>الإجراءات</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -347,14 +347,14 @@ onMounted(() => {
                         class="status-badge"
                         :class="`status-${payment.status === 'paid' ? 'success' : payment.status === 'pending' ? 'warning' : 'danger'}`"
                       >
-                        {{ payment.status.charAt(0).toUpperCase() + payment.status.slice(1) }}
+                        {{ payment.status === 'paid' ? 'مدفوع' : payment.status === 'pending' ? 'معلق' : 'فاشل' }}
                       </span>
                     </td>
                     <td>
                       <button
                         class="btn-icon"
                         @click="router.push(`/payments/${payment.id}`)"
-                        title="View"
+                        title="عرض"
                       >
                         <i class="bi bi-eye"></i>
                       </button>
@@ -365,7 +365,7 @@ onMounted(() => {
             </div>
             <div v-else class="empty-state">
               <i class="bi bi-credit-card-2-front"></i>
-              <p>No payments found</p>
+              <p>لم يتم العثور على مدفوعات</p>
             </div>
           </div>
         </div>

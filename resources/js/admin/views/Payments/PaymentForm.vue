@@ -50,17 +50,17 @@ const items = ref([
 const errors = ref({});
 
 const paymentMethods = ref([
-  { label: 'Cash', value: 'cash' }
+  { label: 'نقدي', value: 'cash' }
 ]);
 
 const paymentStatuses = ref([
-  { label: 'Paid', value: 'paid' },
-  { label: 'Pending', value: 'pending' }
+  { label: 'مدفوع', value: 'paid' },
+  { label: 'قيد الانتظار', value: 'pending' }
 ]);
 
 const itemTypes = ref([
-  { label: 'Subscription', value: 'subscription' },
-  { label: 'Product', value: 'product' }
+  { label: 'اشتراك', value: 'subscription' },
+  { label: 'منتج', value: 'product' }
 ]);
 
 const totalAmount = computed(() => {
@@ -465,13 +465,13 @@ onMounted(async () => {
           <i class="bi bi-cash-stack"></i>
         </div>
         <div class="header-text">
-          <h1 class="page-title">Add New Payment</h1>
-          <p class="page-subtitle">Record a student payment transaction</p>
+          <h1 class="page-title">إضافة دفعة جديدة</h1>
+          <p class="page-subtitle">تسجيل معاملة دفع للطالب</p>
         </div>
       </div>
       <div class="header-actions">
         <Button
-          label="Back to List"
+          label="العودة للقائمة"
           icon="bi bi-arrow-left"
           severity="secondary"
           outlined
@@ -489,8 +489,8 @@ onMounted(async () => {
             <i class="bi bi-info-circle-fill"></i>
           </div>
           <div class="section-text">
-            <h2 class="section-title">Payment Information</h2>
-            <p class="section-subtitle">Basic payment details and transaction method</p>
+            <h2 class="section-title">معلومات الدفع</h2>
+            <p class="section-subtitle">تفاصيل الدفع الأساسية وطريقة المعاملة</p>
           </div>
         </div>
 
@@ -500,7 +500,7 @@ onMounted(async () => {
             <div class="form-group">
               <label class="form-label">
                 <i class="bi bi-person"></i>
-                Student
+                الطالب
                 <span class="required">*</span>
               </label>
               <AutoComplete
@@ -509,7 +509,7 @@ onMounted(async () => {
                 @complete="searchStudents"
                 @item-select="handleStudentSelect"
                 optionLabel="label"
-                placeholder="Search by name, phone, or admission number..."
+                placeholder="البحث بالاسم أو الهاتف أو رقم القبول..."
                 :class="{ 'p-invalid': errors.student_id }"
                 forceSelection
                 dropdown
@@ -517,21 +517,21 @@ onMounted(async () => {
               <small v-if="errors.student_id" class="error-message">
                 {{ errors.student_id[0] }}
               </small>
-              <small v-else class="form-hint">Type at least 2 characters to search</small>
+              <small v-else class="form-hint">اكتب حرفين على الأقل للبحث</small>
             </div>
 
             <!-- Payment Method -->
             <div class="form-group">
               <label class="form-label">
                 <i class="bi bi-credit-card"></i>
-                Payment Method
+                طريقة الدفع
               </label>
               <Select
                 v-model="formData.payment_method"
                 :options="paymentMethods"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Select Payment Method"
+                placeholder="اختر طريقة الدفع"
               />
             </div>
 
@@ -539,7 +539,7 @@ onMounted(async () => {
             <div class="form-group">
               <label class="form-label">
                 <i class="bi bi-check-circle"></i>
-                Status
+                الحالة
                 <span class="required">*</span>
               </label>
               <Select
@@ -547,7 +547,7 @@ onMounted(async () => {
                 :options="paymentStatuses"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Select Status"
+                placeholder="اختر الحالة"
               />
             </div>
 
@@ -555,19 +555,19 @@ onMounted(async () => {
             <div class="form-group">
               <label class="form-label">
                 <i class="bi bi-ticket-perforated"></i>
-                Coupon Code
+                كود الكوبون
               </label>
               <div class="coupon-input-group">
                 <InputText
                   v-model="formData.coupon_code"
                   :invalid="!!errors.coupon_code"
                   :disabled="couponVerified"
-                  placeholder="Enter coupon code"
+                  placeholder="أدخل كود الكوبون"
                   class="coupon-input"
                 />
                 <Button
                   v-if="!couponVerified"
-                  label="Verify"
+                  label="تحقق"
                   icon="bi bi-check-circle"
                   :loading="verifyingCoupon"
                   @click="verifyCoupon"
@@ -577,7 +577,7 @@ onMounted(async () => {
                 />
                 <Button
                   v-else
-                  label="Remove"
+                  label="إزالة"
                   icon="bi bi-x-circle"
                   @click="removeCoupon"
                   severity="danger"
@@ -590,7 +590,7 @@ onMounted(async () => {
               </small>
               <small v-if="couponVerified" class="success-message">
                 <i class="bi bi-check-circle-fill me-1"></i>
-                Coupon verified successfully!
+                تم التحقق من الكوبون بنجاح!
               </small>
             </div>
 
@@ -598,15 +598,15 @@ onMounted(async () => {
             <div class="form-group form-group-full">
               <label class="form-label">
                 <i class="bi bi-pencil-square"></i>
-                Note
+                ملاحظات
               </label>
               <Textarea
                 v-model="formData.note"
                 rows="3"
-                placeholder="Optional payment notes..."
+                placeholder="ملاحظات اختيارية..."
                 autoResize
               />
-              <small class="form-hint">Add any additional notes about this payment</small>
+              <small class="form-hint">أضف أي ملاحظات إضافية حول هذه الدفعة</small>
             </div>
           </div>
         </div>
@@ -619,11 +619,11 @@ onMounted(async () => {
             <i class="bi bi-cart-check-fill"></i>
           </div>
           <div class="section-text">
-            <h2 class="section-title">Payment Items</h2>
-            <p class="section-subtitle">Add subscriptions or products to this payment</p>
+            <h2 class="section-title">عناصر الدفع</h2>
+            <p class="section-subtitle">إضافة اشتراكات أو منتجات لهذه الدفعة</p>
           </div>
           <Button
-            label="Add Item"
+            label="إضافة عنصر"
             icon="bi bi-plus-circle"
             severity="success"
             @click="addItem"
@@ -639,7 +639,7 @@ onMounted(async () => {
               <div class="item-header">
                 <div class="item-badge">
                   <i class="bi bi-tag-fill"></i>
-                  Item {{ index + 1 }}
+                  عنصر {{ index + 1 }}
                 </div>
                 <Button
                   v-if="items.length > 1"
@@ -656,30 +656,30 @@ onMounted(async () => {
               <!-- Payment Info Card -->
               <div v-if="item.payment_info" class="payment-info-card">
                 <div class="info-row">
-                  <span class="info-label">Total Price:</span>
+                  <span class="info-label">السعر الإجمالي:</span>
                   <span class="info-value">${{ item.payment_info.total_price.toFixed(2) }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Already Paid:</span>
+                  <span class="info-label">تم دفعه مسبقاً:</span>
                   <span class="info-value success">${{ item.payment_info.paid_amount.toFixed(2) }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Remaining:</span>
+                  <span class="info-label">المتبقي:</span>
                   <span class="info-value warning">${{ item.payment_info.remaining_amount.toFixed(2) }}</span>
                 </div>
                 <div v-if="item.payment_info.is_full_payment" class="info-row highlight">
                   <i class="bi bi-exclamation-circle"></i>
-                  <span class="info-text">Full payment required: ${{ item.payment_info.remaining_amount.toFixed(2) }}</span>
+                  <span class="info-text">يتطلب دفع كامل: ${{ item.payment_info.remaining_amount.toFixed(2) }}</span>
                 </div>
                 <div v-else class="info-row highlight">
                   <i class="bi bi-info-circle"></i>
-                  <span class="info-text">Partial payment allowed: $1 - ${{ item.payment_info.remaining_amount.toFixed(2) }}</span>
+                  <span class="info-text">يمكن الدفع الجزئي: $1 - ${{ item.payment_info.remaining_amount.toFixed(2) }}</span>
                 </div>
               </div>
 
               <div v-if="item.loading_info" class="loading-info">
                 <i class="bi bi-hourglass-split"></i>
-                <span>Loading payment information...</span>
+                <span>جاري تحميل معلومات الدفع...</span>
               </div>
 
               <div class="item-content">
@@ -688,7 +688,7 @@ onMounted(async () => {
                   <div class="form-group">
                     <label class="form-label">
                       <i class="bi bi-tag"></i>
-                      Item Type
+                      نوع العنصر
                       <span class="required">*</span>
                     </label>
                     <Select
@@ -704,7 +704,7 @@ onMounted(async () => {
                   <div class="form-group">
                     <label class="form-label">
                       <i class="bi bi-box"></i>
-                      {{ item.item_type === 'subscription' ? 'Subscription' : 'Product' }}
+                      {{ item.item_type === 'subscription' ? 'الاشتراك' : 'المنتج' }}
                       <span class="required">*</span>
                     </label>
                     <Select
@@ -712,7 +712,7 @@ onMounted(async () => {
                       :options="item.item_type === 'subscription' ? subscriptionOptions : productOptions"
                       optionLabel="label"
                       optionValue="value"
-                      :placeholder="`Select ${item.item_type === 'subscription' ? 'Subscription' : 'Product'}`"
+                      :placeholder="`اختر ${item.item_type === 'subscription' ? 'الاشتراك' : 'المنتج'}`"
                       :disabled="!formData.student_id && item.item_type === 'subscription'"
                       @change="handleItemSelect(item)"
                       filter
@@ -724,12 +724,12 @@ onMounted(async () => {
                   <div class="form-group form-group-full">
                     <label class="form-label">
                       <i class="bi bi-text-left"></i>
-                      Description
+                      الوصف
                       <span class="required">*</span>
                     </label>
                     <InputText
                       v-model="item.description"
-                      placeholder="Item description"
+                      placeholder="وصف العنصر"
                     />
                   </div>
 
@@ -737,7 +737,7 @@ onMounted(async () => {
                   <div class="form-group">
                     <label class="form-label">
                       <i class="bi bi-hash"></i>
-                      Quantity
+                      الكمية
                       <span class="required">*</span>
                     </label>
                     <InputNumber
@@ -757,7 +757,7 @@ onMounted(async () => {
                   <div class="form-group">
                     <label class="form-label">
                       <i class="bi bi-currency-dollar"></i>
-                      Unit Price
+                      سعر الوحدة
                       <span class="required">*</span>
                     </label>
                     <InputNumber
@@ -775,7 +775,7 @@ onMounted(async () => {
                   <div class="form-group">
                     <label class="form-label">
                       <i class="bi bi-percent"></i>
-                      Discount
+                      الخصم
                     </label>
                     <InputNumber
                       v-model="item.discount_value"
@@ -793,7 +793,7 @@ onMounted(async () => {
                   <div class="form-group">
                     <label class="form-label">
                       <i class="bi bi-cash"></i>
-                      Total Price
+                      السعر الإجمالي
                       <span class="required">*</span>
                     </label>
                     <div class="total-price-display" :class="{ 'has-error': errors[`items.${index}.total_price`] }">
@@ -813,21 +813,21 @@ onMounted(async () => {
           <div v-if="couponVerified && couponDiscount" class="discount-preview">
             <div class="preview-header">
               <i class="bi bi-receipt-cutoff"></i>
-              <span>Coupon Discount Applied</span>
+              <span>تم تطبيق خصم الكوبون</span>
             </div>
             <div class="preview-body">
               <div class="preview-row">
-                <span class="preview-label">Subtotal:</span>
+                <span class="preview-label">المجموع الفرعي:</span>
                 <span class="preview-value">${{ couponDiscount.original_amount }}</span>
               </div>
               <div class="preview-row discount-row">
                 <span class="preview-label">
-                  Discount ({{ couponDiscount.discount_type === 'percent' ? `${couponDiscount.discount_value}%` : 'Fixed' }}):
+                  الخصم ({{ couponDiscount.discount_type === 'percent' ? `${couponDiscount.discount_value}%` : 'ثابت' }}):
                 </span>
                 <span class="preview-value">-${{ couponDiscount.discount_amount }}</span>
               </div>
               <div class="preview-row final-row">
-                <span class="preview-label">Final Amount:</span>
+                <span class="preview-label">المبلغ النهائي:</span>
                 <span class="preview-value">${{ couponDiscount.final_amount }}</span>
               </div>
             </div>
@@ -838,7 +838,7 @@ onMounted(async () => {
             <div class="summary-content">
               <div class="summary-label">
                 <i class="bi bi-calculator"></i>
-                {{ couponVerified ? 'Final' : 'Total' }} Amount
+                {{ couponVerified ? 'المبلغ النهائي' : 'المبلغ الإجمالي' }}
               </div>
               <div class="summary-value" :class="{ 'discounted': couponVerified }">
                 ${{ finalAmount.toFixed(2) }}
@@ -851,14 +851,14 @@ onMounted(async () => {
       <!-- Form Actions -->
       <div class="form-actions">
         <Button
-          label="Cancel"
+          label="إلغاء"
           severity="secondary"
           outlined
           @click="router.push('/payments')"
           type="button"
         />
         <Button
-          label="Create Payment"
+          label="إضافة الدفعة"
           icon="bi bi-check-circle"
           :loading="loading"
           type="submit"

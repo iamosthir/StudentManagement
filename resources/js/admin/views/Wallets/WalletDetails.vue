@@ -4,7 +4,7 @@
         <div class="page-header">
             <div>
                 <Button
-                    label="Back to Wallets"
+                    label="العودة إلى المحافظ"
                     icon="bi bi-arrow-left"
                     severity="secondary"
                     text
@@ -17,7 +17,7 @@
                 </h1>
                 <p v-if="!loading" class="page-subtitle">
                     {{ formatWalletType(wallet.type) }}
-                    <span v-if="wallet.owner"> • Owned by {{ wallet.owner.name }}</span>
+                    <span v-if="wallet.owner"> • مملوك لـ {{ wallet.owner.name }}</span>
                 </p>
             </div>
         </div>
@@ -32,9 +32,9 @@
                         <i class="bi bi-arrow-down-circle"></i>
                     </div>
                     <div class="card-content">
-                        <h3>Receivable Amount</h3>
+                        <h3>المبلغ المستحق</h3>
                         <p class="amount">${{ formatMoney(wallet.receivable_amount) }}</p>
-                        <span class="hint">Money coming in</span>
+                        <span class="hint">الأموال الواردة</span>
                     </div>
                 </div>
 
@@ -43,9 +43,9 @@
                         <i class="bi bi-arrow-up-circle"></i>
                     </div>
                     <div class="card-content">
-                        <h3>Payable Amount</h3>
+                        <h3>المبلغ المستحق الدفع</h3>
                         <p class="amount">${{ formatMoney(wallet.payable_amount) }}</p>
-                        <span class="hint">Money going out</span>
+                        <span class="hint">الأموال الصادرة</span>
                     </div>
                 </div>
 
@@ -54,11 +54,11 @@
                         <i class="bi bi-calculator"></i>
                     </div>
                     <div class="card-content">
-                        <h3>Current Balance</h3>
+                        <h3>الرصيد الحالي</h3>
                         <p :class="['amount', wallet.balance >= 0 ? 'positive' : 'negative']">
                             ${{ formatMoney(wallet.balance) }}
                         </p>
-                        <span class="hint">Receivable - Payable</span>
+                        <span class="hint">المستحق - المستحق الدفع</span>
                     </div>
                 </div>
             </div>
@@ -66,14 +66,14 @@
             <!-- Transaction Filters -->
             <div class="transactions-section">
                 <div class="section-header">
-                    <h2>Transaction History</h2>
+                    <h2>سجل المعاملات</h2>
                     <div class="filters">
                         <Select
                             v-model="filters.type"
                             :options="transactionTypes"
                             optionLabel="label"
                             optionValue="value"
-                            placeholder="All Types"
+                            placeholder="جميع الأنواع"
                             @change="fetchTransactions"
                         />
                         <Select
@@ -81,7 +81,7 @@
                             :options="directions"
                             optionLabel="label"
                             optionValue="value"
-                            placeholder="All Directions"
+                            placeholder="جميع الاتجاهات"
                             @change="fetchTransactions"
                         />
                     </div>
@@ -94,12 +94,12 @@
                     <table v-else-if="transactions.length > 0" class="data-table">
                         <thead>
                             <tr>
-                                <th>Date & Time</th>
-                                <th>Type</th>
-                                <th>Direction</th>
-                                <th>Amount</th>
-                                <th>Description</th>
-                                <th>Created By</th>
+                                <th>التاريخ والوقت</th>
+                                <th>النوع</th>
+                                <th>الاتجاه</th>
+                                <th>المبلغ</th>
+                                <th>الوصف</th>
+                                <th>أنشئ بواسطة</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -118,7 +118,7 @@
                                 <td>
                                     <span :class="['direction-badge', transaction.direction]">
                                         <i :class="transaction.direction === 'in' ? 'bi bi-arrow-down' : 'bi bi-arrow-up'"></i>
-                                        {{ transaction.direction === 'in' ? 'In' : 'Out' }}
+                                        {{ transaction.direction === 'in' ? 'وارد' : 'صادر' }}
                                     </span>
                                 </td>
                                 <td>
@@ -131,11 +131,11 @@
                                         {{ transaction.description }}
                                         <div v-if="transaction.related_payment" class="related-info">
                                             <i class="bi bi-link-45deg"></i>
-                                            Payment #{{ transaction.related_payment_id }}
+                                            دفعة #{{ transaction.related_payment_id }}
                                         </div>
                                         <div v-if="transaction.related_expense" class="related-info">
                                             <i class="bi bi-link-45deg"></i>
-                                            Expense #{{ transaction.related_expense_id }}
+                                            مصروف #{{ transaction.related_expense_id }}
                                         </div>
                                     </div>
                                 </td>
@@ -143,7 +143,7 @@
                                     <span v-if="transaction.created_by">
                                         {{ transaction.created_by.name }}
                                     </span>
-                                    <span v-else class="text-muted">System</span>
+                                    <span v-else class="text-muted">النظام</span>
                                 </td>
                             </tr>
                         </tbody>
@@ -151,23 +151,23 @@
 
                     <div v-else class="empty-state">
                         <i class="bi bi-inbox"></i>
-                        <p>No transactions found</p>
+                        <p>لم يتم العثور على معاملات</p>
                     </div>
 
                     <!-- Pagination -->
                     <div v-if="pagination.total > 0" class="pagination-controls">
                         <Button
-                            label="Previous"
+                            label="السابق"
                             icon="bi bi-chevron-left"
                             :disabled="pagination.current_page === 1"
                             @click="changePage(pagination.current_page - 1)"
                         />
                         <span class="page-info">
-                            Page {{ pagination.current_page }} of {{ pagination.last_page }}
-                            ({{ pagination.total }} total)
+                            صفحة {{ pagination.current_page }} من {{ pagination.last_page }}
+                            ({{ pagination.total }} إجمالي)
                         </span>
                         <Button
-                            label="Next"
+                            label="التالي"
                             icon="bi bi-chevron-right"
                             iconPos="right"
                             :disabled="pagination.current_page === pagination.last_page"
@@ -208,17 +208,17 @@ const filters = ref({
 });
 
 const transactionTypes = [
-    { label: 'All Types', value: null },
-    { label: 'Payment In', value: 'payment_in' },
-    { label: 'Transfer In', value: 'transfer_in' },
-    { label: 'Transfer Out', value: 'transfer_out' },
-    { label: 'Expense', value: 'expense' },
+    { label: 'جميع الأنواع', value: null },
+    { label: 'دفعة واردة', value: 'payment_in' },
+    { label: 'تحويل وارد', value: 'transfer_in' },
+    { label: 'تحويل صادر', value: 'transfer_out' },
+    { label: 'مصروف', value: 'expense' },
 ];
 
 const directions = [
-    { label: 'All Directions', value: null },
-    { label: 'Incoming', value: 'in' },
-    { label: 'Outgoing', value: 'out' },
+    { label: 'جميع الاتجاهات', value: null },
+    { label: 'وارد', value: 'in' },
+    { label: 'صادر', value: 'out' },
 ];
 
 onMounted(() => {
@@ -275,9 +275,9 @@ const formatMoney = (amount) => {
 
 const formatWalletType = (type) => {
     const types = {
-        'staff': 'Staff Wallet',
-        'main_cashbox': 'Main Cashbox',
-        'expense': 'Expense Wallet',
+        'staff': 'محفظة الموظف',
+        'main_cashbox': 'الخزينة الرئيسية',
+        'expense': 'محفظة المصرونات',
     };
     return types[type] || type;
 };
@@ -293,10 +293,10 @@ const getWalletIcon = (type) => {
 
 const formatTransactionType = (type) => {
     const types = {
-        'payment_in': 'Payment In',
-        'transfer_in': 'Transfer In',
-        'transfer_out': 'Transfer Out',
-        'expense': 'Expense',
+        'payment_in': 'دفعة واردة',
+        'transfer_in': 'تحويل وارد',
+        'transfer_out': 'تحويل صادر',
+        'expense': 'مصروف',
     };
     return types[type] || type;
 };

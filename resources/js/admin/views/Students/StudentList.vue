@@ -1,15 +1,15 @@
 <template>
-    <div class="students">
+    <div class="students" dir="rtl">
         <!-- Page Header -->
         <div class="page-header">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 w-100">
                 <div>
                     <h1 class="page-title">
                         <i v-if="statusFilter === 'archived'" class="bi bi-archive me-2"></i>
-                        {{ statusFilter === 'archived' ? 'Student Archive' : 'Students' }}
+                        {{ statusFilter === 'archived' ? 'أرشيف الطلاب' : 'الطلاب' }}
                     </h1>
                     <p v-if="statusFilter === 'archived'" class="page-subtitle">
-                        View and restore archived students
+                        عرض واستعادة الطلاب المؤرشفة
                     </p>
                 </div>
                 <div class="d-flex gap-2">
@@ -19,10 +19,10 @@
                         class="btn-secondary"
                     >
                         <i class="bi bi-arrow-left me-2"></i>
-                        Back to Students
+                        العودة للطلاب
                     </router-link>
                     <router-link v-if="statusFilter !== 'archived'" :to="{ name: 'students.create' }" class="btn-primary">
-                        Add Student
+                        إضافة طالب
                     </router-link>
                 </div>
             </div>
@@ -39,30 +39,30 @@
                                 type="text"
                                 v-model="search"
                                 @keyup.enter="handleSearch"
-                                placeholder="Search by name, admission number, phone..."
+                                placeholder="البحث بالاسم، رقم القبول، الهاتف..."
                                 class="search-input"
                             />
                         </div>
                     </div>
                     <div class="col-md-2">
                         <select v-model="statusFilter" class="filter-select" @change="handleSearch">
-                            <option value="">All Status</option>
-                            <option value="active">Active</option>
-                            <option value="pending_payment">Pending Payment</option>
-                            <option value="expired">Expired</option>
-                            <option value="archived">Archived</option>
+                            <option value="">جميع الحالات</option>
+                            <option value="active">نشط</option>
+                            <option value="pending_payment">انتظار الدفع</option>
+                            <option value="expired">منتهي</option>
+                            <option value="archived">مؤرشف</option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <select v-model="programFilter" class="filter-select" @change="handleSearch">
-                            <option value="">All Programs</option>
+                            <option value="">جميع البرامج</option>
                             <option v-for="program in programs" :key="program.id" :value="program.id">
                                 {{ program.name }}
                             </option>
                         </select>
                     </div>
                     <div class="col-md-1">
-                        <button class="btn-filter-reset" @click="resetFilters" title="Reset Filters">
+                        <button class="btn-filter-reset" @click="resetFilters" title="إعادة تعيين الفلاتر">
                             <i class="bi bi-arrow-clockwise"></i>
                         </button>
                     </div>
@@ -74,10 +74,10 @@
         <div class="glass-card">
             <div class="glass-card-header">
                 <h6 class="card-title">
-                    {{ statusFilter === 'archived' ? 'Archived Students' : 'All Students' }}
+                    {{ statusFilter === 'archived' ? 'الطلاب المؤرشفون' : 'جميع الطلاب' }}
                 </h6>
                 <div class="header-actions">
-                    <span class="student-count">{{ pagination.total || 0 }} {{ statusFilter === 'archived' ? 'Archived' : '' }} Students</span>
+                    <span class="student-count">{{ pagination.total || 0 }} {{ statusFilter === 'archived' ? 'مؤرشف' : '' }} طالب</span>
                 </div>
             </div>
             <div class="glass-card-body">
@@ -87,10 +87,10 @@
                 <!-- Empty State -->
                 <div v-else-if="students.length === 0" class="empty-state">
                     <i class="bi bi-people"></i>
-                    <h3>No Students Found</h3>
-                    <p>Start by adding your first student</p>
+                    <h3>لم يتم العثور على طلاب</h3>
+                    <p>ابدأ بإضافة طالبك الأول</p>
                     <router-link :to="{ name: 'students.create' }" class="btn-primary">
-                        Add Student
+                        إضافة طالب
                     </router-link>
                 </div>
 
@@ -99,16 +99,16 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Admission Number</th>
-                                <th>Student Name</th>
-                                <th>Phone</th>
-                                <th>Program</th>
-                                <th>Subscriptions</th>
-                                <th>Total Payable</th>
-                                <th>Total Paid</th>
-                                <th>Total Due</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>رقم القبول</th>
+                                <th>اسم الطالب</th>
+                                <th>الهاتف</th>
+                                <th>البرنامج</th>
+                                <th>الاشتراكات</th>
+                                <th>إجمالي المستحق</th>
+                                <th>إجمالي المدفوع</th>
+                                <th>إجمالي المتبقي</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -141,11 +141,11 @@
                                             v-for="sub in student.subscriptions"
                                             :key="sub.id"
                                             :class="['subscription-badge', getSubscriptionStatusClass(sub), 'clickable-badge']"
-                                            :title="`${sub.subscription_option?.name} - Expires: ${formatDate(sub.expiry_date)} - Click to renew`"
+                                            :title="`${sub.subscription_option?.name} - انتهاء: ${formatDate(sub.expiry_date)} - انقر للتجديد`"
                                             @click.stop="openRenewalModal(sub, student)"
                                         >
                                             <i :class="getSubscriptionIcon(sub)"></i>
-                                            {{ sub.subscription_option?.name || 'Subscription' }}
+                                            {{ sub.subscription_option?.name || 'اشتراك' }}
                                         </span>
                                     </div>
                                     <span v-else class="text-muted">—</span>
@@ -175,21 +175,21 @@
                                         <button
                                             @click="openPaymentModal(student)"
                                             class="btn-action btn-action-payment"
-                                            title="Add Payment"
+                                            title="إضافة دفعة"
                                         >
                                             <i class="bi bi-cash-stack"></i>
                                         </button>
                                         <router-link
                                             :to="{ name: 'students.show', params: { id: student.id } }"
                                             class="btn-action btn-action-view"
-                                            title="View Details"
+                                            title="عرض التفاصيل"
                                         >
                                             <i class="bi bi-eye"></i>
                                         </router-link>
                                         <router-link
                                             :to="{ name: 'students.edit', params: { id: student.id } }"
                                             class="btn-action btn-action-edit"
-                                            title="Edit"
+                                            title="تعديل"
                                         >
                                             <i class="bi bi-pencil"></i>
                                         </router-link>
@@ -197,7 +197,7 @@
                                             v-if="student.status === 'archived'"
                                             @click="confirmRestore(student)"
                                             class="btn-action btn-action-restore"
-                                            title="Restore"
+                                            title="استعادة"
                                         >
                                             <i class="bi bi-arrow-counterclockwise"></i>
                                         </button>
@@ -205,14 +205,14 @@
                                             v-if="student.status !== 'archived'"
                                             @click="confirmArchive(student)"
                                             class="btn-action btn-action-archive"
-                                            title="Archive"
+                                            title="أرشفة"
                                         >
                                             <i class="bi bi-archive"></i>
                                         </button>
                                         <button
                                             @click="confirmDelete(student)"
                                             class="btn-action btn-action-delete"
-                                            title="Delete"
+                                            title="حذف"
                                         >
                                             <i class="bi bi-trash"></i>
                                         </button>
@@ -234,7 +234,7 @@
                     </button>
 
                     <span class="pagination-info">
-                        Page {{ pagination.current_page }} of {{ pagination.last_page }}
+                        الصفحة {{ pagination.current_page }} من {{ pagination.last_page }}
                     </span>
 
                     <button
@@ -252,7 +252,7 @@
         <div v-if="showArchiveModal" class="modal-overlay" @click="showArchiveModal = false">
             <div class="modal-content" @click.stop>
                 <div class="modal-header">
-                    <h5 class="modal-title">Confirm Archive</h5>
+                    <h5 class="modal-title">تأكيد الأرشفة</h5>
                     <button @click="showArchiveModal = false" class="btn-close">
                         <i class="bi bi-x-lg"></i>
                     </button>
@@ -261,14 +261,14 @@
                     <div class="modal-icon modal-icon-warning">
                         <i class="bi bi-archive"></i>
                     </div>
-                    <p>Are you sure you want to archive <strong>{{ studentToArchive?.full_name }}</strong>?</p>
-                    <p class="text-muted">Archived students can be restored later.</p>
+                    <p>هل أنت متأكد من أرشفة <strong>{{ studentToArchive?.full_name }}</strong>؟</p>
+                    <p class="text-muted">يمكن استعادة الطلاب المؤرشفين لاحقاً.</p>
                 </div>
                 <div class="modal-footer">
-                    <button @click="showArchiveModal = false" class="btn-secondary">Cancel</button>
+                    <button @click="showArchiveModal = false" class="btn-secondary">إلغاء</button>
                     <button @click="archiveStudent" class="btn-warning" :disabled="archiving">
                         <i v-if="archiving" class="bi bi-arrow-repeat spinner me-2"></i>
-                        {{ archiving ? 'Archiving...' : 'Archive' }}
+                        {{ archiving ? 'جاري الأرشفة...' : 'أرشفة' }}
                     </button>
                 </div>
             </div>
@@ -278,7 +278,7 @@
         <div v-if="showRestoreModal" class="modal-overlay" @click="showRestoreModal = false">
             <div class="modal-content" @click.stop>
                 <div class="modal-header">
-                    <h5 class="modal-title">Confirm Restore</h5>
+                    <h5 class="modal-title">تأكيد الاستعادة</h5>
                     <button @click="showRestoreModal = false" class="btn-close">
                         <i class="bi bi-x-lg"></i>
                     </button>
@@ -287,14 +287,14 @@
                     <div class="modal-icon modal-icon-success">
                         <i class="bi bi-arrow-counterclockwise"></i>
                     </div>
-                    <p>Are you sure you want to restore <strong>{{ studentToRestore?.full_name }}</strong>?</p>
-                    <p class="text-muted">The student will be moved back to active students.</p>
+                    <p>هل أنت متأكد من استعادة <strong>{{ studentToRestore?.full_name }}</strong>؟</p>
+                    <p class="text-muted">سيتم نقل الطالب مرة أخرى إلى الطلاب النشطين.</p>
                 </div>
                 <div class="modal-footer">
-                    <button @click="showRestoreModal = false" class="btn-secondary">Cancel</button>
+                    <button @click="showRestoreModal = false" class="btn-secondary">إلغاء</button>
                     <button @click="restoreStudent" class="btn-success" :disabled="restoring">
                         <i v-if="restoring" class="bi bi-arrow-repeat spinner me-2"></i>
-                        {{ restoring ? 'Restoring...' : 'Restore' }}
+                        {{ restoring ? 'جاري الاستعادة...' : 'استعادة' }}
                     </button>
                 </div>
             </div>
@@ -304,7 +304,7 @@
         <div v-if="showDeleteModal" class="modal-overlay" @click="showDeleteModal = false">
             <div class="modal-content" @click.stop>
                 <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
+                    <h5 class="modal-title">تأكيد الحذف</h5>
                     <button @click="showDeleteModal = false" class="btn-close">
                         <i class="bi bi-x-lg"></i>
                     </button>
@@ -313,14 +313,14 @@
                     <div class="modal-icon modal-icon-danger">
                         <i class="bi bi-trash"></i>
                     </div>
-                    <p>Are you sure you want to delete <strong>{{ studentToDelete?.full_name }}</strong>?</p>
-                    <p class="text-muted">This action cannot be undone.</p>
+                    <p>هل أنت متأكد من حذف <strong>{{ studentToDelete?.full_name }}</strong>؟</p>
+                    <p class="text-muted">لا يمكن التراجع عن هذا الإجراء.</p>
                 </div>
                 <div class="modal-footer">
-                    <button @click="showDeleteModal = false" class="btn-secondary">Cancel</button>
+                    <button @click="showDeleteModal = false" class="btn-secondary">إلغاء</button>
                     <button @click="deleteStudent" class="btn-danger" :disabled="deleting">
                         <i v-if="deleting" class="bi bi-arrow-repeat spinner me-2"></i>
-                        {{ deleting ? 'Deleting...' : 'Delete' }}
+                        {{ deleting ? 'جاري الحذف...' : 'حذف' }}
                     </button>
                 </div>
             </div>
@@ -330,7 +330,7 @@
         <Dialog
             v-model:visible="showRenewalModal"
             modal
-            header="Renew Subscription"
+            header="تجديد الاشتراك"
             :style="{ width: '90vw', maxWidth: '600px', zIndex: 9999 }"
             :dismissableMask="true"
             :closable="true"
@@ -341,21 +341,21 @@
                     <div class="renewal-section">
                         <div class="renewal-info-card">
                             <div class="info-row">
-                                <span class="info-label"><i class="bi bi-person"></i> Student:</span>
+                                <span class="info-label"><i class="bi bi-person"></i> الطالب:</span>
                                 <span class="info-value">{{ selectedStudent?.full_name }}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label"><i class="bi bi-calendar-check"></i> Current Expiry:</span>
+                                <span class="info-label"><i class="bi bi-calendar-check"></i> تاريخ الانتهاء الحالي:</span>
                                 <span class="info-value">{{ formatDate(selectedSubscription?.expiry_date) }}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label"><i class="bi bi-clock-history"></i> Remaining Days:</span>
+                                <span class="info-label"><i class="bi bi-clock-history"></i> الأيام المتبقية:</span>
                                 <span class="info-value" :class="selectedSubscription?.remaining_days <= 7 ? 'text-warning' : ''">
-                                    {{ selectedSubscription?.remaining_days || 0 }} days
+                                    {{ selectedSubscription?.remaining_days || 0 }} يوم
                                 </span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label"><i class="bi bi-currency-dollar"></i> Current Price:</span>
+                                <span class="info-label"><i class="bi bi-currency-dollar"></i> السعر الحالي:</span>
                                 <span class="info-value">${{ parseFloat(selectedSubscription?.final_price || 0).toFixed(2) }}</span>
                             </div>
                         </div>
@@ -365,7 +365,7 @@
                     <div class="renewal-section">
                         <h4 class="section-title">
                             <i class="bi bi-arrow-clockwise"></i>
-                            Renewal Details
+                            تفاصيل التجديد
                         </h4>
 
                         <div class="form-grid">
@@ -373,7 +373,7 @@
                             <div class="form-group">
                                 <label class="form-label">
                                     <i class="bi bi-calendar-range"></i>
-                                    Extension Duration (Months)
+                                    مدة التمديد (أشهر)
                                     <span class="required">*</span>
                                 </label>
                                 <InputNumber
@@ -388,7 +388,7 @@
                                     decrementButtonIcon="bi bi-dash"
                                 />
                                 <small class="form-hint">
-                                    Default: {{ selectedSubscription?.subscription_option?.duration_months }} months
+                                    الافتراضي: {{ selectedSubscription?.subscription_option?.duration_months }} أشهر
                                 </small>
                             </div>
 
@@ -396,7 +396,7 @@
                             <div class="form-group">
                                 <label class="form-label">
                                     <i class="bi bi-cash-coin"></i>
-                                    Renewal Price
+                                    سعر التجديد
                                     <span class="required">*</span>
                                 </label>
                                 <InputNumber
@@ -408,7 +408,7 @@
                                     :maxFractionDigits="2"
                                 />
                                 <small class="form-hint">
-                                    Default: ${{ parseFloat(selectedSubscription?.final_price || 0).toFixed(2) }}
+                                    الافتراضي: ${{ parseFloat(selectedSubscription?.final_price || 0).toFixed(2) }}
                                 </small>
                             </div>
 
@@ -416,7 +416,7 @@
                             <div class="form-group form-group-full">
                                 <label class="form-label">
                                     <i class="bi bi-calendar-event"></i>
-                                    New Expiry Date
+                                    تاريخ الانتهاء الجديد
                                 </label>
                                 <div class="calculated-expiry">
                                     <i class="bi bi-calendar-check-fill"></i>
@@ -436,7 +436,7 @@
                                     :binary="true"
                                 />
                                 <label for="create_payment" class="checkbox-label">
-                                    Create payment record for this renewal
+                                    إنشاء سجل دفعة لهذا التجديد
                                 </label>
                             </div>
                         </div>
@@ -448,7 +448,7 @@
                                 <div class="form-group">
                                     <label class="form-label">
                                         <i class="bi bi-credit-card"></i>
-                                        Payment Method
+                                        طريقة الدفع
                                         <span class="required">*</span>
                                     </label>
                                     <Select
@@ -456,7 +456,7 @@
                                         :options="paymentMethods"
                                         optionLabel="label"
                                         optionValue="value"
-                                        placeholder="Select Payment Method"
+                                        placeholder="اختر طريقة الدفع"
                                     />
                                 </div>
 
@@ -464,7 +464,7 @@
                                 <div class="form-group">
                                     <label class="form-label">
                                         <i class="bi bi-check-circle"></i>
-                                        Payment Status
+                                        حالة الدفع
                                         <span class="required">*</span>
                                     </label>
                                     <Select
@@ -472,7 +472,7 @@
                                         :options="paymentStatuses"
                                         optionLabel="label"
                                         optionValue="value"
-                                        placeholder="Select Status"
+                                        placeholder="اختر الحالة"
                                     />
                                 </div>
 
@@ -480,12 +480,12 @@
                                 <div class="form-group form-group-full">
                                     <label class="form-label">
                                         <i class="bi bi-pencil-square"></i>
-                                        Payment Note
+                                        ملاحظة الدفع
                                     </label>
                                     <Textarea
                                         v-model="renewalForm.payment_note"
                                         rows="2"
-                                        placeholder="Optional payment notes..."
+                                        placeholder="ملاحظات دفع اختيارية..."
                                         autoResize
                                     />
                                 </div>
@@ -496,14 +496,14 @@
                     <!-- Form Actions -->
                     <div class="modal-actions">
                         <Button
-                            label="Cancel"
+                            label="إلغاء"
                             severity="secondary"
                             outlined
                             @click="closeRenewalModal"
                             type="button"
                         />
                         <Button
-                            label="Renew Subscription"
+                            label="تجديد الاشتراك"
                             icon="bi bi-arrow-clockwise"
                             :loading="submittingRenewal"
                             type="submit"
@@ -517,7 +517,7 @@
         <Dialog
             v-model:visible="showPaymentModal"
             modal
-            :header="`Add Payment - ${selectedStudentForPayment?.full_name}`"
+            :header="`إضافة دفعة - ${selectedStudentForPayment?.full_name}`"
             :style="{ width: '90vw', maxWidth: '1000px' }"
             :contentStyle="{ padding: 0 }"
         >
@@ -527,7 +527,7 @@
                     <div class="payment-section">
                         <div class="section-header-small">
                             <i class="bi bi-info-circle-fill"></i>
-                            <h3>Payment Information</h3>
+                            <h3>معلومات الدفع</h3>
                         </div>
                         <div class="section-body-small">
                             <div class="form-grid-2">
@@ -535,14 +535,14 @@
                                 <div class="form-group">
                                     <label class="form-label">
                                         <i class="bi bi-credit-card"></i>
-                                        Payment Method
+                                        طريقة الدفع
                                     </label>
                                     <Select
                                         v-model="paymentForm.payment_method"
                                         :options="paymentMethods"
                                         optionLabel="label"
                                         optionValue="value"
-                                        placeholder="Select Payment Method"
+                                        placeholder="اختر طريقة الدفع"
                                     />
                                 </div>
 
@@ -550,7 +550,7 @@
                                 <div class="form-group">
                                     <label class="form-label">
                                         <i class="bi bi-check-circle"></i>
-                                        Status
+                                        الحالة
                                         <span class="required">*</span>
                                     </label>
                                     <Select
@@ -558,7 +558,7 @@
                                         :options="paymentStatuses"
                                         optionLabel="label"
                                         optionValue="value"
-                                        placeholder="Select Status"
+                                        placeholder="اختر الحالة"
                                     />
                                 </div>
 
@@ -566,12 +566,12 @@
                                 <div class="form-group form-group-full">
                                     <label class="form-label">
                                         <i class="bi bi-pencil-square"></i>
-                                        Note
+                                        ملاحظة
                                     </label>
                                     <Textarea
                                         v-model="paymentForm.note"
                                         rows="3"
-                                        placeholder="Optional payment notes..."
+                                        placeholder="ملاحظات دفع اختيارية..."
                                         autoResize
                                     />
                                 </div>
@@ -583,9 +583,9 @@
                     <div class="payment-section">
                         <div class="section-header-small">
                             <i class="bi bi-cart-check-fill"></i>
-                            <h3>Payment Items</h3>
+                            <h3>بنود الدفع</h3>
                             <Button
-                                label="Add Item"
+                                label="إضافة بند"
                                 icon="bi bi-plus-circle"
                                 severity="success"
                                 size="small"
@@ -598,9 +598,9 @@
                             <div class="payment-items-list">
                                 <div v-for="(item, index) in paymentItems" :key="index" class="payment-item-card">
                                     <div class="item-header-small">
-                                        <span class="item-number">Item {{ index + 1 }}</span>
+                                        <span class="item-number">بند {{ index + 1 }}</span>
                                         <Button
-                                            v-if="paymentItems.length > 1"
+                                            v-if="paymentItems.length >1"
                                             icon="bi bi-trash"
                                             severity="danger"
                                             text
@@ -615,31 +615,31 @@
                                     <div v-if="item.payment_info" class="payment-info-small">
                                         <div class="info-grid">
                                             <div class="info-item">
-                                                <span class="info-label">Total Price:</span>
+                                                <span class="info-label">السعر الإجمالي:</span>
                                                 <span class="info-value">${{ item.payment_info.total_price.toFixed(2) }}</span>
                                             </div>
                                             <div class="info-item">
-                                                <span class="info-label">Already Paid:</span>
+                                                <span class="info-label">المدفوع بالفعل:</span>
                                                 <span class="info-value success">${{ item.payment_info.paid_amount.toFixed(2) }}</span>
                                             </div>
                                             <div class="info-item">
-                                                <span class="info-label">Remaining:</span>
+                                                <span class="info-label">المتبقي:</span>
                                                 <span class="info-value warning">${{ item.payment_info.remaining_amount.toFixed(2) }}</span>
                                             </div>
                                         </div>
                                         <div v-if="item.payment_info.is_full_payment" class="info-alert">
                                             <i class="bi bi-exclamation-circle"></i>
-                                            Full payment required: ${{ item.payment_info.remaining_amount.toFixed(2) }}
+                                            دفعة كاملة مطلوبة: ${{ item.payment_info.remaining_amount.toFixed(2) }}
                                         </div>
                                         <div v-else class="info-alert info">
                                             <i class="bi bi-info-circle"></i>
-                                            Partial payment allowed: $1 - ${{ item.payment_info.remaining_amount.toFixed(2) }}
+                                            دفعة جزئية مسموحة: $1 - ${{ item.payment_info.remaining_amount.toFixed(2) }}
                                         </div>
                                     </div>
 
                                     <div v-if="item.loading_info" class="loading-info-small">
                                         <i class="bi bi-hourglass-split"></i>
-                                        <span>Loading payment information...</span>
+                                        <span>جاري تحميل معلومات الدفع...</span>
                                     </div>
 
                                     <div class="form-grid-2">
@@ -647,7 +647,7 @@
                                         <div class="form-group">
                                             <label class="form-label">
                                                 <i class="bi bi-tag"></i>
-                                                Item Type
+                                                نوع البند
                                                 <span class="required">*</span>
                                             </label>
                                             <Select
@@ -663,7 +663,7 @@
                                         <div class="form-group">
                                             <label class="form-label">
                                                 <i class="bi bi-box"></i>
-                                                {{ item.item_type === 'subscription' ? 'Subscription' : 'Product' }}
+                                                {{ item.item_type === 'subscription' ? 'اشتراك' : 'منتج' }}
                                                 <span class="required">*</span>
                                             </label>
                                             <Select
@@ -671,7 +671,7 @@
                                                 :options="item.item_type === 'subscription' ? subscriptionOptions : productOptions"
                                                 optionLabel="label"
                                                 optionValue="value"
-                                                :placeholder="`Select ${item.item_type === 'subscription' ? 'Subscription' : 'Product'}`"
+                                                :placeholder="`اختر ${item.item_type === 'subscription' ? 'اشتراك' : 'منتج'}`"
                                                 :disabled="item.item_type === 'subscription' && !selectedStudentForPayment"
                                                 @change="handleItemSelect(item)"
                                                 filter
@@ -683,12 +683,12 @@
                                         <div class="form-group form-group-full">
                                             <label class="form-label">
                                                 <i class="bi bi-text-left"></i>
-                                                Description
+                                                الوصف
                                                 <span class="required">*</span>
                                             </label>
                                             <InputText
                                                 v-model="item.description"
-                                                placeholder="Item description"
+                                                placeholder="وصف البند"
                                             />
                                         </div>
 
@@ -696,7 +696,7 @@
                                         <div class="form-group">
                                             <label class="form-label">
                                                 <i class="bi bi-hash"></i>
-                                                Quantity
+                                                الكمية
                                                 <span class="required">*</span>
                                             </label>
                                             <InputNumber
@@ -716,7 +716,7 @@
                                         <div class="form-group">
                                             <label class="form-label">
                                                 <i class="bi bi-currency-dollar"></i>
-                                                Unit Price
+                                                سعر الوحدة
                                                 <span class="required">*</span>
                                             </label>
                                             <InputNumber
@@ -734,7 +734,7 @@
                                         <div class="form-group">
                                             <label class="form-label">
                                                 <i class="bi bi-percent"></i>
-                                                Discount
+                                                الخصم
                                             </label>
                                             <InputNumber
                                                 v-model="item.discount_value"
@@ -752,7 +752,7 @@
                                         <div class="form-group">
                                             <label class="form-label">
                                                 <i class="bi bi-cash"></i>
-                                                Total Price
+                                                السعر الإجمالي
                                                 <span class="required">*</span>
                                             </label>
                                             <div class="total-price-display" :class="{ 'has-error': paymentErrors[`items.${index}.total_price`] }">
@@ -771,7 +771,7 @@
                             <div class="payment-summary-small">
                                 <span class="summary-label">
                                     <i class="bi bi-calculator"></i>
-                                    Total Amount
+                                    المبلغ الإجمالي
                                 </span>
                                 <span class="summary-value">
                                     ${{ totalPaymentAmount.toFixed(2) }}
@@ -783,14 +783,14 @@
                     <!-- Form Actions -->
                     <div class="modal-actions">
                         <Button
-                            label="Cancel"
+                            label="إلغاء"
                             severity="secondary"
                             outlined
                             @click="closePaymentModal"
                             type="button"
                         />
                         <Button
-                            label="Create Payment"
+                            label="إنشاء الدفعة"
                             icon="bi bi-check-circle"
                             :loading="submittingPayment"
                             type="submit"
@@ -825,7 +825,7 @@ const programFilter = ref('');
 const programs = ref([]);
 
 const pagination = ref({
-    current_page: 1,
+    current_page:1,
     last_page: 1,
     per_page: 15,
     total: 0
@@ -878,7 +878,7 @@ const paymentItems = ref([
         item_type: 'subscription',
         item_id: '',
         description: '',
-        quantity: 1,
+        quantity:1,
         unit_price: 0,
         discount_value: 0,
         total_price: 0,
@@ -980,7 +980,7 @@ const archiveStudent = async () => {
         fetchStudents(pagination.value.current_page);
     } catch (error) {
         console.error('Error archiving student:', error);
-        alert(error.response?.data?.message || 'Failed to archive student');
+        alert(error.response?.data?.message || 'فشل في أرشفة الطالب');
     } finally {
         archiving.value = false;
     }
@@ -1002,7 +1002,7 @@ const restoreStudent = async () => {
         fetchStudents(pagination.value.current_page);
     } catch (error) {
         console.error('Error restoring student:', error);
-        alert(error.response?.data?.message || 'Failed to restore student');
+        alert(error.response?.data?.message || 'فشل في استعادة الطالب');
     } finally {
         restoring.value = false;
     }
@@ -1024,7 +1024,7 @@ const deleteStudent = async () => {
         fetchStudents(pagination.value.current_page);
     } catch (error) {
         console.error('Error deleting student:', error);
-        alert(error.response?.data?.message || 'Failed to delete student');
+        alert(error.response?.data?.message || 'فشل في حذف الطالب');
     } finally {
         deleting.value = false;
     }
@@ -1043,10 +1043,10 @@ const getStatusClass = (status) => {
 
 const getStatusLabel = (status) => {
     const labels = {
-        active: 'Active',
-        pending_payment: 'Pending Payment',
-        expired: 'Expired',
-        archived: 'Archived'
+        active: 'نشط',
+        pending_payment: 'انتظار الدفع',
+        expired: 'منتهي',
+        archived: 'مؤرشف'
     };
     return labels[status] || status;
 };
@@ -1139,14 +1139,14 @@ const handleRenewalSubmit = async () => {
 
         const response = await axios.post(`/admin/subscriptions/${selectedSubscription.value.id}/renew`, payload);
 
-        alert(response.data.message || 'Subscription renewed successfully!');
+        alert(response.data.message || 'تم تجديد الاشتراك بنجاح!');
         closeRenewalModal();
 
-        // Refresh the student list to show updated data
+        // Refresh student list to show updated data
         fetchStudents(pagination.value.current_page);
     } catch (error) {
         console.error('Error renewing subscription:', error);
-        alert(error.response?.data?.message || 'Failed to renew subscription');
+        alert(error.response?.data?.message || 'فشل في تجديد الاشتراك');
     } finally {
         submittingRenewal.value = false;
     }
@@ -1178,7 +1178,7 @@ const closePaymentModal = () => {
         item_type: 'subscription',
         item_id: '',
         description: '',
-        quantity: 1,
+        quantity:1,
         unit_price: 0,
         discount_value: 0,
         total_price: 0,
@@ -1245,7 +1245,7 @@ const addPaymentItem = () => {
         item_type: 'subscription',
         item_id: '',
         description: '',
-        quantity: 1,
+        quantity:1,
         unit_price: 0,
         discount_value: 0,
         total_price: 0,
@@ -1289,7 +1289,7 @@ const handleItemSelect = async (item) => {
     if (item.item_type === 'subscription') {
         const subscription = subscriptions.value.find(s => s.id == item.item_id);
         if (subscription) {
-            item.description = `${subscription.subscription_option?.name || 'Subscription'} - ${subscription.program?.name || ''}`;
+            item.description = `${subscription.subscription_option?.name || 'اشتراك'} - ${subscription.program?.name || ''}`;
             item.unit_price = subscription.final_price;
             item.quantity = 1;
             await fetchPaymentInfo(item);
@@ -1332,16 +1332,16 @@ const handlePaymentSubmit = async () => {
     paymentItems.value.forEach((item, index) => {
         if (!validateTotalPrice(item)) {
             if (item.payment_info?.is_full_payment) {
-                paymentErrors.value[`items.${index}.total_price`] = [`Full payment required: $${item.payment_info.remaining_amount}`];
+                paymentErrors.value[`items.${index}.total_price`] = [`دفعة كاملة مطلوبة: $${item.payment_info.remaining_amount}`];
             } else {
-                paymentErrors.value[`items.${index}.total_price`] = [`Amount must be between $${item.payment_info?.min_payment} and $${item.payment_info?.max_payment}`];
+                paymentErrors.value[`items.${index}.total_price`] = [`يجب أن يكون المبلغ بين $${item.payment_info?.min_payment} و $${item.payment_info?.max_payment}`];
             }
             hasErrors = true;
         }
     });
 
     if (hasErrors) {
-        alert('Please fix the payment amount errors before submitting');
+        alert('يرجى إصلاح أخطاء مبلغ الدفع قبل الإرسال');
         return;
     }
 
@@ -1362,14 +1362,14 @@ const handlePaymentSubmit = async () => {
         };
 
         await axios.post('/admin/payments', payload);
-        alert('Payment created successfully');
+        alert('تم إنشاء الدفعة بنجاح');
         closePaymentModal();
         fetchStudents(pagination.value.current_page);
     } catch (error) {
         if (error.response?.data?.errors) {
             paymentErrors.value = error.response.data.errors;
         } else {
-            alert(error.response?.data?.message || 'Failed to create payment');
+            alert(error.response?.data?.message || 'فشل في إنشاء الدفعة');
         }
     } finally {
         submittingPayment.value = false;
@@ -1511,7 +1511,7 @@ onMounted(() => {
 }
 
 .section-body-small {
-    padding-left: 0;
+    padding-right: 0;
 }
 
 /* Form Grids */

@@ -10,8 +10,8 @@
                                 <div class="mb-3">
                                     <i class="bi bi-mortarboard-fill text-primary" style="font-size: 3rem;"></i>
                                 </div>
-                                <h3 class="fw-bold">Student Management</h3>
-                                <p class="text-muted">Admin Panel Login</p>
+                                <h3 class="fw-bold">إدارة الطلاب</h3>
+                                <p class="text-muted">تسجيل دخول لوحة الإدارة</p>
                             </div>
 
                             <!-- Alert Messages -->
@@ -24,7 +24,7 @@
                             <!-- Login Form -->
                             <form @submit.prevent="handleLogin">
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">Email Address</label>
+                                    <label for="email" class="form-label">البريد الإلكتروني</label>
                                     <IconField>
                                         <InputIcon class="bi bi-envelope"></InputIcon>
                                         <InputText
@@ -40,13 +40,13 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="password" class="form-label">Password</label>
+                                    <label for="password" class="form-label">كلمة المرور</label>
                                     <IconField>
                                         <InputIcon class="bi bi-lock"></InputIcon>
                                         <Password
                                             id="password"
                                             v-model="form.password"
-                                            placeholder="Enter your password"
+                                            placeholder="أدخل كلمة المرور"
                                             :toggle-mask="true"
                                             :feedback="false"
                                             class="w-100"
@@ -63,7 +63,7 @@
                                         :binary="true"
                                     />
                                     <label for="remember" class="mb-0" style="cursor: pointer;">
-                                        Remember me
+                                        تذكرني
                                     </label>
                                 </div>
 
@@ -75,11 +75,11 @@
                                     >
                                         <span v-if="loading">
                                             <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                            Logging in...
+                                            جاري تسجيل الدخول...
                                         </span>
                                         <span v-else>
                                             <i class="bi bi-box-arrow-in-right me-2"></i>
-                                            Login
+                                            تسجيل الدخول
                                         </span>
                                     </button>
                                 </div>
@@ -88,7 +88,7 @@
                             <!-- Additional Links -->
                             <div class="text-center mt-3">
                                 <a href="#" class="text-decoration-none text-muted small">
-                                    Forgot Password?
+                                    نسيت كلمة المرور؟
                                 </a>
                             </div>
                         </div>
@@ -97,7 +97,7 @@
                     <!-- Footer -->
                     <div class="text-center mt-4">
                         <p class="text-muted small">
-                            © {{ currentYear }} Student Management System
+                            © {{ currentYear }} نظام إدارة الطلاب
                         </p>
                     </div>
                 </div>
@@ -151,14 +151,14 @@ const handleLogin = async () => {
         if (error.response) {
             // Handle validation errors or authentication errors
             if (error.response.status === 422) {
-                errorMessage.value = error.response.data.message || 'Invalid credentials';
+                errorMessage.value = error.response.data.message || 'بيانات الاعتماد غير صالحة';
             } else if (error.response.status === 403) {
-                errorMessage.value = error.response.data.message || 'Account is deactivated';
+                errorMessage.value = error.response.data.message || 'الحساب معطل';
             } else {
-                errorMessage.value = 'Login failed. Please try again.';
+                errorMessage.value = 'فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.';
             }
         } else {
-            errorMessage.value = 'Network error. Please check your connection.';
+            errorMessage.value = 'خطأ في الشبكة. يرجى فحص اتصالك.';
         }
         console.error('Login error:', error);
     } finally {

@@ -16,7 +16,7 @@
                 <div class="sidebar-logo">
                     <i class="bi bi-mortarboard-fill"></i>
                     <transition name="fade">
-                        <span v-if="!collapsed" class="logo-text">Student MS</span>
+                        <span v-if="!collapsed" class="logo-text">إدارة الطلاب</span>
                     </transition>
                 </div>
             </div>
@@ -31,13 +31,13 @@
                 >
                     <i class="bi bi-speedometer2"></i>
                     <transition name="fade">
-                        <span v-if="!collapsed">Dashboard</span>
+                        <span v-if="!collapsed">لوحة التحكم</span>
                     </transition>
                 </router-link>
 
                 <!-- Student Management -->
                 <div class="nav-group">
-                    <div v-if="!collapsed" class="group-label">Student Management</div>
+                    <div v-if="!collapsed" class="group-label">إدارة الطلاب</div>
                     <router-link
                         :to="{ name: 'students.index' }"
                         class="nav-item"
@@ -45,7 +45,7 @@
                     >
                         <i class="bi bi-people"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Students</span>
+                            <span v-if="!collapsed">الطلاب</span>
                         </transition>
                     </router-link>
                     <router-link
@@ -55,14 +55,14 @@
                     >
                         <i class="bi bi-archive"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Student Archive</span>
+                            <span v-if="!collapsed">أرشيف الطلاب</span>
                         </transition>
                     </router-link>
                 </div>
 
                 <!-- Programs -->
                 <div class="nav-group">
-                    <div v-if="!collapsed" class="group-label">Programs</div>
+                    <div v-if="!collapsed" class="group-label">البرامج</div>
                     <router-link
                         :to="{ name: 'programs.index' }"
                         class="nav-item"
@@ -70,7 +70,7 @@
                     >
                         <i class="bi bi-book"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Programs</span>
+                            <span v-if="!collapsed">البرامج</span>
                         </transition>
                     </router-link>
                     <router-link
@@ -80,7 +80,7 @@
                     >
                         <i class="bi bi-bookmark"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Subscription Options</span>
+                            <span v-if="!collapsed">خيارات الاشتراك</span>
                         </transition>
                     </router-link>
                     <router-link
@@ -90,7 +90,7 @@
                     >
                         <i class="bi bi-box"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Products</span>
+                            <span v-if="!collapsed">المنتجات</span>
                         </transition>
                     </router-link>
                     <router-link
@@ -101,7 +101,7 @@
                     >
                         <i class="bi bi-ticket-perforated"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Coupons</span>
+                            <span v-if="!collapsed">الكوبونات</span>
                         </transition>
                     </router-link>
                     <router-link
@@ -112,14 +112,14 @@
                     >
                         <i class="bi bi-people"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Students with Coupons</span>
+                            <span v-if="!collapsed">الطلاب بالكوبونات</span>
                         </transition>
                     </router-link>
                 </div>
 
                 <!-- Financial -->
                 <div class="nav-group">
-                    <div v-if="!collapsed" class="group-label">Financial</div>
+                    <div v-if="!collapsed" class="group-label">المالية</div>
                     <router-link
                         :to="{ name: 'payments.index' }"
                         class="nav-item"
@@ -127,7 +127,7 @@
                     >
                         <i class="bi bi-credit-card"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Payments</span>
+                            <span v-if="!collapsed">المدفوعات</span>
                         </transition>
                     </router-link>
                     <router-link
@@ -137,7 +137,7 @@
                     >
                         <i class="bi bi-wallet-fill"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">My Wallet</span>
+                            <span v-if="!collapsed">محفظتي</span>
                         </transition>
                     </router-link>
                     <router-link
@@ -148,7 +148,7 @@
                     >
                         <i class="bi bi-wallet2"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Wallets</span>
+                            <span v-if="!collapsed">المحافظ</span>
                         </transition>
                     </router-link>
                     <router-link
@@ -158,7 +158,7 @@
                     >
                         <i class="bi bi-arrow-left-right"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Wallet Transfers</span>
+                            <span v-if="!collapsed">تحويلات المحفظة</span>
                         </transition>
                     </router-link>
                     <router-link
@@ -168,14 +168,14 @@
                     >
                         <i class="bi bi-cash-stack"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Expenses</span>
+                            <span v-if="!collapsed">المصروفات</span>
                         </transition>
                     </router-link>
                 </div>
 
                 <!-- Logs -->
                 <div class="nav-group">
-                    <div v-if="!collapsed" class="group-label">Logs</div>
+                    <div v-if="!collapsed" class="group-label">السجلات</div>
                     <router-link
                         v-if="isAdministrator"
                         :to="{ name: 'transaction-logs.index' }"
@@ -184,7 +184,7 @@
                     >
                         <i class="bi bi-journal-text"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Transaction Logs</span>
+                            <span v-if="!collapsed">سجلات المعاملات</span>
                         </transition>
                     </router-link>
                     <router-link
@@ -195,14 +195,14 @@
                     >
                         <i class="bi bi-arrow-left-right"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Transfer Logs</span>
+                            <span v-if="!collapsed">سجلات التحويلات</span>
                         </transition>
                     </router-link>
                 </div>
 
                 <!-- System -->
                 <div class="nav-group">
-                    <div v-if="!collapsed" class="group-label">System</div>
+                    <div v-if="!collapsed" class="group-label">النظام</div>
                     <router-link
                         v-if="isAdministrator"
                         :to="{ name: 'admin.users.index' }"
@@ -211,7 +211,7 @@
                     >
                         <i class="bi bi-person-badge"></i>
                         <transition name="fade">
-                            <span v-if="!collapsed">Admin Users</span>
+                            <span v-if="!collapsed">مستخدمو الإدارة</span>
                         </transition>
                     </router-link>
                 </div>

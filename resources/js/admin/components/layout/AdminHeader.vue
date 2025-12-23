@@ -14,7 +14,7 @@
                 <!-- Brand / Logo -->
                 <router-link :to="{ name: 'admin.dashboard' }" class="brand">
                     <i class="bi bi-mortarboard-fill"></i>
-                    <span class="brand-text d-none d-sm-inline">Student Management</span>
+                    <span class="brand-text d-none d-sm-inline">إدارة الطلاب</span>
                 </router-link>
 
                 <!-- Right Side Items -->
@@ -31,7 +31,7 @@
                     </button>
                     <Menu ref="notificationMenu" :model="notificationItems" :popup="true" class="notification-menu">
                         <template #start>
-                            <div class="menu-header">Notifications</div>
+                            <div class="menu-header">الإشعارات</div>
                         </template>
                     </Menu>
 
@@ -82,21 +82,21 @@ const adminName = computed(() => {
 // Notification menu items
 const notificationItems = ref([
     {
-        label: 'New student registration',
+        label: 'تسجيل طالب جديد',
         icon: 'bi bi-person-plus',
         command: () => {
             // Handle notification click
         }
     },
     {
-        label: 'Payment received',
+        label: 'تم استلام الدفعة',
         icon: 'bi bi-cash',
         command: () => {
             // Handle notification click
         }
     },
     {
-        label: 'Subscription expiring soon',
+        label: 'الاشتراك على وشك الانتهاء',
         icon: 'bi bi-exclamation-circle',
         command: () => {
             // Handle notification click
@@ -107,14 +107,14 @@ const notificationItems = ref([
 // User menu items
 const userMenuItems = ref([
     {
-        label: 'Profile',
+        label: 'الملف الشخصي',
         icon: 'bi bi-person',
         command: () => {
             // Navigate to profile
         }
     },
     {
-        label: 'Settings',
+        label: 'الإعدادات',
         icon: 'bi bi-gear',
         command: () => {
             // Navigate to settings
@@ -124,7 +124,7 @@ const userMenuItems = ref([
         separator: true
     },
     {
-        label: 'Logout',
+        label: 'تسجيل الخروج',
         icon: 'bi bi-box-arrow-right',
         class: 'text-danger',
         command: () => {

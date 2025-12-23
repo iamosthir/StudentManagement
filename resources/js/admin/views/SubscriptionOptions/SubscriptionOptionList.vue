@@ -2,8 +2,8 @@
   <div class="subscription-options-container">
     <div class="page-header">
       <div class="header-content">
-        <h1 class="page-title gradient-text">Subscription Options</h1>
-        <p class="page-subtitle">Manage subscription pricing and duration</p>
+        <h1 class="page-title gradient-text">خيارات الاشتراك</h1>
+        <p class="page-subtitle">إدارة أسعار ومدد الاشتراك</p>
       </div>
       <router-link
         to="/subscription-options/create"
@@ -11,7 +11,7 @@
         v-if="canCreate"
       >
         <i class="bi bi-plus-circle me-2"></i>
-        Add Subscription Option
+        إضافة خيار اشتراك
       </router-link>
     </div>
 
@@ -27,23 +27,23 @@
                   type="text"
                   v-model="filters.search"
                   @input="handleSearch"
-                  placeholder="Search subscription options..."
+                  placeholder="البحث في خيارات الاشتراك..."
                   class="form-control"
                 />
               </div>
             </div>
             <div class="col-md-3">
               <select v-model="filters.status" @change="loadOptions" class="form-select">
-                <option value="">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="">جميع الحالات</option>
+                <option value="active">نشط</option>
+                <option value="inactive">غير نشط</option>
               </select>
             </div>
             <div class="col-md-3">
               <select v-model="filters.payment_type" @change="loadOptions" class="form-select">
-                <option value="">All Payment Types</option>
-                <option value="full">Full Payment</option>
-                <option value="installment">Installment</option>
+                <option value="">جميع أنواع الدفع</option>
+                <option value="full">دفع كامل</option>
+                <option value="installment">تقسيط</option>
               </select>
             </div>
           </div>
@@ -57,13 +57,13 @@
           <table class="data-table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Duration</th>
-                <th>Payment Type</th>
-                <th>Programs</th>
-                <th>Status</th>
-                <th class="text-center">Actions</th>
+                <th>الاسم</th>
+                <th>السعر</th>
+                <th>المدة</th>
+                <th>نوع الدفع</th>
+                <th>البرامج</th>
+                <th>الحالة</th>
+                <th class="text-center">الإجراءات</th>
               </tr>
             </thead>
             <tbody>
@@ -75,11 +75,11 @@
                   <div class="fw-semibold text-success">${{ parseFloat(option.price).toFixed(2) }}</div>
                 </td>
                 <td>
-                  <div>{{ option.duration_months }} {{ option.duration_months === 1 ? 'month' : 'months' }}</div>
+                  <div>{{ option.duration_months }} {{ option.duration_months === 1 ? 'شهر' : 'أشهر' }}</div>
                 </td>
                 <td>
                   <span :class="['badge', option.is_full_payment ? 'bg-primary' : 'bg-warning']">
-                    {{ option.is_full_payment ? 'Full Payment' : 'Installment' }}
+                    {{ option.is_full_payment ? 'دفع كامل' : 'تقسيط' }}
                   </span>
                 </td>
                 <td>
@@ -88,14 +88,14 @@
                       {{ program.name }}
                     </span>
                     <span v-if="option.programs.length > 2" class="text-muted small">
-                      +{{ option.programs.length - 2 }} more
+                      +{{ option.programs.length - 2 }} أخرى
                     </span>
                   </div>
                   <span v-else class="text-muted">-</span>
                 </td>
                 <td>
                   <span :class="['badge', option.is_active ? 'badge-success' : 'badge-danger']">
-                    {{ option.is_active ? 'Active' : 'Inactive' }}
+                    {{ option.is_active ? 'نشط' : 'غير نشط' }}
                   </span>
                 </td>
                 <td class="text-center">
@@ -104,7 +104,7 @@
                       :to="`/subscription-options/${option.id}/edit`"
                       class="btn btn-sm btn-outline-primary"
                       v-if="canEdit"
-                      title="Edit"
+                      title="تعديل"
                     >
                       <i class="bi bi-pencil"></i>
                     </router-link>
@@ -112,7 +112,7 @@
                       @click="confirmDelete(option)"
                       class="btn btn-sm btn-outline-danger"
                       v-if="canDelete"
-                      title="Delete"
+                      title="حذف"
                     >
                       <i class="bi bi-trash"></i>
                     </button>
@@ -126,8 +126,8 @@
         <!-- Empty State -->
         <div v-else class="empty-state">
           <i class="bi bi-inbox"></i>
-          <h5>No Subscription Options Found</h5>
-          <p>{{ filters.search ? 'Try adjusting your search' : 'Start by creating your first subscription option' }}</p>
+          <h5>لم يتم العثور على خيارات اشتراك</h5>
+          <p>{{ filters.search ? 'حاول تعديل بحثك' : 'ابدأ بإنشاء أول خيار اشتراك' }}</p>
         </div>
 
         <!-- Pagination -->
@@ -163,18 +163,18 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Confirm Delete</h5>
+            <h5 class="modal-title">تأكيد الحذف</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
-            <p>Are you sure you want to delete the subscription option <strong>{{ optionToDelete?.name }}</strong>?</p>
-            <p class="text-danger small">This action cannot be undone.</p>
+            <p>هل أنت متأكد من حذف خيار الاشتراك <strong>{{ optionToDelete?.name }}</strong>؟</p>
+            <p class="text-danger small">لا يمكن التراجع عن هذا الإجراء.</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
             <button type="button" class="btn btn-danger" @click="deleteOption" :disabled="deleting">
               <span v-if="deleting" class="spinner-border spinner-border-sm me-2"></span>
-              Delete
+              حذف
             </button>
           </div>
         </div>

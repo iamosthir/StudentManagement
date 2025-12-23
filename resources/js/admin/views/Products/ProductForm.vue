@@ -1,14 +1,14 @@
 <template>
-  <div class="product-form-page">
+  <div class="product-form-page" dir="rtl">
     <div class="page-header">
       <div class="header-content">
         <div class="header-text">
-          <h1 class="page-title">{{ isEdit ? 'Edit Product' : 'Add New Product' }}</h1>
-          <p class="page-subtitle">{{ isEdit ? 'Update product information' : 'Create a new product' }}</p>
+          <h1 class="page-title">{{ isEdit ? 'تعديل منتج' : 'إضافة منتج جديد' }}</h1>
+          <p class="page-subtitle">{{ isEdit ? 'تحديث معلومات المنتج' : 'إنشاء منتج جديد' }}</p>
         </div>
         <router-link to="/products" class="btn btn-outline-secondary">
           <i class="bi bi-arrow-left me-2"></i>
-          Back to Products
+          العودة للمنتجات
         </router-link>
       </div>
     </div>
@@ -31,12 +31,12 @@
             <div class="row g-4">
               <div class="col-md-8">
                 <div class="form-group">
-                  <label for="name" class="form-label required">Product Name</label>
+                  <label for="name" class="form-label required">اسم المنتج</label>
                   <InputText
                     id="name"
                     v-model="form.name"
                     :class="['w-100', { 'p-invalid': errors.name }]"
-                    placeholder="Enter product name"
+                    placeholder="أدخل اسم المنتج"
                   />
                   <small v-if="errors.name" class="p-error">{{ errors.name }}</small>
                 </div>
@@ -44,10 +44,10 @@
 
               <div class="col-md-4">
                 <div class="form-group">
-                  <label for="is_active" class="form-label">Status</label>
+                  <label for="is_active" class="form-label">الحالة</label>
                   <div class="toggle-wrapper">
                     <ToggleSwitch v-model="form.is_active" input-id="is_active" />
-                    <span class="toggle-label">{{ form.is_active ? 'Active' : 'Inactive' }}</span>
+                    <span class="toggle-label">{{ form.is_active ? 'نشط' : 'غير نشط' }}</span>
                   </div>
                 </div>
               </div>
@@ -62,8 +62,8 @@
               <i class="bi bi-currency-dollar"></i>
             </div>
             <div>
-              <h3 class="section-title">Pricing & Type</h3>
-              <p class="section-subtitle">Set product pricing and classification</p>
+              <h3 class="section-title">السعر والنوع</h3>
+              <p class="section-subtitle">تعيين سعر المنتج وتصنيفه</p>
             </div>
           </div>
 
@@ -71,7 +71,7 @@
             <div class="row g-4">
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="price" class="form-label required">Price</label>
+                  <label for="price" class="form-label required">السعر</label>
                   <InputNumber
                     id="price"
                     v-model="form.price"
@@ -91,14 +91,14 @@
 
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="type" class="form-label required">Product Type</label>
+                  <label for="type" class="form-label required">نوع المنتج</label>
                   <Select
                     id="type"
                     v-model="form.type"
                     :options="productTypes"
                     optionLabel="label"
                     optionValue="value"
-                    placeholder="Select product type"
+                    placeholder="اختر نوع المنتج"
                     :class="['w-100', { 'p-invalid': errors.type }]"
                   />
                   <small v-if="errors.type" class="p-error">{{ errors.type }}</small>
@@ -114,29 +114,29 @@
             <div class="summary-icon">
               <i class="bi bi-card-checklist"></i>
             </div>
-            <h4>Product Summary</h4>
+            <h4>ملخص المنتج</h4>
           </div>
           <div class="summary-body">
             <div class="summary-row">
-              <span class="summary-label">Product Name:</span>
+              <span class="summary-label">اسم المنتج:</span>
               <span class="summary-value">{{ form.name || '-' }}</span>
             </div>
             <div class="summary-row">
-              <span class="summary-label">Price:</span>
+              <span class="summary-label">السعر:</span>
               <span class="summary-value price">
                 {{ form.price ? `$${parseFloat(form.price).toFixed(2)}` : '-' }}
               </span>
             </div>
             <div class="summary-row">
-              <span class="summary-label">Type:</span>
+              <span class="summary-label">النوع:</span>
               <span class="summary-value">
                 {{ productTypes.find(t => t.value === form.type)?.label || '-' }}
               </span>
             </div>
             <div class="summary-row">
-              <span class="summary-label">Status:</span>
+              <span class="summary-label">الحالة:</span>
               <span :class="['summary-value', form.is_active ? 'status-active' : 'status-inactive']">
-                {{ form.is_active ? 'Active' : 'Inactive' }}
+                {{ form.is_active ? 'نشط' : 'غير نشط' }}
               </span>
             </div>
           </div>
@@ -147,14 +147,14 @@
       <div class="form-actions">
         <Button
           type="submit"
-          :label="isEdit ? 'Update Product' : 'Create Product'"
+          :label="isEdit ? 'تحديث المنتج' : 'إنشاء المنتج'"
           :loading="loading"
           :icon="isEdit ? 'bi bi-check-circle' : 'bi bi-plus-circle'"
           class="btn-submit"
         />
         <Button
           type="button"
-          label="Cancel"
+          label="إلغاء"
           severity="secondary"
           outlined
           @click="$router.push('/products')"
@@ -220,8 +220,8 @@ const loadProduct = async () => {
     console.error('Error loading product:', error);
     toast.add({
       severity: 'error',
-      summary: 'Error',
-      detail: 'Error loading product',
+      summary: 'خطأ',
+      detail: 'خطأ في تحميل المنتج',
       life: 3000
     });
     router.push('/products');
@@ -250,15 +250,15 @@ const handleSubmit = async () => {
     } else if (error.response?.data?.message) {
       toast.add({
         severity: 'error',
-        summary: 'Error',
+        summary: 'خطأ',
         detail: error.response.data.message,
         life: 3000
       });
     } else {
       toast.add({
         severity: 'error',
-        summary: 'Error',
-        detail: 'Error saving product',
+        summary: 'خطأ',
+        detail: 'خطأ في حفظ المنتج',
         life: 3000
       });
     }
@@ -393,7 +393,7 @@ onMounted(() => {
 .form-label.required::after {
   content: '*';
   color: #ef4444;
-  margin-left: 0.25rem;
+  margin-right: 0.25rem;
 }
 
 .toggle-wrapper {

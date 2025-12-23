@@ -5,9 +5,9 @@
             <div>
                 <h1 class="page-title">
                     <i class="bi bi-wallet-fill"></i>
-                    My Wallet
+                    محفظتي
                 </h1>
-                <p class="page-subtitle">View your wallets, balances, and recent transactions</p>
+                <p class="page-subtitle">عرض محافظك والأرصدة والمعاملات الأخيرة</p>
             </div>
         </div>
 
@@ -21,11 +21,11 @@
                         <i class="bi bi-wallet2"></i>
                     </div>
                     <div class="card-content">
-                        <h3>Total Balance</h3>
+                        <h3>إجمالي الرصيد</h3>
                         <p :class="['amount', summary.total_balance >= 0 ? 'positive' : 'negative']">
                             ${{ formatMoney(summary.total_balance) }}
                         </p>
-                        <span class="hint">Across {{ summary.wallet_count }} {{ summary.wallet_count === 1 ? 'wallet' : 'wallets' }}</span>
+                        <span class="hint">عبر {{ summary.wallet_count }} {{ summary.wallet_count === 1 ? 'محفظة' : 'محفظة' }}</span>
                     </div>
                 </div>
 
@@ -34,9 +34,9 @@
                         <i class="bi bi-arrow-down-circle"></i>
                     </div>
                     <div class="card-content">
-                        <h3>Total Receivable</h3>
+                        <h3>إجمالي المستحق</h3>
                         <p class="amount">${{ formatMoney(summary.total_receivable) }}</p>
-                        <span class="hint">Money coming in</span>
+                        <span class="hint">الأموال الواردة</span>
                     </div>
                 </div>
 
@@ -45,9 +45,9 @@
                         <i class="bi bi-arrow-up-circle"></i>
                     </div>
                     <div class="card-content">
-                        <h3>Total Payable</h3>
+                        <h3>إجمالي المستحق الدفع</h3>
                         <p class="amount">${{ formatMoney(summary.total_payable) }}</p>
-                        <span class="hint">Money going out</span>
+                        <span class="hint">الأموال الصادرة</span>
                     </div>
                 </div>
             </div>
@@ -55,8 +55,8 @@
             <!-- Empty State -->
             <div v-if="wallets.length === 0" class="empty-state">
                 <i class="bi bi-wallet2"></i>
-                <h3>No Wallets Found</h3>
-                <p>You don't have any wallets yet. Wallets are automatically created when you receive payments.</p>
+                <h3>لم يتم العثور على محافظ</h3>
+                <p>ليس لديك أي محافظ حتى الآن. يتم إنشاء المحافظ تلقائيًا عند استلام المدفوعات.</p>
             </div>
 
             <!-- Wallets List -->
@@ -73,7 +73,7 @@
                             </span>
                         </div>
                         <Button
-                            label="View Details"
+                            label="عرض التفاصيل"
                             icon="bi bi-arrow-right"
                             iconPos="right"
                             severity="secondary"
@@ -87,21 +87,21 @@
                         <div class="balance-item">
                             <span class="label">
                                 <i class="bi bi-arrow-down-circle"></i>
-                                Receivable
+                                مستحق
                             </span>
                             <span class="value receivable">${{ formatMoney(wallet.receivable_amount) }}</span>
                         </div>
                         <div class="balance-item">
                             <span class="label">
                                 <i class="bi bi-arrow-up-circle"></i>
-                                Payable
+                                مستحق الدفع
                             </span>
                             <span class="value payable">${{ formatMoney(wallet.payable_amount) }}</span>
                         </div>
                         <div class="balance-item main">
                             <span class="label">
                                 <i class="bi bi-calculator"></i>
-                                Balance
+                                الرصيد
                             </span>
                             <span :class="['value', 'balance', wallet.balance >= 0 ? 'positive' : 'negative']">
                                 ${{ formatMoney(wallet.balance) }}
@@ -113,7 +113,7 @@
                     <div v-if="wallet.recent_transactions && wallet.recent_transactions.length > 0" class="recent-transactions">
                         <h4>
                             <i class="bi bi-clock-history"></i>
-                            Recent Transactions
+                            المعاملات الأخيرة
                         </h4>
                         <div class="transactions-list">
                             <div
@@ -138,7 +138,7 @@
                     </div>
                     <div v-else class="no-transactions">
                         <i class="bi bi-inbox"></i>
-                        <span>No transactions yet</span>
+                        <span>لا توجد معاملات بعد</span>
                     </div>
                 </div>
             </div>
@@ -209,9 +209,9 @@ const getWalletIcon = (type) => {
 
 const formatWalletType = (type) => {
     const types = {
-        staff: 'Staff Wallet',
-        main_cashbox: 'Main Cashbox',
-        expense: 'Expense Wallet',
+        staff: 'محفظة الموظف',
+        main_cashbox: 'الخزينة الرئيسية',
+        expense: 'محفظة المصروفات',
     };
     return types[type] || type;
 };

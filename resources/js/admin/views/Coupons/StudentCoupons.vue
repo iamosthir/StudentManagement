@@ -105,8 +105,8 @@ onMounted(() => {
           <i class="bi bi-people-fill"></i>
         </div>
         <div class="header-text">
-          <h1 class="page-title">Students with Coupons</h1>
-          <p class="page-subtitle">View students who have applied coupons and their discount details</p>
+          <h1 class="page-title">الطلاب بالكوبونات</h1>
+          <p class="page-subtitle">عرض الطلاب الذين طبقوا كوبونات وتفاصيل الخصم</p>
         </div>
       </div>
     </div>
@@ -117,13 +117,13 @@ onMounted(() => {
         <div class="filter-group">
           <label for="search" class="filter-label">
             <i class="bi bi-search"></i>
-            Search by Student Name, Admission Number, or Coupon Code
+            البحث باسم الطالب أو رقم القبول أو كود الكوبون
           </label>
           <input
             id="search"
             v-model="searchQuery"
             type="text"
-            placeholder="Enter search term..."
+            placeholder="أدخل مصطلح البحث..."
             class="filter-input"
             @keyup.enter="handleSearch"
           />
@@ -132,14 +132,14 @@ onMounted(() => {
         <div class="filter-actions">
           <button class="btn-filter" @click="handleSearch">
             <i class="bi bi-search"></i>
-            Search
+            بحث
           </button>
           <button
             class="btn-filter-reset"
             @click="searchQuery = ''; fetchStudentsWithCoupons(1)"
           >
             <i class="bi bi-x-circle"></i>
-            Reset
+            إعادة تعيين
           </button>
         </div>
       </div>
@@ -153,21 +153,21 @@ onMounted(() => {
         <table class="data-table">
           <thead>
             <tr>
-              <th>Student</th>
-              <th>Coupon Code</th>
-              <th>Coupon Name</th>
-              <th>Discount</th>
-              <th>Applied By</th>
-              <th>Used At</th>
-              <th>Actions</th>
+              <th>الطالب</th>
+              <th>كود الكوبون</th>
+              <th>اسم الكوبون</th>
+              <th>الخصم</th>
+              <th>تم التطبيق بواسطة</th>
+              <th>تاريخ الاستخدام</th>
+              <th>الإجراءات</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="record in studentsWithCoupons" :key="record.id">
               <td>
                 <div class="student-info">
-                  <span class="student-name">{{ record.student?.full_name || 'Unknown' }}</span>
-                  <span class="student-admission">{{ record.student?.admission_number || 'N/A' }}</span>
+                  <span class="student-name">{{ record.student?.full_name || 'غير معروف' }}</span>
+                  <span class="student-admission">{{ record.student?.admission_number || 'غير متاح' }}</span>
                 </div>
               </td>
               <td>
@@ -194,7 +194,7 @@ onMounted(() => {
                   <button
                     class="btn-icon btn-icon-view"
                     @click="viewStudentDetails(record.student?.id)"
-                    title="View Student Details"
+                    title="عرض تفاصيل الطالب"
                     :disabled="!record.student?.id"
                   >
                     <i class="bi bi-eye"></i>
@@ -208,7 +208,7 @@ onMounted(() => {
 
       <div v-else class="empty-state">
         <i class="bi bi-people"></i>
-        <p>No students found with applied coupons</p>
+        <p>لم يتم العثور على طلاب بكوبونات مطبقة</p>
       </div>
 
       <!-- Pagination -->
@@ -219,11 +219,11 @@ onMounted(() => {
           @click="fetchStudentsWithCoupons(currentPage - 1)"
         >
           <i class="bi bi-chevron-left"></i>
-          Previous
+          السابق
         </button>
 
         <span class="pagination-info">
-          Page {{ currentPage }} of {{ lastPage }} ({{ total }} total)
+          صفحة {{ currentPage }} من {{ lastPage }} ({{ total }} إجمالي)
         </span>
 
         <button
@@ -231,7 +231,7 @@ onMounted(() => {
           :disabled="currentPage === lastPage"
           @click="fetchStudentsWithCoupons(currentPage + 1)"
         >
-          Next
+          التالي
           <i class="bi bi-chevron-right"></i>
         </button>
       </div>

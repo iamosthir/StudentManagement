@@ -3,10 +3,10 @@
         <!-- Page Header -->
         <div class="page-header">
             <div class="d-flex justify-content-between align-items-center">
-                <h1 class="page-title">{{ isEdit ? 'Edit Admin User' : 'Create Admin User' }}</h1>
+                <h1 class="page-title">{{ isEdit ? 'تعديل مستخدم الإدارة' : 'إضافة مستخدم إدارة' }}</h1>
                 <router-link :to="{ name: 'admin.users.index' }" class="btn-back">
                     <i class="bi bi-arrow-right me-2"></i>
-                    Back to List
+                    العودة للقائمة
                 </router-link>
             </div>
         </div>
@@ -18,7 +18,7 @@
                     <div class="row">
                         <!-- Name -->
                         <div class="col-md-6 mb-3">
-                            <label for="name" class="form-label">Name <span class="required">*</span></label>
+                            <label for="name" class="form-label">الاسم <span class="required">*</span></label>
                             <input
                                 type="text"
                                 id="name"
@@ -34,7 +34,7 @@
 
                         <!-- Email -->
                         <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">Email <span class="required">*</span></label>
+                            <label for="email" class="form-label">البريد الإلكتروني <span class="required">*</span></label>
                             <input
                                 type="email"
                                 id="email"
@@ -51,8 +51,8 @@
                         <!-- Password -->
                         <div class="col-md-6 mb-3">
                             <label for="password" class="form-label">
-                                Password <span v-if="!isEdit" class="required">*</span>
-                                <span v-if="isEdit" class="text-muted">(leave blank to keep current)</span>
+                                كلمة المرور <span v-if="!isEdit" class="required">*</span>
+                                <span v-if="isEdit" class="text-muted">(اتركها فارغة للإبقاء على الحالية)</span>
                             </label>
                             <input
                                 type="password"
@@ -70,7 +70,7 @@
                         <!-- Password Confirmation -->
                         <div class="col-md-6 mb-3">
                             <label for="password_confirmation" class="form-label">
-                                Confirm Password <span v-if="!isEdit" class="required">*</span>
+                                تأكيد كلمة المرور <span v-if="!isEdit" class="required">*</span>
                             </label>
                             <input
                                 type="password"
@@ -83,7 +83,7 @@
 
                         <!-- Roles -->
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Roles</label>
+                            <label class="form-label">الصلاحيات</label>
                             <div class="roles-checkboxes">
                                 <div v-for="role in availableRoles" :key="role.id" class="role-checkbox">
                                     <input
@@ -102,7 +102,7 @@
 
                         <!-- Status -->
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Status</label>
+                            <label class="form-label">الحالة</label>
                             <div class="status-toggle">
                                 <input
                                     type="checkbox"
@@ -112,7 +112,7 @@
                                 />
                                 <label for="is_active" class="toggle-label">
                                     <span class="toggle-switch"></span>
-                                    <span class="toggle-text">{{ form.is_active ? 'Active' : 'Inactive' }}</span>
+                                    <span class="toggle-text">{{ form.is_active ? 'نشط' : 'غير نشط' }}</span>
                                 </label>
                             </div>
                         </div>
@@ -121,11 +121,11 @@
                     <!-- Form Actions -->
                     <div class="form-actions">
                         <router-link :to="{ name: 'admin.users.index' }" class="btn-secondary">
-                            Cancel
+                            إلغاء
                         </router-link>
                         <button type="submit" class="btn-primary" :disabled="submitting">
                             <i v-if="submitting" class="bi bi-arrow-repeat spinner me-2"></i>
-                            {{ submitting ? 'Saving...' : (isEdit ? 'Update Admin' : 'Create Admin') }}
+                            {{ submitting ? 'جاري الحفظ...' : (isEdit ? 'تحديث المستخدم' : 'إضافة مستخدم') }}
                         </button>
                     </div>
                 </form>
@@ -187,8 +187,8 @@ const fetchAdmin = async () => {
         console.error('Error fetching admin:', error);
         toast.add({
             severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to fetch admin user details',
+            summary: 'خطأ',
+            detail: 'فشل في جلب تفاصيل مستخدم الإدارة',
             life: 3000
         });
         router.push({ name: 'admin.users.index' });
@@ -211,8 +211,8 @@ const submitForm = async () => {
 
         toast.add({
             severity: 'success',
-            summary: 'Success',
-            detail: isEdit.value ? 'Admin user updated successfully' : 'Admin user created successfully',
+            summary: 'نجاح',
+            detail: isEdit.value ? 'تم تحديث مستخدم الإدارة بنجاح' : 'تم إنشاء مستخدم الإدارة بنجاح',
             life: 3000
         });
 
@@ -223,8 +223,8 @@ const submitForm = async () => {
         } else {
             toast.add({
                 severity: 'error',
-                summary: 'Error',
-                detail: error.response?.data?.message || 'An error occurred while saving',
+                summary: 'خطأ',
+                detail: error.response?.data?.message || 'حدث خطأ أثناء الحفظ',
                 life: 3000
             });
         }

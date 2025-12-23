@@ -1,12 +1,12 @@
 <template>
-    <div class="dashboard">
+    <div class="dashboard" dir="rtl">
         <!-- Page Header -->
         <div class="page-header">
             <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <h1 class="page-title">Dashboard</h1>
+                <h1 class="page-title">لوحة التحكم</h1>
                 <button type="button" class="btn-filter">
                     <i class="bi bi-calendar3 me-2"></i>
-                    This Month
+                    هذا الشهر
                     <i class="bi bi-chevron-down ms-2"></i>
                 </button>
             </div>
@@ -15,7 +15,7 @@
         <!-- Loading State -->
         <div v-if="loading" class="loading-state">
             <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
+                <span class="visually-hidden">جاري التحميل...</span>
             </div>
         </div>
 
@@ -28,11 +28,11 @@
                         <i class="bi bi-people"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-label">Total Students</div>
+                        <div class="stat-label">إجمالي الطلاب</div>
                         <div class="stat-value">{{ formatNumber(stats.total_students?.value || 0) }}</div>
                         <div class="stat-trend" :class="{ 'trend-up': stats.total_students?.trend === 'up', 'trend-down': stats.total_students?.trend === 'down' }">
                             <i :class="`bi bi-arrow-${stats.total_students?.trend === 'up' ? 'up' : 'down'}`"></i>
-                            <span>{{ Math.abs(stats.total_students?.growth || 0) }}% from last month</span>
+                            <span>{{ Math.abs(stats.total_students?.growth || 0) }}% من الشهر الماضي</span>
                         </div>
                     </div>
                 </div>
@@ -45,11 +45,11 @@
                         <i class="bi bi-bookmark-check"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-label">Active Subscriptions</div>
+                        <div class="stat-label">الاشتراكات النشطة</div>
                         <div class="stat-value">{{ formatNumber(stats.active_subscriptions?.value || 0) }}</div>
                         <div class="stat-trend" :class="{ 'trend-up': stats.active_subscriptions?.trend === 'up', 'trend-down': stats.active_subscriptions?.trend === 'down' }">
                             <i :class="`bi bi-arrow-${stats.active_subscriptions?.trend === 'up' ? 'up' : 'down'}`"></i>
-                            <span>{{ Math.abs(stats.active_subscriptions?.growth || 0) }}% from last month</span>
+                            <span>{{ Math.abs(stats.active_subscriptions?.growth || 0) }}% من الشهر الماضي</span>
                         </div>
                     </div>
                 </div>
@@ -62,11 +62,11 @@
                         <i class="bi bi-cash-stack"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-label">Monthly Revenue</div>
+                        <div class="stat-label">الإيرادات الشهرية</div>
                         <div class="stat-value">${{ formatMoney(stats.monthly_revenue?.value || 0) }}</div>
                         <div class="stat-trend" :class="{ 'trend-up': stats.monthly_revenue?.trend === 'up', 'trend-down': stats.monthly_revenue?.trend === 'down' }">
                             <i :class="`bi bi-arrow-${stats.monthly_revenue?.trend === 'up' ? 'up' : 'down'}`"></i>
-                            <span>{{ Math.abs(stats.monthly_revenue?.growth || 0) }}% from last month</span>
+                            <span>{{ Math.abs(stats.monthly_revenue?.growth || 0) }}% من الشهر الماضي</span>
                         </div>
                     </div>
                 </div>
@@ -79,11 +79,11 @@
                         <i class="bi bi-exclamation-triangle"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-label">Pending Payments</div>
+                        <div class="stat-label">المدفوعات المعلقة</div>
                         <div class="stat-value">{{ formatNumber(stats.pending_payments?.value || 0) }}</div>
                         <div class="stat-trend" :class="{ 'trend-up': stats.pending_payments?.trend === 'up', 'trend-down': stats.pending_payments?.trend === 'down' }">
                             <i :class="`bi bi-arrow-${stats.pending_payments?.trend === 'down' ? 'down' : 'up'}`"></i>
-                            <span>{{ Math.abs(stats.pending_payments?.growth || 0) }}% from last month</span>
+                            <span>{{ Math.abs(stats.pending_payments?.growth || 0) }}% من الشهر الماضي</span>
                         </div>
                     </div>
                 </div>
@@ -96,7 +96,7 @@
             <div class="col-lg-8 mb-4">
                 <div class="glass-card">
                     <div class="glass-card-header">
-                        <h6 class="card-title">Revenue Overview</h6>
+                        <h6 class="card-title">نظرة عامة على الإيرادات</h6>
                         <div class="header-actions">
                             <button class="btn-action">
                                 <i class="bi bi-three-dots"></i>
@@ -111,12 +111,12 @@
                         />
                         <div v-else-if="loading" class="chart-placeholder">
                             <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading chart...</span>
+                                <span class="visually-hidden">جاري تحميل الرسم البياني...</span>
                             </div>
                         </div>
                         <div v-else class="chart-placeholder">
                             <i class="bi bi-bar-chart"></i>
-                            <p class="placeholder-text">No revenue data available</p>
+                            <p class="placeholder-text">لا توجد بيانات إيرادات متاحة</p>
                         </div>
                     </div>
                 </div>
@@ -126,12 +126,12 @@
             <div class="col-lg-4 mb-4">
                 <div class="glass-card">
                     <div class="glass-card-header">
-                        <h6 class="card-title">Recent Activity</h6>
+                        <h6 class="card-title">النشاط الأخير</h6>
                     </div>
                     <div class="glass-card-body">
                         <div v-if="!loading && recentActivity.length === 0" class="empty-state-small">
                             <i class="bi bi-inbox"></i>
-                            <p>No recent activity</p>
+                            <p>لا يوجد نشاط حديث</p>
                         </div>
                         <div v-else class="activity-list">
                             <div v-for="(activity, index) in recentActivity" :key="index" class="activity-item">
@@ -154,33 +154,33 @@
             <div class="col-12">
                 <div class="glass-card">
                     <div class="glass-card-header">
-                        <h6 class="card-title">Recent Students</h6>
+                        <h6 class="card-title">الطلاب الأخيرون</h6>
                         <div class="header-actions">
-                            <router-link :to="{ name: 'students.index' }" class="btn-primary">View All</router-link>
+                            <router-link :to="{ name: 'students.index' }" class="btn-primary">عرض الكل</router-link>
                         </div>
                     </div>
                     <div class="glass-card-body">
                         <div v-if="recentStudents.length === 0" class="empty-state">
                             <i class="bi bi-people"></i>
-                            <p>No students yet</p>
+                            <p>لا يوجد طلاب بعد</p>
                         </div>
                         <div v-else class="table-responsive">
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th>Admission #</th>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Program</th>
-                                        <th>Status</th>
-                                        <th>Registration Date</th>
+                                        <th>رقم القبول</th>
+                                        <th>الاسم</th>
+                                        <th>البريد الإلكتروني</th>
+                                        <th>البرنامج</th>
+                                        <th>الحالة</th>
+                                        <th>تاريخ التسجيل</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="student in recentStudents" :key="student.id">
                                         <td><span class="table-id">{{ student.admission_number }}</span></td>
                                         <td class="fw-medium">{{ student.full_name }}</td>
-                                        <td>{{ student.email || 'N/A' }}</td>
+                                        <td>{{ student.email || 'غير متوفر' }}</td>
                                         <td>{{ student.program }}</td>
                                         <td><span :class="['status-badge', getStatusClass(student.status)]">{{ getStatusLabel(student.status) }}</span></td>
                                         <td>{{ student.created_at }}</td>
@@ -248,10 +248,10 @@ const getStatusClass = (status) => {
 
 const getStatusLabel = (status) => {
     const labels = {
-        active: 'Active',
-        pending_payment: 'Pending Payment',
-        expired: 'Expired',
-        archived: 'Archived'
+        active: 'نشط',
+        pending_payment: 'انتظار الدفع',
+        expired: 'منتهي',
+        archived: 'مؤرشف'
     };
     return labels[status] || status;
 };

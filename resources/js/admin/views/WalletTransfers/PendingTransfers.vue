@@ -5,12 +5,12 @@
       <div class="header-content">
         <h1 class="page-title">
           <i class="bi bi-hourglass-split gradient-icon"></i>
-          Pending Transfers
+          التحويلات المعلقة
         </h1>
-        <p class="page-subtitle">Review and approve pending wallet transfers</p>
+        <p class="page-subtitle">مراجعة والموافقة على تحويلات المحفظة المعلقة</p>
       </div>
       <Button
-        label="Back to Transfers"
+        label="العودة إلى التحويلات"
         icon="bi bi-arrow-left"
         @click="router.push('/transfers')"
         severity="secondary"
@@ -24,8 +24,8 @@
     <!-- No Pending Transfers -->
     <div v-else-if="transfers.length === 0" class="empty-state">
       <i class="bi bi-check-circle-fill"></i>
-      <h3>No Pending Transfers</h3>
-      <p>All transfer requests have been processed.</p>
+      <h3>لا توجد تحويلات معلقة</h3>
+      <p>تمت معالجة جميع طلبات التحويل.</p>
     </div>
 
     <!-- Pending Transfers Table -->
@@ -33,13 +33,13 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Amount</th>
-            <th>Notes</th>
-            <th>Requested At</th>
-            <th>Actions</th>
+            <th>المعرف</th>
+            <th>من</th>
+            <th>إلى</th>
+            <th>المبلغ</th>
+            <th>ملاحظات</th>
+            <th>طلب في</th>
+            <th>الإجراءات</th>
           </tr>
         </thead>
         <tbody>
@@ -71,7 +71,7 @@
             <td>
               <div class="action-buttons">
                 <Button
-                  label="Accept"
+                  label="قبول"
                   icon="bi bi-check-lg"
                   severity="success"
                   size="small"
@@ -79,7 +79,7 @@
                   :loading="processing[transfer.id]"
                 />
                 <Button
-                  label="Reject"
+                  label="رفض"
                   icon="bi bi-x-lg"
                   severity="danger"
                   size="small"
@@ -98,28 +98,28 @@
     <Dialog
       v-model:visible="rejectDialogVisible"
       modal
-      header="Reject Transfer"
+      header="رفض التحويل"
       :style="{ width: '500px' }"
     >
       <div class="reject-dialog-content">
-        <p>Please provide a reason for rejecting this transfer:</p>
+        <p>يرجى تقديم سبب لرفض هذا التحويل:</p>
         <Textarea
           v-model="rejectionReason"
           rows="4"
-          placeholder="Enter rejection reason..."
+          placeholder="أدخل سبب الرفض..."
           :class="{ 'p-invalid': rejectionError }"
         />
         <small v-if="rejectionError" class="error-message">{{ rejectionError }}</small>
       </div>
       <template #footer>
         <Button
-          label="Cancel"
+          label="إلغاء"
           severity="secondary"
           outlined
           @click="rejectDialogVisible = false"
         />
         <Button
-          label="Reject Transfer"
+          label="رفض التحويل"
           severity="danger"
           @click="confirmReject"
           :loading="processing[selectedTransferId]"
@@ -167,7 +167,7 @@ const fetchPendingTransfers = async () => {
 
 const processTransfer = async (transferId, action) => {
   if (action === 'accept') {
-    if (!confirm('Are you sure you want to accept this transfer?')) {
+    if (!confirm('هل أنت متأكد من قبول هذا التحويل؟')) {
       return;
     }
   }
@@ -211,7 +211,7 @@ const showRejectDialog = (transferId) => {
 
 const confirmReject = () => {
   if (!rejectionReason.value.trim()) {
-    rejectionError.value = 'Rejection reason is required.';
+    rejectionError.value = 'سبب الرفض مطلوب.';
     return;
   }
   processTransfer(selectedTransferId.value, 'reject');

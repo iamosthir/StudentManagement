@@ -1,16 +1,16 @@
 <template>
-    <div class="expense-form-container">
+    <div class="expense-form-container" dir="rtl">
         <!-- Page Header -->
         <div class="page-header">
             <div class="header-content">
                 <h1 class="page-title">
                     <i class="bi bi-cash-stack gradient-icon"></i>
-                    {{ isEditing ? 'Edit Expense' : 'Add New Expense' }}
+                    {{ isEditing ? 'تعديل مصروف' : 'إضافة مصروف جديد' }}
                 </h1>
-                <p class="page-subtitle">{{ isEditing ? 'Update expense details' : 'Record a new expense transaction' }}</p>
+                <p class="page-subtitle">{{ isEditing ? 'تحديث تفاصيل المصروف' : 'تسجيل معاملة مصروف جديدة' }}</p>
             </div>
             <Button
-                label="Back to Expenses"
+                label="العودة للمصروفات"
                 icon="bi bi-arrow-left"
                 @click="router.push('/expenses')"
                 severity="secondary"
@@ -27,8 +27,8 @@
                         <i class="bi bi-info-circle"></i>
                     </div>
                     <div>
-                        <h3 class="section-title">Expense Details</h3>
-                        <p class="section-subtitle">Enter the expense information</p>
+                        <h3 class="section-title">تفاصيل المصروف</h3>
+                        <p class="section-subtitle">أدخل معلومات المصروف</p>
                     </div>
                 </div>
 
@@ -37,21 +37,21 @@
                         <div class="form-group">
                             <label for="wallet_id">
                                 <i class="bi bi-wallet2"></i>
-                                Expense Wallet <span class="required">*</span>
+                                محفظة المصروف <span class="required">*</span>
                             </label>
                             <Select
                                 v-model="form.wallet_id"
                                 :options="wallets"
                                 optionLabel="name"
                                 optionValue="id"
-                                placeholder="Select expense wallet"
+                                placeholder="اختر محفظة المصروف"
                                 :class="{ 'p-invalid': errors.wallet_id }"
                                 :disabled="isEditing"
                             >
                                 <template #option="slotProps">
                                     <div class="flex flex-column">
                                         <div class="font-medium">{{ slotProps.option.name }}</div>
-                                        <div class="text-sm text-green-600">Balance: ${{ formatMoney(slotProps.option.balance) }}</div>
+                                        <div class="text-sm text-green-600">الرصيد: ${{ formatMoney(slotProps.option.balance) }}</div>
                                     </div>
                                 </template>
                             </Select>
@@ -59,21 +59,21 @@
                                 {{ errors.wallet_id[0] }}
                             </small>
                             <small v-else-if="selectedWallet" class="hint-text">
-                                Available balance: <strong>${{ formatMoney(selectedWallet.balance) }}</strong>
+                                الرصيد المتاح: <strong>${{ formatMoney(selectedWallet.balance) }}</strong>
                             </small>
                         </div>
 
                         <div class="form-group">
                             <label for="expense_category_id">
                                 <i class="bi bi-tag"></i>
-                                Category <span class="required">*</span>
+                                الفئة <span class="required">*</span>
                             </label>
                             <Select
                                 v-model="form.expense_category_id"
                                 :options="categories"
                                 optionLabel="name"
                                 optionValue="id"
-                                placeholder="Select category"
+                                placeholder="اختر الفئة"
                                 :class="{ 'p-invalid': errors.expense_category_id }"
                             />
                             <small v-if="errors.expense_category_id" class="error-message">
@@ -86,7 +86,7 @@
                         <div class="form-group">
                             <label for="amount">
                                 <i class="bi bi-currency-dollar"></i>
-                                Amount <span class="required">*</span>
+                                المبلغ <span class="required">*</span>
                             </label>
                             <InputNumber
                                 v-model="form.amount"
@@ -106,12 +106,12 @@
                         <div class="form-group">
                             <label for="date">
                                 <i class="bi bi-calendar"></i>
-                                Date <span class="required">*</span>
+                                التاريخ <span class="required">*</span>
                             </label>
                             <DatePicker
                                 v-model="form.date"
                                 dateFormat="yy-mm-dd"
-                                placeholder="Select date"
+                                placeholder="اختر التاريخ"
                                 showIcon
                                 :class="{ 'p-invalid': errors.date }"
                             />
@@ -124,13 +124,13 @@
                     <div class="form-group">
                         <label for="description">
                             <i class="bi bi-card-text"></i>
-                            Description
+                            الوصف
                         </label>
                         <Textarea
                             v-model="form.description"
                             inputId="description"
                             rows="4"
-                            placeholder="Enter expense description..."
+                            placeholder="أدخل وصف المصروف..."
                             :class="{ 'p-invalid': errors.description }"
                         />
                         <small v-if="errors.description" class="error-message">
@@ -144,7 +144,7 @@
             <div class="form-actions">
                 <Button
                     type="button"
-                    label="Cancel"
+                    label="إلغاء"
                     severity="secondary"
                     outlined
                     @click="router.push('/expenses')"
@@ -152,7 +152,7 @@
                 />
                 <Button
                     type="submit"
-                    :label="isEditing ? 'Update Expense' : 'Create Expense'"
+                    :label="isEditing ? 'تحديث المصروف' : 'إنشاء المصروف'"
                     icon="bi bi-check-circle"
                     iconPos="right"
                     :loading="submitting"
@@ -277,8 +277,8 @@ const submitForm = async () => {
         } else {
             toast.add({
                 severity: 'error',
-                summary: 'Error',
-                detail: error.response?.data?.message || 'An error occurred',
+                summary: 'خطأ',
+                detail: error.response?.data?.message || 'حدث خطأ',
                 life: 3000
             });
         }

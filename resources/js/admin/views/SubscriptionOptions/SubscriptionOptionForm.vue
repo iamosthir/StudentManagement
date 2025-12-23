@@ -24,8 +24,8 @@ const form = ref({
 });
 
 const paymentTypeOptions = [
-  { label: 'Full Payment', value: true },
-  { label: 'Installment', value: false }
+  { label: 'دفع كامل', value: true },
+  { label: 'تقسيط', value: false }
 ];
 
 const loadOption = async () => {
@@ -88,14 +88,14 @@ onMounted(() => {
         <div class="header-text">
           <h1 class="page-title">
             <i class="bi bi-bookmark-fill me-3"></i>
-            {{ isEdit ? 'Edit Subscription Option' : 'Add New Subscription Option' }}
+            {{ isEdit ? 'تعديل خيار الاشتراك' : 'إضافة خيار اشتراك جديد' }}
           </h1>
           <p class="page-subtitle">
-            {{ isEdit ? 'Update subscription option details' : 'Create a new subscription pricing plan' }}
+            {{ isEdit ? 'تحديث تفاصيل خيار الاشتراك' : 'إنشاء خطة تسعير اشتراك جديدة' }}
           </p>
         </div>
         <Button
-          label="Back to List"
+          label="العودة للقائمة"
           icon="bi bi-arrow-right"
           iconPos="right"
           outlined
@@ -115,8 +115,8 @@ onMounted(() => {
             <i class="bi bi-info-circle"></i>
           </div>
           <div class="section-title-wrapper">
-            <h3 class="section-title">Basic Information</h3>
-            <p class="section-subtitle">Subscription option name and status</p>
+            <h3 class="section-title">المعلومات الأساسية</h3>
+            <p class="section-subtitle">اسم خيار الاشتراك والحالة</p>
           </div>
         </div>
         <div class="section-body">
@@ -125,13 +125,13 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-tag me-2"></i>
-                  Option Name
+                  اسم الخيار
                   <span class="required">*</span>
                 </label>
                 <InputText
                   v-model="form.name"
                   :invalid="!!errors.name"
-                  placeholder="e.g., Monthly, Quarterly, Annual"
+                  placeholder="مثال: شهري، ربع سنوي، سنوي"
                   class="w-100"
                 />
                 <small v-if="errors.name" class="error-message">
@@ -144,11 +144,11 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-toggle-on me-2"></i>
-                  Status
+                  الحالة
                 </label>
                 <div class="toggle-field">
                   <ToggleSwitch v-model="form.is_active" />
-                  <span class="toggle-label">{{ form.is_active ? 'Active' : 'Inactive' }}</span>
+                  <span class="toggle-label">{{ form.is_active ? 'نشط' : 'غير نشط' }}</span>
                 </div>
               </div>
             </div>
@@ -163,8 +163,8 @@ onMounted(() => {
             <i class="bi bi-cash-coin"></i>
           </div>
           <div class="section-title-wrapper">
-            <h3 class="section-title">Pricing & Duration</h3>
-            <p class="section-subtitle">Define price and subscription period</p>
+            <h3 class="section-title">التسعير والمدة</h3>
+            <p class="section-subtitle">حدد السعر وفترة الاشتراك</p>
           </div>
         </div>
         <div class="section-body">
@@ -173,7 +173,7 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-currency-dollar me-2"></i>
-                  Price
+                  السعر
                   <span class="required">*</span>
                 </label>
                 <InputNumber
@@ -198,7 +198,7 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-calendar-range me-2"></i>
-                  Duration (Months)
+                  المدة (بالأشهر)
                   <span class="required">*</span>
                 </label>
                 <InputNumber
@@ -206,12 +206,12 @@ onMounted(() => {
                   :invalid="!!errors.duration_months"
                   :min="1"
                   :max="120"
-                  placeholder="Enter number of months"
+                  placeholder="أدخل عدد الأشهر"
                   class="w-100"
                   inputClass="w-100"
                 />
                 <small class="field-hint">
-                  Number of months this subscription lasts (1-120)
+                  عدد الأشهر لهذا الاشتراك (1-120)
                 </small>
                 <small v-if="errors.duration_months" class="error-message">
                   {{ errors.duration_months[0] }}
@@ -229,8 +229,8 @@ onMounted(() => {
             <i class="bi bi-credit-card"></i>
           </div>
           <div class="section-title-wrapper">
-            <h3 class="section-title">Payment Type</h3>
-            <p class="section-subtitle">How students can pay for this subscription</p>
+            <h3 class="section-title">نوع الدفع</h3>
+            <p class="section-subtitle">كيف يمكن للطلاب الدفع لهذا الاشتراك</p>
           </div>
         </div>
         <div class="section-body">
@@ -239,7 +239,7 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-wallet2 me-2"></i>
-                  Payment Method
+                  طريقة الدفع
                   <span class="required">*</span>
                 </label>
                 <Select
@@ -248,11 +248,11 @@ onMounted(() => {
                   optionLabel="label"
                   optionValue="value"
                   :invalid="!!errors.is_full_payment"
-                  placeholder="Select payment type"
+                  placeholder="اختر نوع الدفع"
                   class="w-100"
                 />
                 <small class="field-hint">
-                  {{ form.is_full_payment ? 'Students must pay the full amount upfront' : 'Students can pay in installments over time' }}
+                  {{ form.is_full_payment ? 'يجب على الطلاب دفع المبلغ الكامل مقدماً' : 'يمكن للطلاب الدفع على أقساط بمرور الوقت' }}
                 </small>
                 <small v-if="errors.is_full_payment" class="error-message">
                   {{ errors.is_full_payment[0] }}
@@ -267,19 +267,19 @@ onMounted(() => {
                   <i class="bi bi-info-circle"></i>
                 </div>
                 <div class="summary-content">
-                  <h4 class="summary-title">Subscription Summary</h4>
+                  <h4 class="summary-title">ملخص الاشتراك</h4>
                   <div class="summary-details">
                     <div class="summary-item">
-                      <span class="summary-label">Price:</span>
+                      <span class="summary-label">السعر:</span>
                       <span class="summary-value">${{ form.price?.toFixed(2) || '0.00' }}</span>
                     </div>
                     <div class="summary-item">
-                      <span class="summary-label">Duration:</span>
-                      <span class="summary-value">{{ form.duration_months || 0 }} {{ form.duration_months === 1 ? 'month' : 'months' }}</span>
+                      <span class="summary-label">المدة:</span>
+                      <span class="summary-value">{{ form.duration_months || 0 }} {{ form.duration_months === 1 ? 'شهر' : 'أشهر' }}</span>
                     </div>
                     <div class="summary-item">
-                      <span class="summary-label">Payment Type:</span>
-                      <span class="summary-value">{{ form.is_full_payment ? 'Full Payment' : 'Installment' }}</span>
+                      <span class="summary-label">نوع الدفع:</span>
+                      <span class="summary-value">{{ form.is_full_payment ? 'دفع كامل' : 'تقسيط' }}</span>
                     </div>
                   </div>
                 </div>
@@ -292,7 +292,7 @@ onMounted(() => {
       <!-- Submit Buttons -->
       <div class="form-actions">
         <Button
-          label="Cancel"
+          label="إلغاء"
           icon="bi bi-x-lg"
           outlined
           severity="secondary"
@@ -300,7 +300,7 @@ onMounted(() => {
           type="button"
         />
         <Button
-          :label="isEdit ? 'Update Option' : 'Create Option'"
+          :label="isEdit ? 'تحديث الخيار' : 'إضافة الخيار'"
           :icon="loading ? 'pi pi-spin pi-spinner' : 'bi bi-check-lg'"
           :loading="loading"
           type="submit"

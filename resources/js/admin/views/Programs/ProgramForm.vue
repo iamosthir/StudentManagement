@@ -72,7 +72,7 @@ const loadProgram = async () => {
     };
   } catch (error) {
     console.error('Error loading program:', error);
-    alert('Failed to load program');
+    alert('فشل في تحميل البرنامج');
     router.push('/programs');
   }
 };
@@ -96,7 +96,7 @@ const submitForm = async () => {
       errors.value = error.response.data.errors;
     } else {
       console.error('Error submitting form:', error);
-      alert('Failed to save program');
+      alert('فشل في حفظ البرنامج');
     }
   } finally {
     loading.value = false;
@@ -114,21 +114,21 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="program-form">
+  <div class="program-form" dir="rtl">
     <!-- Page Header -->
     <div class="page-header">
       <div class="header-wrapper">
         <div class="header-text">
           <h1 class="page-title">
             <i class="bi bi-book-fill me-3"></i>
-            {{ isEdit ? 'Edit Program' : 'Add New Program' }}
+            {{ isEdit ? 'تعديل برنامج' : 'إضافة برنامج جديد' }}
           </h1>
           <p class="page-subtitle">
-            {{ isEdit ? 'Update program details and assignments' : 'Create a new educational program' }}
+            {{ isEdit ? 'تحديث تفاصيل البرنامج والمهام' : 'إنشاء برنامج تعليمي جديد' }}
           </p>
         </div>
         <Button
-          label="Back to List"
+          label="العودة للقائمة"
           icon="bi bi-arrow-right"
           iconPos="right"
           outlined
@@ -148,8 +148,8 @@ onMounted(() => {
             <i class="bi bi-info-circle"></i>
           </div>
           <div class="section-title-wrapper">
-            <h3 class="section-title">Basic Information</h3>
-            <p class="section-subtitle">Program name, description and status</p>
+            <h3 class="section-title">المعلومات الأساسية</h3>
+            <p class="section-subtitle">اسم البرنامج والوصف والحالة</p>
           </div>
         </div>
         <div class="section-body">
@@ -158,13 +158,13 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-journal-text me-2"></i>
-                  Program Name
+                  اسم البرنامج
                   <span class="required">*</span>
                 </label>
                 <InputText
                   v-model="form.name"
                   :invalid="!!errors.name"
-                  placeholder="Enter program name"
+                  placeholder="أدخل اسم البرنامج"
                   class="w-100"
                 />
                 <small v-if="errors.name" class="error-message">
@@ -177,11 +177,11 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-toggle-on me-2"></i>
-                  Status
+                  الحالة
                 </label>
                 <div class="toggle-field">
                   <ToggleSwitch v-model="form.is_active" />
-                  <span class="toggle-label">{{ form.is_active ? 'Active' : 'Inactive' }}</span>
+                  <span class="toggle-label">{{ form.is_active ? 'نشط' : 'غير نشط' }}</span>
                 </div>
               </div>
             </div>
@@ -190,13 +190,13 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-text-paragraph me-2"></i>
-                  Description
+                  الوصف
                 </label>
                 <Textarea
                   v-model="form.description"
                   :invalid="!!errors.description"
                   rows="4"
-                  placeholder="Enter program description"
+                  placeholder="أدخل وصف البرنامج"
                   class="w-100"
                 />
                 <small v-if="errors.description" class="error-message">
@@ -215,8 +215,8 @@ onMounted(() => {
             <i class="bi bi-bookmark"></i>
           </div>
           <div class="section-title-wrapper">
-            <h3 class="section-title">Subscription Options</h3>
-            <p class="section-subtitle">Assign subscription plans to this program</p>
+            <h3 class="section-title">خيارات الاشتراك</h3>
+            <p class="section-subtitle">تعيين خطط الاشتراك لهذا البرنامج</p>
           </div>
         </div>
         <div class="section-body">
@@ -225,7 +225,7 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-tags me-2"></i>
-                  Select Subscription Options
+                  اختيار خيارات الاشتراك
                 </label>
                 <MultiSelect
                   v-model="form.subscription_option_ids"
@@ -233,12 +233,12 @@ onMounted(() => {
                   optionLabel="label"
                   optionValue="value"
                   :loading="loadingOptions"
-                  placeholder="Select subscription options"
+                  placeholder="اختر خيارات الاشتراك"
                   class="w-100"
                   display="chip"
                 />
                 <small class="field-hint">
-                  Students can subscribe to this program using the selected options
+                  يمكن للطلاب الاشتراك في هذا البرنامج باستخدام الخيارات المحددة
                 </small>
                 <small v-if="errors.subscription_option_ids" class="error-message">
                   {{ errors.subscription_option_ids[0] }}
@@ -256,8 +256,8 @@ onMounted(() => {
             <i class="bi bi-box"></i>
           </div>
           <div class="section-title-wrapper">
-            <h3 class="section-title">Products</h3>
-            <p class="section-subtitle">Assign products and materials to this program</p>
+            <h3 class="section-title">المنتجات</h3>
+            <p class="section-subtitle">تعيين المنتجات والمواد لهذا البرنامج</p>
           </div>
         </div>
         <div class="section-body">
@@ -266,7 +266,7 @@ onMounted(() => {
               <div class="form-field">
                 <label class="field-label">
                   <i class="bi bi-box-seam me-2"></i>
-                  Select Products
+                  اختيار المنتجات
                 </label>
                 <MultiSelect
                   v-model="form.product_ids"
@@ -274,12 +274,12 @@ onMounted(() => {
                   optionLabel="label"
                   optionValue="value"
                   :loading="loadingProducts"
-                  placeholder="Select products"
+                  placeholder="اختر المنتجات"
                   class="w-100"
                   display="chip"
                 />
                 <small class="field-hint">
-                  Products like books, uniforms, or materials associated with this program
+                  منتجات مثل الكتب والزي والمواد المرتبطة بهذا البرنامج
                 </small>
                 <small v-if="errors.product_ids" class="error-message">
                   {{ errors.product_ids[0] }}
@@ -293,7 +293,7 @@ onMounted(() => {
       <!-- Submit Buttons -->
       <div class="form-actions">
         <Button
-          label="Cancel"
+          label="إلغاء"
           icon="bi bi-x-lg"
           outlined
           severity="secondary"
@@ -301,7 +301,7 @@ onMounted(() => {
           type="button"
         />
         <Button
-          :label="isEdit ? 'Update Program' : 'Create Program'"
+          :label="isEdit ? 'تحديث البرنامج' : 'إنشاء البرنامج'"
           :icon="loading ? 'pi pi-spin pi-spinner' : 'bi bi-check-lg'"
           :loading="loading"
           type="submit"
@@ -498,7 +498,7 @@ onMounted(() => {
 
 .required {
   color: #ef4444;
-  margin-left: 0.25rem;
+  margin-right: 0.25rem;
 }
 
 .field-hint {

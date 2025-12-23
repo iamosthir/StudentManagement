@@ -28,8 +28,8 @@ const formData = ref({
 const errors = ref({});
 
 const discountTypeOptions = [
-  { label: 'Percentage Discount', value: 'percent' },
-  { label: 'Fixed Amount Discount', value: 'fixed' }
+  { label: 'خصم بالنسبة المئوية', value: 'percent' },
+  { label: 'خصم بمبلغ ثابت', value: 'fixed' }
 ];
 
 const adminUser = ref(JSON.parse(localStorage.getItem('admin_user')));
@@ -168,13 +168,13 @@ onMounted(() => {
           <i class="bi bi-ticket-perforated"></i>
         </div>
         <div class="header-text">
-          <h1 class="page-title">{{ isEditMode ? 'Edit Coupon' : 'Create New Coupon' }}</h1>
-          <p class="page-subtitle">{{ isEditMode ? 'Update coupon details' : 'Generate a new discount coupon' }}</p>
+          <h1 class="page-title">{{ isEditMode ? 'تعديل الكوبون' : 'إضافة كوبون جديد' }}</h1>
+          <p class="page-subtitle">{{ isEditMode ? 'تحديث تفاصيل الكوبون' : 'إنشاء كوبون خصم جديد' }}</p>
         </div>
       </div>
       <button class="back-btn" @click="handleCancel">
         <i class="bi bi-arrow-left"></i>
-        <span>Back to List</span>
+        <span>العودة للقائمة</span>
       </button>
     </div>
 
@@ -188,8 +188,8 @@ onMounted(() => {
               <i class="bi bi-info-circle"></i>
             </div>
             <div class="section-text">
-              <h3 class="section-title">Basic Information</h3>
-              <p class="section-subtitle">Configure coupon name and code</p>
+              <h3 class="section-title">المعلومات الأساسية</h3>
+              <p class="section-subtitle">إعداد اسم وكود الكوبون</p>
             </div>
           </div>
 
@@ -199,12 +199,12 @@ onMounted(() => {
               <div class="form-group">
                 <label for="coupon_name" class="form-label">
                   <i class="bi bi-card-text"></i>
-                  Coupon Name <span class="required">*</span>
+                  اسم الكوبون <span class="required">*</span>
                 </label>
                 <InputText
                   id="coupon_name"
                   v-model="formData.coupon_name"
-                  placeholder="Enter a descriptive name for the coupon"
+                  placeholder="أدخل اسماً وصفياً للكوبون"
                   maxlength="255"
                   :class="{ 'p-invalid': errors.coupon_name }"
                   class="w-100"
@@ -218,20 +218,20 @@ onMounted(() => {
               <div class="form-group">
                 <label for="code" class="form-label">
                   <i class="bi bi-tag"></i>
-                  Coupon Code
+                  كود الكوبون
                 </label>
                 <div class="code-input-group">
                   <InputText
                     id="code"
                     v-model="formData.code"
-                    placeholder="Enter 5-character code or generate one"
+                    placeholder="أدخل كود من 5 أحرف أو قم بإنشاء واحد"
                     maxlength="5"
                     :class="{ 'p-invalid': errors.code }"
                     class="code-input"
                   />
                   <Button
                     type="button"
-                    label="Generate"
+                    label="إنشاء"
                     icon="bi bi-arrow-repeat"
                     outlined
                     @click="generateCode"
@@ -239,7 +239,7 @@ onMounted(() => {
                   />
                 </div>
                 <small class="hint-text">
-                  Leave empty to auto-generate a unique 5-character code
+                  اتركه فارغاً لإنشاء كود فريد من 5 أحرف تلقائياً
                 </small>
                 <small v-if="errors.code" class="error-message">
                   {{ errors.code[0] }}
@@ -248,7 +248,7 @@ onMounted(() => {
             </div>
 
             <div v-if="formData.code" class="code-preview">
-              <div class="code-preview-label">Code Preview:</div>
+              <div class="code-preview-label">معاينة الكود:</div>
               <div class="code-preview-value">{{ formData.code }}</div>
             </div>
           </div>
@@ -261,8 +261,8 @@ onMounted(() => {
               <i class="bi bi-percent"></i>
             </div>
             <div class="section-text">
-              <h3 class="section-title">Discount Details</h3>
-              <p class="section-subtitle">Configure the discount type and value</p>
+              <h3 class="section-title">تفاصيل الخصم</h3>
+              <p class="section-subtitle">إعداد نوع وقيمة الخصم</p>
             </div>
           </div>
 
@@ -272,7 +272,7 @@ onMounted(() => {
               <div class="form-group">
                 <label for="discount_type" class="form-label">
                   <i class="bi bi-bookmark"></i>
-                  Discount Type <span class="required">*</span>
+                  نوع الخصم <span class="required">*</span>
                 </label>
                 <Select
                   id="discount_type"
@@ -280,7 +280,7 @@ onMounted(() => {
                   :options="discountTypeOptions"
                   optionLabel="label"
                   optionValue="value"
-                  placeholder="Select discount type"
+                  placeholder="اختر نوع الخصم"
                   :class="{ 'p-invalid': errors.discount_type }"
                   class="w-100"
                 />
@@ -293,7 +293,7 @@ onMounted(() => {
               <div class="form-group">
                 <label for="discount_value" class="form-label">
                   <i class="bi bi-calculator"></i>
-                  Discount Value <span class="required">*</span>
+                  قيمة الخصم <span class="required">*</span>
                 </label>
                 <InputNumber
                   v-if="formData.discount_type === 'fixed'"
@@ -302,7 +302,7 @@ onMounted(() => {
                   mode="currency"
                   currency="USD"
                   locale="en-US"
-                  placeholder="Enter discount amount"
+                  placeholder="أدخل مبلغ الخصم"
                   :class="{ 'p-invalid': errors.discount_value }"
                   class="w-100"
                 />
@@ -314,7 +314,7 @@ onMounted(() => {
                   suffix="%"
                   :min="0"
                   :max="100"
-                  placeholder="Enter discount percentage"
+                  placeholder="أدخل نسبة الخصم"
                   :class="{ 'p-invalid': errors.discount_value }"
                   class="w-100"
                 />
@@ -323,7 +323,7 @@ onMounted(() => {
                   id="discount_value"
                   v-model="formData.discount_value"
                   mode="decimal"
-                  placeholder="Select discount type first"
+                  placeholder="اختر نوع الخصم أولاً"
                   disabled
                   :class="{ 'p-invalid': errors.discount_value }"
                   class="w-100"
@@ -340,13 +340,13 @@ onMounted(() => {
                 <i class="bi bi-gift"></i>
               </div>
               <div class="preview-content">
-                <div class="preview-label">Discount Preview</div>
+                <div class="preview-label">معاينة الخصم</div>
                 <div class="preview-value">
                   <template v-if="formData.discount_type === 'percent'">
-                    {{ formData.discount_value }}% off
+                    خصم {{ formData.discount_value }}%
                   </template>
                   <template v-else>
-                    ${{ formData.discount_value }} off
+                    خصم ${{ formData.discount_value }}
                   </template>
                 </div>
               </div>
@@ -358,7 +358,7 @@ onMounted(() => {
         <div class="form-actions">
           <Button
             type="button"
-            label="Cancel"
+            label="إلغاء"
             severity="secondary"
             outlined
             @click="handleCancel"
@@ -366,7 +366,7 @@ onMounted(() => {
           />
           <Button
             type="submit"
-            :label="submitting ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update Coupon' : 'Create Coupon')"
+            :label="submitting ? (isEditMode ? 'جاري التحديث...' : 'جاري الإضافة...') : (isEditMode ? 'تحديث الكوبون' : 'إضافة الكوبون')"
             icon="bi bi-check-circle"
             :loading="submitting"
             :disabled="submitting"

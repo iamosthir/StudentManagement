@@ -1,17 +1,17 @@
 <template>
-  <div class="products-page">
+  <div class="products-page" dir="rtl">
     <div class="page-header">
       <div class="header-content">
         <div class="header-text">
-          <h1 class="page-title">Products</h1>
-          <p class="page-subtitle">Manage all products</p>
+          <h1 class="page-title">المنتجات</h1>
+          <p class="page-subtitle">إدارة جميع المنتجات</p>
         </div>
         <router-link
           to="/products/create"
           class="btn btn-primary"
         >
           <i class="bi bi-plus-circle me-2"></i>
-          Add Product
+          إضافة منتج
         </router-link>
       </div>
     </div>
@@ -25,21 +25,21 @@
               v-model="filters.search"
               type="text"
               class="form-control"
-              placeholder="Search products..."
+              placeholder="البحث في المنتجات..."
               @input="debouncedSearch"
             />
           </div>
         </div>
         <div class="col-md-3">
           <select v-model="filters.status" class="form-select" @change="loadProducts">
-            <option value="">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
+            <option value="">جميع الحالات</option>
+            <option value="active">نشط</option>
+            <option value="inactive">غير نشط</option>
           </select>
         </div>
         <div class="col-md-3">
           <select v-model="filters.type" class="form-select" @change="loadProducts">
-            <option value="">All Types</option>
+            <option value="">جميع الأنواع</option>
             <option v-for="type in productTypes" :key="type.value" :value="type.value">
               {{ type.label }}
             </option>
@@ -48,7 +48,7 @@
         <div class="col-md-2">
           <button class="btn btn-outline-secondary w-100" @click="resetFilters">
             <i class="bi bi-arrow-clockwise me-1"></i>
-            Reset
+            إعادة تعيين
           </button>
         </div>
       </div>
@@ -59,15 +59,15 @@
 
       <div v-else-if="products.length === 0" class="empty-state">
         <i class="bi bi-box-seam"></i>
-        <h3>No Products Found</h3>
-        <p>{{ filters.search ? 'Try adjusting your search filters' : 'Get started by creating your first product' }}</p>
+        <h3>لم يتم العثور على منتجات</h3>
+        <p>{{ filters.search ? 'حاول تعديل فلاتر البحث' : 'ابدأ بإنشاء منتجك الأول' }}</p>
         <router-link
           v-if="!filters.search"
           to="/products/create"
           class="btn btn-primary mt-3"
         >
           <i class="bi bi-plus-circle me-2"></i>
-          Add Product
+          إضافة منتج
         </router-link>
       </div>
 
@@ -75,12 +75,12 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Price</th>
-              <th>Type</th>
-              <th>Programs</th>
-              <th>Status</th>
-              <th class="text-end">Actions</th>
+              <th>الاسم</th>
+              <th>السعر</th>
+              <th>النوع</th>
+              <th>البرامج</th>
+              <th>الحالة</th>
+              <th class="text-end">الإجراءات</th>
             </tr>
           </thead>
           <tbody>
@@ -104,14 +104,14 @@
                     {{ program.name }}
                   </span>
                   <span v-if="product.programs.length > 2" class="program-tag more">
-                    +{{ product.programs.length - 2 }} more
+                    +{{ product.programs.length - 2 }} المزيد
                   </span>
                 </div>
-                <span v-else class="text-muted">No programs</span>
+                <span v-else class="text-muted">لا توجد برامج</span>
               </td>
               <td>
                 <span :class="['status-badge', product.is_active ? 'status-active' : 'status-inactive']">
-                  {{ product.is_active ? 'Active' : 'Inactive' }}
+                  {{ product.is_active ? 'نشط' : 'غير نشط' }}
                 </span>
               </td>
               <td>
@@ -119,14 +119,14 @@
                   <router-link
                     :to="`/products/${product.id}/edit`"
                     class="btn-action btn-action-edit"
-                    title="Edit"
+                    title="تعديل"
                   >
                     <i class="bi bi-pencil"></i>
                   </router-link>
                   <button
                     @click="confirmDelete(product)"
                     class="btn-action btn-action-delete"
-                    title="Delete"
+                    title="حذف"
                   >
                     <i class="bi bi-trash"></i>
                   </button>
@@ -139,7 +139,7 @@
 
       <div v-if="pagination.total > 0" class="pagination-wrapper">
         <div class="pagination-info">
-          Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} products
+          عرض {{ pagination.from }} إلى {{ pagination.to }} من {{ pagination.total }} منتج
         </div>
         <nav class="pagination-nav">
           <button
@@ -148,17 +148,17 @@
             @click="changePage(pagination.current_page - 1)"
           >
             <i class="bi bi-chevron-left"></i>
-            Previous
+            السابق
           </button>
           <span class="pagination-current">
-            Page {{ pagination.current_page }} of {{ pagination.last_page }}
+            الصفحة {{ pagination.current_page }} من {{ pagination.last_page }}
           </span>
           <button
             class="btn btn-sm btn-outline-primary"
             :disabled="pagination.current_page === pagination.last_page"
             @click="changePage(pagination.current_page + 1)"
           >
-            Next
+            التالي
             <i class="bi bi-chevron-right"></i>
           </button>
         </nav>
@@ -256,7 +256,7 @@ const changePage = (page) => {
 };
 
 const confirmDelete = async (product) => {
-  if (!confirm(`Are you sure you want to delete "${product.name}"?`)) {
+  if (!confirm(`هل أنت متأكد من حذف "${product.name}"؟`)) {
     return;
   }
 
@@ -264,8 +264,8 @@ const confirmDelete = async (product) => {
     await axios.delete(`/admin/products/${product.id}`);
     toast.add({
       severity: 'success',
-      summary: 'Success',
-      detail: 'Product deleted successfully',
+      summary: 'نجاح',
+      detail: 'تم حذف المنتج بنجاح',
       life: 3000
     });
     loadProducts(pagination.value.current_page);
@@ -273,15 +273,15 @@ const confirmDelete = async (product) => {
     if (error.response?.data?.message) {
       toast.add({
         severity: 'error',
-        summary: 'Error',
+        summary: 'خطأ',
         detail: error.response.data.message,
         life: 3000
       });
     } else {
       toast.add({
         severity: 'error',
-        summary: 'Error',
-        detail: 'Error deleting product',
+        summary: 'خطأ',
+        detail: 'خطأ في حذف المنتج',
         life: 3000
       });
     }
@@ -345,7 +345,7 @@ onMounted(() => {
 
 .search-icon {
   position: absolute;
-  left: 1rem;
+  right: 1rem;
   top: 50%;
   transform: translateY(-50%);
   color: #94a3b8;
@@ -353,7 +353,7 @@ onMounted(() => {
 }
 
 .search-box .form-control {
-  padding-left: 2.75rem;
+  padding-right: 2.75rem;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -393,7 +393,7 @@ onMounted(() => {
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   color: white;
   padding: 1rem;
-  text-align: left;
+  text-align: right;
   font-weight: 600;
   font-size: 0.875rem;
   text-transform: uppercase;
@@ -408,7 +408,7 @@ onMounted(() => {
 
 .data-table tbody tr:hover {
   background: linear-gradient(90deg, rgba(99, 102, 241, 0.03) 0%, rgba(139, 92, 246, 0.03) 100%);
-  transform: translateX(-2px);
+  transform: translateX(2px);
 }
 
 .data-table tbody td {
@@ -485,7 +485,7 @@ onMounted(() => {
 .action-buttons {
   display: flex;
   gap: 0.5rem;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .btn-action {

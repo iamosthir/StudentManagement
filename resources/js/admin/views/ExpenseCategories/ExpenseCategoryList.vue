@@ -1,16 +1,16 @@
 <template>
-    <div class="expense-categories">
+    <div class="expense-categories" dir="rtl">
         <!-- Page Header -->
         <div class="page-header">
             <div>
                 <h1 class="page-title">
                     <i class="bi bi-tags me-2"></i>
-                    Expense Categories
+                    فئات المصروفات
                 </h1>
-                <p class="page-subtitle">Manage expense categories for better organization</p>
+                <p class="page-subtitle">إدارة فئات المصروفات لتنظيم أفضل</p>
             </div>
             <Button
-                label="Add Category"
+                label="إضافة فئة"
                 icon="bi bi-plus-circle"
                 @click="openCreateModal"
             />
@@ -23,9 +23,9 @@
             <table v-else class="data-table">
                 <thead>
                     <tr>
-                        <th>Category Name</th>
-                        <th>Expenses Count</th>
-                        <th>Actions</th>
+                        <th>اسم الفئة</th>
+                        <th>عدد المصروفات</th>
+                        <th>الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,7 +37,7 @@
                             </div>
                         </td>
                         <td>
-                            <span class="badge">{{ category.expenses_count || 0 }} expenses</span>
+                            <span class="badge">{{ category.expenses_count || 0 }} مصروف</span>
                         </td>
                         <td>
                             <div class="action-buttons">
@@ -47,7 +47,7 @@
                                     text
                                     rounded
                                     @click="openEditModal(category)"
-                                    v-tooltip.top="'Edit'"
+                                    v-tooltip.top="'تعديل'"
                                 />
                                 <Button
                                     icon="bi bi-trash"
@@ -55,7 +55,7 @@
                                     text
                                     rounded
                                     @click="confirmDelete(category)"
-                                    v-tooltip.top="'Delete'"
+                                    v-tooltip.top="'حذف'"
                                     :disabled="category.expenses_count > 0"
                                 />
                             </div>
@@ -66,8 +66,8 @@
 
             <div v-if="!loading && categories.length === 0" class="empty-state">
                 <i class="bi bi-inbox"></i>
-                <p>No expense categories found</p>
-                <Button label="Add First Category" @click="openCreateModal" />
+                <p>لم يتم العثور على فئات مصروفات</p>
+                <Button label="إضافة أول فئة" @click="openCreateModal" />
             </div>
         </div>
 
@@ -75,19 +75,19 @@
         <Dialog
             v-model:visible="showModal"
             modal
-            :header="isEditing ? 'Edit Category' : 'Add Category'"
+            :header="isEditing ? 'تعديل الفئة' : 'إضافة فئة'"
             :style="{ width: '500px' }"
         >
             <div class="category-form">
                 <div class="form-group">
                     <label>
                         <i class="bi bi-tag me-2"></i>
-                        Category Name
+                        اسم الفئة
                         <span class="text-danger">*</span>
                     </label>
                     <InputText
                         v-model="form.name"
-                        placeholder="e.g., Office Supplies, Utilities"
+                        placeholder="مثال: المستلزمات المكتبية، المرافق"
                         :class="{ 'p-invalid': errors.name }"
                     />
                     <small v-if="errors.name" class="error-message">
@@ -98,13 +98,13 @@
 
             <template #footer>
                 <Button
-                    label="Cancel"
+                    label="إلغاء"
                     severity="secondary"
                     @click="showModal = false"
                     :disabled="submitting"
                 />
                 <Button
-                    :label="isEditing ? 'Update' : 'Create'"
+                    :label="isEditing ? 'تحديث' : 'إنشاء'"
                     @click="submitForm"
                     :loading="submitting"
                 />
@@ -197,8 +197,8 @@ const submitForm = async () => {
         } else {
             toast.add({
                 severity: 'error',
-                summary: 'Error',
-                detail: error.response?.data?.message || 'An error occurred',
+                summary: 'خطأ',
+                detail: error.response?.data?.message || 'حدث خطأ',
                 life: 3000
             });
         }
@@ -209,8 +209,8 @@ const submitForm = async () => {
 
 const confirmDelete = (category) => {
     confirm.require({
-        message: `Are you sure you want to delete "${category.name}"?`,
-        header: 'Confirm Delete',
+        message: `هل أنت متأكد من حذف "${category.name}"؟`,
+        header: 'تأكيد الحذف',
         icon: 'bi bi-exclamation-triangle',
         acceptClass: 'p-button-danger',
         accept: () => deleteCategory(category),
@@ -226,8 +226,8 @@ const deleteCategory = async (category) => {
     } catch (error) {
         toast.add({
             severity: 'error',
-            summary: 'Error',
-            detail: error.response?.data?.message || 'Failed to delete category',
+            summary: 'خطأ',
+            detail: error.response?.data?.message || 'فشل في حذف الفئة',
             life: 3000
         });
     }
@@ -277,7 +277,7 @@ const deleteCategory = async (category) => {
     color: #1e293b;
     font-weight: 600;
     padding: 1rem;
-    text-align: left;
+    text-align: right;
     border-bottom: 2px solid #e2e8f0;
 }
 

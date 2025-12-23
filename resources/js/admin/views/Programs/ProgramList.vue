@@ -1,9 +1,9 @@
 <template>
-  <div class="programs-container">
+  <div class="programs-container" dir="rtl">
     <div class="page-header">
       <div class="header-content">
-        <h1 class="page-title gradient-text">Programs</h1>
-        <p class="page-subtitle">Manage educational programs</p>
+        <h1 class="page-title gradient-text">البرامج</h1>
+        <p class="page-subtitle">إدارة البرامج التعليمية</p>
       </div>
       <router-link
         to="/programs/create"
@@ -11,7 +11,7 @@
         v-if="canCreate"
       >
         <i class="bi bi-plus-circle me-2"></i>
-        Add Program
+        إضافة برنامج
       </router-link>
     </div>
 
@@ -27,16 +27,16 @@
                   type="text"
                   v-model="filters.search"
                   @input="handleSearch"
-                  placeholder="Search programs..."
+                  placeholder="البحث في البرامج..."
                   class="form-control"
                 />
               </div>
             </div>
             <div class="col-md-3">
               <select v-model="filters.status" @change="loadPrograms" class="form-select">
-                <option value="">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="">جميع الحالات</option>
+                <option value="active">نشط</option>
+                <option value="inactive">غير نشط</option>
               </select>
             </div>
           </div>
@@ -50,12 +50,12 @@
           <table class="data-table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Subscription Options</th>
-                <th>Products</th>
-                <th>Status</th>
-                <th class="text-center">Actions</th>
+                <th>الاسم</th>
+                <th>الوصف</th>
+                <th>خيارات الاشتراك</th>
+                <th>المنتجات</th>
+                <th>الحالة</th>
+                <th class="text-center">الإجراءات</th>
               </tr>
             </thead>
             <tbody>
@@ -74,7 +74,7 @@
                       {{ option.name }}
                     </span>
                     <span v-if="program.subscription_options.length > 2" class="text-muted small">
-                      +{{ program.subscription_options.length - 2 }} more
+                      +{{ program.subscription_options.length - 2 }} المزيد
                     </span>
                   </div>
                   <span v-else class="text-muted">-</span>
@@ -85,14 +85,14 @@
                       {{ product.name }}
                     </span>
                     <span v-if="program.products.length > 2" class="text-muted small">
-                      +{{ program.products.length - 2 }} more
+                      +{{ program.products.length - 2 }} المزيد
                     </span>
                   </div>
                   <span v-else class="text-muted">-</span>
                 </td>
                 <td>
                   <span :class="['badge', program.is_active ? 'badge-success' : 'badge-danger']">
-                    {{ program.is_active ? 'Active' : 'Inactive' }}
+                    {{ program.is_active ? 'نشط' : 'غير نشط' }}
                   </span>
                 </td>
                 <td class="text-center">
@@ -101,7 +101,7 @@
                       :to="`/programs/${program.id}/edit`"
                       class="btn btn-sm btn-outline-primary"
                       v-if="canEdit"
-                      title="Edit"
+                      title="تعديل"
                     >
                       <i class="bi bi-pencil"></i>
                     </router-link>
@@ -109,7 +109,7 @@
                       @click="confirmDelete(program)"
                       class="btn btn-sm btn-outline-danger"
                       v-if="canDelete"
-                      title="Delete"
+                      title="حذف"
                     >
                       <i class="bi bi-trash"></i>
                     </button>
@@ -123,8 +123,8 @@
         <!-- Empty State -->
         <div v-else class="empty-state">
           <i class="bi bi-inbox"></i>
-          <h5>No Programs Found</h5>
-          <p>{{ filters.search ? 'Try adjusting your search' : 'Start by creating your first program' }}</p>
+          <h5>لم يتم العثور على برامج</h5>
+          <p>{{ filters.search ? 'حاول تعديل البحث' : 'ابدأ بإنشاء برنامجك الأول' }}</p>
         </div>
 
         <!-- Pagination -->
@@ -160,18 +160,18 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Confirm Delete</h5>
+            <h5 class="modal-title">تأكيد الحذف</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
-            <p>Are you sure you want to delete the program <strong>{{ programToDelete?.name }}</strong>?</p>
-            <p class="text-danger small">This action cannot be undone.</p>
+            <p>هل أنت متأكد من حذف البرنامج <strong>{{ programToDelete?.name }}</strong>؟</p>
+            <p class="text-danger small">لا يمكن التراجع عن هذا الإجراء.</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
             <button type="button" class="btn btn-danger" @click="deleteProgram" :disabled="deleting">
               <span v-if="deleting" class="spinner-border spinner-border-sm me-2"></span>
-              Delete
+              حذف
             </button>
           </div>
         </div>
@@ -201,7 +201,7 @@ const filters = ref({
 });
 
 const pagination = ref({
-  current_page: 1,
+  current_page:1,
   last_page: 1,
   per_page: 15,
   total: 0
@@ -255,7 +255,7 @@ const loadPrograms = async (page = 1) => {
     };
   } catch (error) {
     console.error('Error loading programs:', error);
-    alert('Failed to load programs');
+    alert('فشل في تحميل البرامج');
   } finally {
     loading.value = false;
   }
@@ -292,7 +292,7 @@ const deleteProgram = async () => {
     if (error.response?.data?.message) {
       alert(error.response.data.message);
     } else {
-      alert('Failed to delete program');
+      alert('فشل في حذف البرنامج');
     }
   } finally {
     deleting.value = false;
